@@ -2,18 +2,20 @@ package com.willyoubackend.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.willyoubackend.domain.user.dto.SignupRequestDto;
-import com.willyoubackend.domain.user.dto.SignupResponseDto;
 import com.willyoubackend.domain.user.dto.UserInfoDto;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
+import com.willyoubackend.global.dto.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,9 +30,9 @@ public class UserController {
 
     // 회원 가입
     @PostMapping("/signup")
-    public SignupResponseDto signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
-        userService.signup(signupRequestDto);
-        return new SignupResponseDto("회원가입 성공", 200);
+    public ResponseEntity<ApiResponse<String>> signup(
+            @Valid @RequestBody SignupRequestDto signupRequestDto, BindingResult bindingResult) {
+        return userService.signup(signupRequestDto,bindingResult);
     }
 
     // 회원 관련 정보 받기

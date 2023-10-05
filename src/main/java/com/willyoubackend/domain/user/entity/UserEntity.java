@@ -40,6 +40,13 @@ public class UserEntity {
         this.kakaoId = kakaoId;
     }
 
+    public UserEntity(String username, String password, String email, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
+
     public UserEntity kakaoIdUpdate(Long kakaoId) {
         this.kakaoId = kakaoId;
         return this;
