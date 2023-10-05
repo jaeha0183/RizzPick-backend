@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user.entity;
 
+import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,9 @@ public class UserEntity {
     private UserRoleEnum role;
 
     private Long kakaoId;
+
+    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    private UserProfileEntity userProfileEntity;
 
     public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
         this.username = username;
