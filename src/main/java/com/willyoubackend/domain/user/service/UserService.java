@@ -4,12 +4,20 @@ import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.willyoubackend.domain.user.entity.UserRoleEnum.ADMIN;
@@ -26,37 +34,48 @@ public class UserService {
     private String ADMIN_TOKEN;
 
     // 회원가입
-    public void signup(SignupRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<String>> signup(SignupRequestDto requestDto, BindingResult bindingResult) {
+
+        // Validation 예외처리
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        if (!fieldErrors.isEmpty()) {
+            for (FieldError fieldError : bindingResult.getFieldErrors()) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ApiResponse.error(fieldError.getDefaultMessage()));
+            }
+        }
 
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
+        String email = requestDto.getEmail();
 
         // 회원 중복 확인
         Optional<UserEntity> checkUsername = userRepository.findByUsername(username);
         if (checkUsername.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
 
-        // email 중복확인
-        String email = requestDto.getEmail();
+        // 이메일 중복 확인
         Optional<UserEntity> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email이 존재합니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         //사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (requestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 유효하지 않아 등록이 불가능합니다.");
+                throw new CustomException(ErrorCode.NOT_AUTHORIZED);
             }
-            role = ADMIN;
+            role = UserRoleEnum.ADMIN;
         }
 
         // 사용자 등록
-        UserEntity userEntity = UserEntity.builder().username(username).password(password).email(email).role(role).build();
+        UserEntity userEntity = new UserEntity(username, password, email, role);
         userRepository.save(userEntity);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successMessage("회원가입이 완료되었습니다."));
     }
+
 
     // 회원정보 수정
     @Transactional
@@ -66,6 +85,6 @@ public class UserService {
 
     public UserEntity findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("해당 사용자 이름의 회원을 찾을 수 없습니다. 사용자 이름: " + username));
+                new CustomException(ErrorCode.NOT_FOUND_ENTITY));
     }
 }
