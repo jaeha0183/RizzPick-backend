@@ -30,4 +30,18 @@ public class UserEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
+    private Long kakaoId;
+
+    public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.kakaoId = kakaoId;
+    }
+
+    public UserEntity kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
+    }
 }

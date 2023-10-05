@@ -5,7 +5,6 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,24 +58,11 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    // 회원정보 조회
-    @Transactional(readOnly = true)
-    public UserEntity getProfile(String username) {
-        // 유효성 검사
-        if (username == null) {
-            throw new IllegalArgumentException("사용자 이름을 입력해 주세요.");
-        }
-
-        // 회원 정보 조회
-        return findByUsername(username);
-    }
-
     // 회원정보 수정
     @Transactional
     public void update(UserEntity userEntity) {
         userRepository.save(userEntity);
     }
-
 
     public UserEntity findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() ->
