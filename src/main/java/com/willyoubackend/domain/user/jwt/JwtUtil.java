@@ -21,7 +21,6 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
-
 @Slf4j(topic = "JWT 관련 로그")
 @Component
 public class JwtUtil {

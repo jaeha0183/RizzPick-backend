@@ -1,10 +1,14 @@
 package com.willyoubackend.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.dto.SignupResponseDto;
 import com.willyoubackend.domain.user.dto.UserInfoDto;
+import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
+import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +24,7 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final KakaoService kakaoService;
 
     // 회원 가입
     @PostMapping("/signup")
@@ -36,4 +41,11 @@ public class UserController {
         return new UserInfoDto(username);
     }
 
+    // 카카오 로그인
+    @GetMapping("/kakao/callback")
+    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        String token = kakaoService.kakaoLogin(code);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        return "redirect:/";
+    }
 }
