@@ -18,7 +18,11 @@ public enum ErrorCode {
     NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
 
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 존재하는 아이디입니다."),
-    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다.");
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
+
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임을 입력해야 합니다."),
+
+    INVALID_ENUM_VAL(HttpStatus.BAD_REQUEST, "유효하지 않은 열거값입니다.");
 
 
     private final HttpStatus httpStatus;
