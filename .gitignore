@@ -5,6 +5,11 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Properties ###
+application-db.properties
+application-aws.properties
+
+
 ### STS ###
 .apt_generated
 .classpath
