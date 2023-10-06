@@ -55,9 +55,6 @@ public class UserProfileEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @OneToMany(mappedBy = "userProfileEntity", cascade = CascadeType.ALL)
-    private List<ProfileImageEntity> profileImages;
-
     public void updateProfile(UserProfileRequestDto userProfileRequestDto) {
         this.nickname = userProfileRequestDto.getNickname();
         this.age = userProfileRequestDto.getAge();
