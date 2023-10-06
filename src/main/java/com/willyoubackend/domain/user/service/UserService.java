@@ -137,7 +137,7 @@ public class UserService {
         }
 
 // 유효 시간(3분)동안 {email, authKey} 저장
-        redisUtil.setDataExpire(email, authKey,60 * 3L);
+        redisUtil.setDataExpire(email, authKey,  3 * 60 * 1L);
     }
 
     // 이메일 인증

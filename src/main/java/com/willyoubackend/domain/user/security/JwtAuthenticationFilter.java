@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
-    private RedisUtil redisUtil;
+    private final RedisUtil redisUtil;
 
     //로그인
     public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository, RedisUtil redisUtil) {
@@ -72,7 +72,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(JwtUtil.REFRESH_HEADER, refreshToken.getToken());
 
         // 유효 시간(5분)동안 {username, refreshToken} 저장
-        redisUtil.setDataExpire(username, refresh, 30 * 1L); //30초
+        redisUtil.setDataExpire(username, refresh, 3 * 60 * 1L); //3분
 
         // 로그인 성공시 "로그인 성공" 메시지를 반환
         response.setStatus(HttpServletResponse.SC_OK);
