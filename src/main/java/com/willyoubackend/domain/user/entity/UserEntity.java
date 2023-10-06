@@ -1,11 +1,14 @@
 package com.willyoubackend.domain.user.entity;
 
+import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Builder
 @Entity
@@ -35,6 +38,9 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL)
     private UserProfileEntity userProfileEntity;
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    private List<ProfileImageEntity> profileImages;
 
     public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
         this.username = username;

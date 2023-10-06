@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user_profile.entity;
 
+import com.willyoubackend.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,14 @@ public class ProfileImageEntity {
     private String image;
 
     @ManyToOne
-    @JoinColumn(name = "user_profile_id")
-    private UserProfileEntity userProfileEntity;
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
+
+    public ProfileImageEntity(String image){
+        this.image = image;
+    }
+
+    public void setUserEntity(UserEntity userEntity){
+        this.userEntity = userEntity;
+    }
 }
