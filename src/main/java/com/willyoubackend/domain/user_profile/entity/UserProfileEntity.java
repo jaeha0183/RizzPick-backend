@@ -79,4 +79,7 @@ public class UserProfileEntity {
         }
     }
 
+    public void setUserEntity(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
 }

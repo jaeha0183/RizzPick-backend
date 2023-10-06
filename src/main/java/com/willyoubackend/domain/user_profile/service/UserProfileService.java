@@ -10,6 +10,8 @@ import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserProfileService {
@@ -17,16 +19,17 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
 
-    public void updateUserProfile(Long userId, UserProfileRequestDto userProfileRequestDto) {
+    public void updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
         if (userProfileRequestDto.getNickname().isEmpty()){
             throw new CustomException(ErrorCode.INVALID_NICKNAME);
         }
 
-        UserEntity userEntity = findUserById(userId);
+        UserEntity loggedInUser = findUserById(userEntity.getId());
 
         UserProfileEntity userProfileEntity = userEntity.getUserProfileEntity();
 
+        userProfileEntity.setUserEntity(loggedInUser);
         userProfileEntity.updateProfile(userProfileRequestDto);
 
         userProfileRepository.save(userProfileEntity);

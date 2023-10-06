@@ -31,11 +31,7 @@ public class ProfileImageService {
             throw new CustomException(ErrorCode.INVALID_IMAGE);
         }
 
-        Optional<UserEntity> userEntityOptional = userRepository.findById(userEntity.getId());
-        if (userEntityOptional.isEmpty()){
-            throw new IllegalArgumentException("유저를 찾을 수 없습니다.");
-        }
-        UserEntity loggedInUser = userEntityOptional.get();
+        UserEntity loggedInUser = findUserById(userEntity.getId());
 
         String fileName = s3Uploader.upload(image, "profileImage/" + userEntity.getUsername());
         ProfileImageEntity profileImageEntity = new ProfileImageEntity(fileName);
