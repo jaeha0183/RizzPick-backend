@@ -1,8 +1,10 @@
 package com.willyoubackend.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.willyoubackend.domain.user.dto.EmailRequest;
 import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.dto.UserInfoDto;
+import com.willyoubackend.domain.user.dto.VerifiRequest;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
@@ -32,7 +34,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signup(
             @Valid @RequestBody SignupRequestDto signupRequestDto, BindingResult bindingResult) {
-        return userService.signup(signupRequestDto,bindingResult);
+        return userService.signup(signupRequestDto, bindingResult);
     }
 
     // 회원 관련 정보 받기
@@ -49,5 +51,16 @@ public class UserController {
         String token = kakaoService.kakaoLogin(code);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
         return "redirect:/";
+    }
+
+    @PostMapping("/email")
+    public ResponseEntity<Void> authEmail(@RequestBody @Valid EmailRequest request) {
+        userService.authEmail(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/email/verify")
+    public ApiResponse<String> verifyEmail(@RequestBody @Valid VerifiRequest request) {
+        return userService.verifyEmail(request);
     }
 }
