@@ -1,8 +1,13 @@
 package com.willyoubackend.domain.dating.service;
 
+import com.willyoubackend.domain.dating.dto.ActivityResponseDto;
+import com.willyoubackend.domain.dating.dto.DatingDetailResponseDto;
 import com.willyoubackend.domain.dating.dto.DatingRequestDto;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
+import com.willyoubackend.domain.dating.entity.ActivitiesDating;
+import com.willyoubackend.domain.dating.entity.Activity;
 import com.willyoubackend.domain.dating.entity.Dating;
+import com.willyoubackend.domain.dating.repository.ActivitiesDatingRepository;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.global.dto.ApiResponse;
@@ -16,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +29,7 @@ import java.util.List;
 @Slf4j(topic = "Dating Service")
 public class DatingService {
     private final DatingRepository datingRepository;
+    private final ActivitiesDatingRepository activitiesDatingRepository;
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> createDating(UserEntity user) {
         Dating dating = new Dating(
@@ -54,33 +61,44 @@ public class DatingService {
         List<DatingResponseDto> datingResponseDtoListByLocation = datingRepository.findAllByLocationOrderByCreatedAt(location)
                 .stream()
                 .map(DatingResponseDto::new)
-                .toList();;
+                .toList();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(datingResponseDtoListByLocation));
     }
 
-    public ResponseEntity<ApiResponse<DatingResponseDto>> getDatingDetail(Long id) {
-        DatingResponseDto responseDto = new DatingResponseDto(findByIdDating(id));
+    public ResponseEntity<ApiResponse<DatingDetailResponseDto>> getDatingDetail(Long id) {
+        Dating selectedDating = datingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ENTITY));
+        List<Activity> activityList = new ArrayList<>();
+        for (ActivitiesDating activitiesDating: activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDating)) {
+            activityList.add(activitiesDating.getActivity());
+        }
+        List<ActivityResponseDto> selectedActivities = activityList
+                .stream()
+                .map(ActivityResponseDto::new)
+                .toList();
+        DatingDetailResponseDto responseDto = new DatingDetailResponseDto(selectedDating,selectedActivities);
         return  ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(responseDto));
     }
 
     @Transactional
     public ResponseEntity<ApiResponse<DatingResponseDto>> updateDating(UserEntity user, Long id, DatingRequestDto requestDto) {
-        Dating selectedDate = findByIdDating(id);
+        Dating selectedDate = findByIdDateAuthCheck(id, user);
         if (!selectedDate.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         selectedDate.update(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new DatingResponseDto(selectedDate)));
     }
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(UserEntity user, Long id) {
-        Dating selectedDate = findByIdDating(id);
+        Dating selectedDate = findByIdDateAuthCheck(id, user);
         if (!selectedDate.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         datingRepository.delete(selectedDate);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 
-    private Dating findByIdDating(Long id) {
-        return datingRepository.findById(id).orElseThrow(
+    private Dating findByIdDateAuthCheck(Long id,UserEntity user) {
+        Dating selectedDating = datingRepository.findById(id).orElseThrow(
                 () ->new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
+        if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        return selectedDating;
     }
 }

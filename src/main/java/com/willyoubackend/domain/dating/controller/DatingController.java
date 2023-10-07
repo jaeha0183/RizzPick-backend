@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.dating.controller;
 
 import com.amazonaws.Response;
+import com.willyoubackend.domain.dating.dto.DatingDetailResponseDto;
 import com.willyoubackend.domain.dating.dto.DatingRequestDto;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.dating.service.DatingService;
@@ -45,9 +46,10 @@ public class DatingController {
     public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingListByLocation(@RequestParam String location) {
         return datingService.getDatingListByLocation(location);
     }
+
     // 데이트 상세 조회
     @GetMapping("/dating/{id}")
-    public ResponseEntity<ApiResponse<DatingResponseDto>> getDatingDetail(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<DatingDetailResponseDto>> getDatingDetail(@PathVariable Long id) {
         return datingService.getDatingDetail(id);
     }
 

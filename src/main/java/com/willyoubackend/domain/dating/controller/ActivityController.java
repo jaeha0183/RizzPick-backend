@@ -26,12 +26,13 @@ public class ActivityController {
 //    }
     // Create
     // 데이트 활동 생성
-    @PostMapping("/activity")
+    @PostMapping("/activity/{datingId}")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> createActivity(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody ActivityRequestDto requestDto
+            @RequestBody ActivityRequestDto requestDto,
+            @PathVariable Long datingId
     ) {
-        return activityService.activityCreate(userDetails.getUser(), requestDto);
+        return activityService.activityCreate(userDetails.getUser(), requestDto, datingId);
     }
 
     // Read
@@ -56,7 +57,7 @@ public class ActivityController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id,
             @RequestBody ActivityRequestDto requestDto) {
-        return activityService.updateDating(userDetails.getUser(), id, requestDto);
+        return activityService.updateActivity(userDetails.getUser(), id, requestDto);
     }
     // Delete
     // 데이트 활동 삭제
@@ -64,7 +65,7 @@ public class ActivityController {
     public ResponseEntity<ApiResponse<ActivityResponseDto>> deleteDating(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id) {
-        return activityService.deleteDating(userDetails.getUser(), id);
+        return activityService.deleteActivity(userDetails.getUser(), id);
     }
 }
 
