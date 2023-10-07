@@ -33,14 +33,13 @@ public class UserProfileController {
 
     // 프로필 전체 조회
     @GetMapping("/userProfiles")
-    public List<UserProfileResponseDto> getUserProfiles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getUserProfiles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userProfileService.getUserProfiles(userDetails.getUser());
     }
 
     // 프로필 상세 조회
     @GetMapping("/userProfile/{userId}")
-    public UserProfileResponseDto getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                 @PathVariable Long userId) {
-        return userProfileService.getUserProfile(userDetails.getUser(), userId);
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getUserProfile(@PathVariable Long userId) {
+        return userProfileService.getUserProfile(userId);
     }
 }
