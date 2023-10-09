@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user_profile.entity;
 
+import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.global.exception.CustomException;
@@ -55,6 +56,10 @@ public class UserProfileEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
+    @OneToOne
+    @JoinColumn(name = "user_dating_id")
+    private Dating dating;
+
     public void updateProfile(UserProfileRequestDto userProfileRequestDto) {
         this.nickname = userProfileRequestDto.getNickname();
         this.age = userProfileRequestDto.getAge();
@@ -81,5 +86,9 @@ public class UserProfileEntity {
 
     public void setUserEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
+    }
+
+    public void setDating(Dating dating){
+        this.dating = dating;
     }
 }

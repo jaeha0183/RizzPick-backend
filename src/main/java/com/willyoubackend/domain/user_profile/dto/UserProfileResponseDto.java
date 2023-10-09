@@ -1,5 +1,7 @@
 package com.willyoubackend.domain.user_profile.dto;
 
+import com.willyoubackend.domain.dating.dto.DatingResponseDto;
+import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import lombok.Getter;
@@ -20,6 +22,7 @@ public class UserProfileResponseDto {
     private String mbti;
     private String religion;
     private List<String> profileImages;
+    private DatingResponseDto dating;
 
     public UserProfileResponseDto(UserEntity userEntity){
         this.userId = userEntity.getId();
@@ -41,5 +44,8 @@ public class UserProfileResponseDto {
         }
 
         this.profileImages = userEntity.getProfileImages().stream().map(ProfileImageEntity::getImage).collect(Collectors.toList());
+
+        this.dating = new DatingResponseDto(userEntity.getUserProfileEntity().getDating());
+
     }
 }
