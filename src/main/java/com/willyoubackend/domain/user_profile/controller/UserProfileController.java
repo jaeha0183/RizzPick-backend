@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user_profile.controller;
 
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
+import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.service.UserProfileService;
@@ -42,4 +43,22 @@ public class UserProfileController {
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> getUserProfile(@PathVariable Long userId) {
         return userProfileService.getUserProfile(userId);
     }
+
+    // 대표 데이트 설정 및 수정
+    @PutMapping("/setMainDating")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> setMainDating(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody SetMainDatingRequestDto setMainDatingRequestDto) {
+        return userProfileService.setMainDating(userDetails.getUser(), setMainDatingRequestDto);
+    }
+
+
+    // 대표 데이트 삭제
+    @DeleteMapping("/deleteMainDating/{datingId}")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> deleteMainDating(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long datingId) {
+        return userProfileService.deleteMainDating(userDetails.getUser(), datingId);
+    }
+
 }

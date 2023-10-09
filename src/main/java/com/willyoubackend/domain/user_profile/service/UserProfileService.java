@@ -1,7 +1,10 @@
 package com.willyoubackend.domain.user_profile.service;
 
+import com.willyoubackend.domain.dating.entity.Dating;
+import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
@@ -27,6 +30,7 @@ public class UserProfileService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final DatingRepository datingRepository;
 
     public void updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
@@ -71,8 +75,44 @@ public class UserProfileService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> setMainDating(UserEntity userEntity, SetMainDatingRequestDto setMainDatingRequestDto) {
+        Dating dating = findByIdDateAuthCheck(setMainDatingRequestDto.getDatingId(), userEntity);
+
+        UserEntity loggedInUser = findUserById(userEntity.getId());
+        UserProfileEntity userProfileEntity = loggedInUser.getUserProfileEntity();
+
+        userProfileEntity.setDating(dating);
+
+        userProfileRepository.save(userProfileEntity);
+
+        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(loggedInUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
+    }
+
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> deleteMainDating(UserEntity userEntity, Long datingId) {
+        Dating dating = findByIdDateAuthCheck(datingId, userEntity);
+
+        UserEntity loggedInUser = findUserById(userEntity.getId());
+        UserProfileEntity userProfileEntity = loggedInUser.getUserProfileEntity();
+
+        userProfileEntity.setDating(null);
+
+        userProfileRepository.save(userProfileEntity);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
+    }
+
     private UserEntity findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new CustomException(ErrorCode.NOT_FOUND_ENTITY));
+    }
+
+    private Dating findByIdDateAuthCheck(Long id,UserEntity user) {
+        Dating selectedDating = datingRepository.findById(id).orElseThrow(
+                () ->new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+        );
+        if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        return selectedDating;
     }
 }
