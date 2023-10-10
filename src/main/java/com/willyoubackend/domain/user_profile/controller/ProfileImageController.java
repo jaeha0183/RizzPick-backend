@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+
 @Tag(name = "프로필 이미지", description = "프로필 이미지")
 @RestController
 @Slf4j
@@ -30,9 +32,9 @@ public class ProfileImageController {
     public ResponseEntity<ApiResponse<String>> updateProfileImage(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @ModelAttribute ProfileImageRequestDto profileImageRequestDto,
-            @RequestParam(value = "image") MultipartFile image) throws IOException {
+            @RequestParam(value = "image") List<MultipartFile> images) throws IOException {
         log.info("userId : {}", userDetails.getUser());
-        profileImageService.updateProfileImage(userDetails.getUser(), profileImageRequestDto, image);
+        profileImageService.updateProfileImage(userDetails.getUser(), profileImageRequestDto, images);
         return ResponseEntity.ok(ApiResponse.successMessage("프로필 사진 업데이트 완료."));
     }
 }
