@@ -31,10 +31,9 @@ public class ProfileImageController {
     @PutMapping(value = "/updateImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<String>> updateProfileImage(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @ModelAttribute ProfileImageRequestDto profileImageRequestDto,
-            @RequestParam(value = "image") List<MultipartFile> images) throws IOException {
-        log.info("userId : {}", userDetails.getUser());
-        profileImageService.updateProfileImage(userDetails.getUser(), profileImageRequestDto, images);
+            @ModelAttribute ProfileImageRequestDto profileImageRequestDto) throws IOException {
+        log.info(profileImageRequestDto.toString());
+        profileImageService.updateProfileImage(userDetails.getUser(), profileImageRequestDto);
         return ResponseEntity.ok(ApiResponse.successMessage("프로필 사진 업데이트 완료."));
     }
 }
