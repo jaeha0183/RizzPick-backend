@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,21 +26,24 @@ public class ProfileImageService {
     private final ProfileImageRepository profileImageRepository;
 
 
-    public void updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto, MultipartFile image) throws IOException {
+    public void updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto, List<MultipartFile> images) throws IOException {
 
-        if (image.isEmpty()){
+        if (images.isEmpty()){
             throw new CustomException(ErrorCode.INVALID_IMAGE);
         }
 
         UserEntity loggedInUser = findUserById(userEntity.getId());
 
-        String fileName = s3Uploader.upload(image, "profileImage/" + userEntity.getUsername());
-        ProfileImageEntity profileImageEntity = new ProfileImageEntity(fileName);
+        for (MultipartFile image : images) {
 
-        profileImageEntity.setUserEntity(loggedInUser);
-        loggedInUser.getProfileImages().add(profileImageEntity);
+            String fileName = s3Uploader.upload(image, "profileImage/" + userEntity.getUsername());
+            ProfileImageEntity profileImageEntity = new ProfileImageEntity(fileName);
 
-        profileImageRepository.save(profileImageEntity);
+            profileImageEntity.setUserEntity(loggedInUser);
+            loggedInUser.getProfileImages().add(profileImageEntity);
+
+            profileImageRepository.save(profileImageEntity);
+        }
     }
 
     private UserEntity findUserById(Long userId) {
