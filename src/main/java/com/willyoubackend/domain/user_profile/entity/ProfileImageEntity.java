@@ -32,4 +32,8 @@ public class ProfileImageEntity {
     public void setUserEntity(UserEntity userEntity){
         this.userEntity = userEntity;
     }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 }

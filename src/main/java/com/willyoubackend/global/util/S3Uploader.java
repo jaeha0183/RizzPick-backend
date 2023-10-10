@@ -70,4 +70,8 @@ public class S3Uploader {
         }
         return Optional.empty();
     }
+
+    public void delete(String fileName) {
+        amazonS3Client.deleteObject(bucket, fileName);
+    }
 }
