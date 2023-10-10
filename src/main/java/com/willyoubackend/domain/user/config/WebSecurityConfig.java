@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -68,7 +69,11 @@ public class WebSecurityConfig {
                 .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/users/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+                .requestMatchers("/api/users/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
+                .requestMatchers("/ws/**").permitAll() // WebSocket 요청 경로 허용
+                .requestMatchers("/chat/**").permitAll() // chat 요청 경로 허용
+                .requestMatchers("/chatlogin/**").permitAll() // chat 요청 경로 허용
+                .requestMatchers(HttpMethod.GET).permitAll() // 모든 GET 허용
                 .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
