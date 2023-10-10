@@ -5,6 +5,7 @@ import com.willyoubackend.domain.user_like_match.dto.LikeNopeResponseDto;
 import com.willyoubackend.domain.user_like_match.service.UserLikeService;
 import com.willyoubackend.domain.user_like_match.service.UserNopeService;
 import com.willyoubackend.global.dto.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,21 +24,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserLikeNopeController {
     private final UserLikeService userLikeService;
     private final UserNopeService userNopeService;
+
     // 좋아요를 보낸다.
+    @Operation(summary = "좋아요 누르기", description = "유저가 다른 유저에게 좋아요를 누르게 할 수 있습니다.")
     @PostMapping("/like/{userId}")
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createLike(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId)
-    {
+            @PathVariable Long userId) {
         return userLikeService.createLike(userDetails.getUser(), userId);
 
     }
+
     // 싫어요를 보낸다.
     @PostMapping("/nope/{userId}")
+    @Operation(summary = "싫어요 누르기", description = "유저가 다른 유저에게 싫어요를 누르게 할 수 있습니다.")
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createNope(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId)
-    {
+            @PathVariable Long userId) {
         return userNopeService.createNope(userDetails.getUser(), userId);
     }
 }
