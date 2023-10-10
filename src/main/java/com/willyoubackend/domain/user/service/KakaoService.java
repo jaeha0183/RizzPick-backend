@@ -118,13 +118,10 @@ public class KakaoService {
 
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties")
-                .get("nickname").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
-
-        log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, email);
+        log.info("카카오 사용자 정보: " + id + ", " +  ", " + email);
+        return new KakaoUserInfoDto(id,  email);
     }
 
     private UserEntity registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
@@ -149,7 +146,7 @@ public class KakaoService {
                 // email: kakao email
                 String email = kakaoUserInfo.getEmail();
 
-                kakaoUser = new UserEntity(kakaoUserInfo.getNickname(),
+                kakaoUser = new UserEntity(
                         encodedPassword,
                         email,
                         UserRoleEnum.USER,

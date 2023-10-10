@@ -42,8 +42,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
     private List<ProfileImageEntity> profileImages;
 
-    public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
-        this.username = username;
+    public UserEntity( String password, String email, UserRoleEnum role, Long kakaoId) {
         this.password = password;
         this.email = email;
         this.role = role;
