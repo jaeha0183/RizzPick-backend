@@ -71,7 +71,7 @@ public class KakaoService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", CLIENT_ID);
 //        body.add("client_id", CLIENT_ID); 프론트랑 맞추고 코드 수정예정
-        body.add("redirect_uri", "http://localhost:8080/api/login/kakao");
+        body.add("redirect_uri", "http://localhost:3000/login/kakao/callback");
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
@@ -87,6 +87,7 @@ public class KakaoService {
 
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
+        log.info(jsonNode.get("access_token").asText());
         return jsonNode.get("access_token").asText();
     }
 
@@ -118,13 +119,16 @@ public class KakaoService {
 
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties")
-                .get("nickname").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
-
-        log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, email);
+        // Wooyong Jeong
+        int indexAt = 0;
+        for (int i = 0; i < email.length(); i++) {
+            if (email.charAt(i) == '@') {
+                indexAt = i;
+            }
+        }
+        return new KakaoUserInfoDto(id, email.substring(0,indexAt), email);
     }
 
     private UserEntity registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
