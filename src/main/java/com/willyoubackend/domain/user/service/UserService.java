@@ -4,6 +4,8 @@ import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
+import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -28,6 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserProfileRepository userProfileRepository;
 
     // 관리자 인증 토큰
     @Value("${admin.token}") // Base64 Encode 한 SecretKey
@@ -72,6 +75,11 @@ public class UserService {
         // 사용자 등록
         UserEntity userEntity = new UserEntity(username, password, email, role);
         userRepository.save(userEntity);
+
+        // userProfileEntity 생성
+        UserProfileEntity userProfileEntity = new UserProfileEntity();
+        userProfileEntity.setUserEntity(userEntity);
+        userProfileRepository.save(userProfileEntity);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successMessage("회원가입이 완료되었습니다."));
     }
