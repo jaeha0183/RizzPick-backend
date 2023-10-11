@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user.service;
 
+import com.willyoubackend.domain.user.dto.LoginResponseDto;
 import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
@@ -80,10 +81,13 @@ public class UserService {
         UserProfileEntity userProfileEntity = new UserProfileEntity();
         userProfileEntity.setUserEntity(userEntity);
         userProfileRepository.save(userProfileEntity);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successMessage("회원가입이 완료되었습니다."));
     }
 
+    public ResponseEntity<ApiResponse<LoginResponseDto>> userStatusCheck(UserEntity user) {
+        UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(user);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new LoginResponseDto(user.getId(), userProfileEntity.isUserActiveStatus())));
+    }
 
     // 회원정보 수정
     @Transactional

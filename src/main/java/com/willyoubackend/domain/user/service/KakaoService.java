@@ -4,14 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.willyoubackend.domain.user.dto.KakaoUserInfoDto;
+import com.willyoubackend.domain.user.dto.LoginResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
+import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
+import com.willyoubackend.global.dto.ApiResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,12 +37,13 @@ public class KakaoService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
     @Value("${client.id}")
     private String CLIENT_ID;
 
-    public String kakaoLogin(String code) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<LoginResponseDto>> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getToken(code);
 
@@ -48,8 +55,16 @@ public class KakaoService {
 
         // 4. JWT 토큰 반환
         String createToken = jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
 
-        return createToken;
+        // Kakao User active status
+        UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(kakaoUser);
+        LoginResponseDto responseDto = new LoginResponseDto(
+                kakaoUser.getId(),
+                userProfileEntity.isUserActiveStatus()
+
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(responseDto));
     }
 
     private String getToken(String code) throws JsonProcessingException {
@@ -153,14 +168,18 @@ public class KakaoService {
                 // email: kakao email
                 String email = kakaoUserInfo.getEmail();
 
-                kakaoUser = new UserEntity(kakaoUserInfo.getNickname(),
+                kakaoUser = new UserEntity(kakaoUserInfo.getUsername(),
                         encodedPassword,
                         email,
                         UserRoleEnum.USER,
                         kakaoId
                 );
             }
-            userRepository.save(kakaoUser);
+            UserEntity savedUserEntity = userRepository.save(kakaoUser);
+            // Wooyong jeong - User Profile Create with dummy value
+            UserProfileEntity userProfileEntity = new UserProfileEntity();
+            userProfileEntity.setUserEntity(savedUserEntity);
+            userProfileRepository.save(userProfileEntity);
         }
         return kakaoUser;
     }
