@@ -102,7 +102,7 @@ public class KakaoService {
 
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
-        log.info(jsonNode.get("access_token").asText());
+        // log.info(jsonNode.get("access_token").asText());
         return jsonNode.get("access_token").asText();
     }
 
@@ -168,7 +168,7 @@ public class KakaoService {
                 // email: kakao email
                 String email = kakaoUserInfo.getEmail();
 
-                kakaoUser = new UserEntity(kakaoUserInfo.getUsername(),
+                kakaoUser = new UserEntity(
                         encodedPassword,
                         email,
                         UserRoleEnum.USER,
