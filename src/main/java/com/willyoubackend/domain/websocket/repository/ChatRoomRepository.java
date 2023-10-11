@@ -1,7 +1,7 @@
 package com.willyoubackend.domain.websocket.repository;
 
 import com.willyoubackend.domain.websocket.dto.ChatRoom;
-import com.willyoubackend.domain.websocket.pubsub.RedisSubscriber;
+import com.willyoubackend.domain.websocket.service.RedisSubscriber;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;

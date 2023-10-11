@@ -1,7 +1,7 @@
 package com.willyoubackend.domain.websocket.controller;
 
 import com.willyoubackend.domain.websocket.dto.ChatMessage;
-import com.willyoubackend.domain.websocket.pubsub.RedisPublisher;
+import com.willyoubackend.domain.websocket.service.RedisPublisher;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
