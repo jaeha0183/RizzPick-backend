@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +25,18 @@ public class ProfileImageService {
 
     public void updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
 
+
         switch (profileImageRequestDto.getAction()) {
             case ADD -> addProfileImage(userEntity, profileImageRequestDto);
             case DELETE -> deleteProfileImage(profileImageRequestDto.getId());
             case MODIFY -> modifyProfileImage(userEntity, profileImageRequestDto);
         }
 
+        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+
+        if (profileImageEntities.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_IMAGE);
+        }
     }
 
     private void addProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {

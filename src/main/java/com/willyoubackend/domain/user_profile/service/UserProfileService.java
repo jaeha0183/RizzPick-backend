@@ -34,8 +34,12 @@ public class UserProfileService {
 
     public void updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
-        if (userProfileRequestDto.getNickname().isEmpty()){
+        if (userProfileRequestDto.getNickname() == null || userProfileRequestDto.getNickname().isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_NICKNAME);
+        }
+
+        if (userProfileRequestDto.getGender() == null || userProfileRequestDto.getGender().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_GENDER);
         }
 
         UserEntity loggedInUser = findUserById(userEntity.getId());
@@ -44,6 +48,7 @@ public class UserProfileService {
 
         userProfileEntity.setUserEntity(loggedInUser);
         userProfileEntity.updateProfile(userProfileRequestDto);
+        userProfileEntity.setUserActiveStatus(true);
 
         userProfileRepository.save(userProfileEntity);
     }

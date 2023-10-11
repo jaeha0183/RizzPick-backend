@@ -91,4 +91,8 @@ public class UserProfileEntity {
     public void setDating(Dating dating){
         this.dating = dating;
     }
+
+    public void setUserActiveStatus(boolean userActiveStatus) {
+        this.userActiveStatus = userActiveStatus;
+    }
 }
