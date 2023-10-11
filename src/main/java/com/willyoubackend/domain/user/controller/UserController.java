@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.willyoubackend.domain.user.dto.LoginResponseDto;
 import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.dto.UserInfoDto;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
@@ -47,9 +48,13 @@ public class UserController {
 
     // 카카오 로그인
     @GetMapping("/kakao/callback")
-    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        String token = kakaoService.kakaoLogin(code);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
-        return "redirect:/";
+    public ResponseEntity<ApiResponse<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        return kakaoService.kakaoLogin(code, response);
+    }
+
+    // 유저 활성화 항새 확인
+    @GetMapping("/status")
+    public ResponseEntity<ApiResponse<LoginResponseDto>> userStatusCheck(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.userStatusCheck(userDetails.getUser());
     }
 }
