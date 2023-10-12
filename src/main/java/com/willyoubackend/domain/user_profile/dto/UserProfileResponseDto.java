@@ -20,10 +20,10 @@ public class UserProfileResponseDto {
     private String location;
     private String mbti;
     private String religion;
-    private List<String> profileImages;
+    private List<ImageResponseDto> profileImages;
     private DatingResponseDto dating;
 
-    public UserProfileResponseDto(UserEntity userEntity){
+    public UserProfileResponseDto(UserEntity userEntity) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
         this.age = userEntity.getUserProfileEntity().getAge();
@@ -42,7 +42,7 @@ public class UserProfileResponseDto {
             this.religion = userEntity.getUserProfileEntity().getReligion().name();
         }
 
-        this.profileImages = userEntity.getProfileImages().stream().map(ProfileImageEntity::getImage).collect(Collectors.toList());
-        this.dating = (userEntity.getUserProfileEntity().getDating() != null)?new DatingResponseDto(userEntity.getUserProfileEntity().getDating()):null;
+        this.profileImages = userEntity.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
+        this.dating = (userEntity.getUserProfileEntity().getDating() != null) ? new DatingResponseDto(userEntity.getUserProfileEntity().getDating()) : null;
     }
 }

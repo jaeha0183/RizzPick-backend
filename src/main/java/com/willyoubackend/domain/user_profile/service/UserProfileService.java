@@ -76,6 +76,11 @@ public class UserProfileService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
     }
 
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile(UserEntity userEntity) {
+        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(findUserById(userEntity.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
+    }
+
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> getUserProfile(Long userId) {
         UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(findUserById(userId));
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
