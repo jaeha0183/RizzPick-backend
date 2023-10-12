@@ -1,7 +1,7 @@
 package com.willyoubackend.domain.user.service;
 
-import com.willyoubackend.domain.user.dto.LoginResponseDto;
 import com.willyoubackend.domain.user.dto.EmailRequest;
+import com.willyoubackend.domain.user.dto.LoginResponseDto;
 import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.dto.VerifiRequest;
 import com.willyoubackend.domain.user.entity.UserEntity;

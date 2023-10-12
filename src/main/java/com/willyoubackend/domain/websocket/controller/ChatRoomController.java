@@ -1,7 +1,7 @@
 package com.willyoubackend.domain.websocket.controller;
 
-import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import com.willyoubackend.domain.websocket.dto.ChatRoom;
+import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
