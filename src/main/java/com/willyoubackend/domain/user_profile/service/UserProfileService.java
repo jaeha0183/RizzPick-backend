@@ -32,7 +32,7 @@ public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
     private final DatingRepository datingRepository;
 
-    public void updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
         if (userProfileRequestDto.getNickname() == null || userProfileRequestDto.getNickname().isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_NICKNAME);
@@ -51,6 +51,10 @@ public class UserProfileService {
         userProfileEntity.setUserActiveStatus(true);
 
         userProfileRepository.save(userProfileEntity);
+
+        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(loggedInUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getUserProfiles(UserEntity userEntity) {
