@@ -40,6 +40,10 @@ public class ProfileImageService {
     }
 
     private void addProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
+        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+        if (profileImageEntities.size() >= 6) {
+            throw new CustomException(ErrorCode.INVALID_MAXIMA);
+        }
         String fileName = s3Uploader.upload(profileImageRequestDto.getImage(), "profileImage/" + userEntity.getUsername());
         ProfileImageEntity profileImageEntity = new ProfileImageEntity(fileName);
         profileImageEntity.setUserEntity(userEntity);
@@ -48,6 +52,11 @@ public class ProfileImageService {
 
     private void deleteProfileImage(Long imageId) {
         ProfileImageEntity profileImageEntity = findImageById(imageId);
+        UserEntity userEntity = profileImageEntity.getUserEntity();
+        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+        if (profileImageEntities.size() <= 1) {
+            throw new CustomException(ErrorCode.INVALID_IMAGE);
+        }
         s3Uploader.delete(profileImageEntity.getImage());
         profileImageRepository.deleteById(imageId);
     }
