@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user_profile.entity;
 
 public enum ReligionEnum {
+    NONE,
     CHRISTIANITY, // 기독교
     JUDAISM, // 유대교
     ISLAM, // 이슬람교

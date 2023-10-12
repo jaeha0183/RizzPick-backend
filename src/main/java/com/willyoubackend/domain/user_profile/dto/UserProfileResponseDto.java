@@ -44,8 +44,6 @@ public class UserProfileResponseDto {
         }
 
         this.profileImages = userEntity.getProfileImages().stream().map(ProfileImageEntity::getImage).collect(Collectors.toList());
-
-        this.dating = new DatingResponseDto(userEntity.getUserProfileEntity().getDating());
-
+        this.dating = (userEntity.getUserProfileEntity().getDating() != null)?new DatingResponseDto(userEntity.getUserProfileEntity().getDating()):null;
     }
 }
