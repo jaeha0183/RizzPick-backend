@@ -51,17 +51,27 @@ public class OpenApiConfig {
                 .description("This API exposes endpoints to manage WillYou API.").termsOfService("https://www.scourt.go.kr/scourt/index.html")
                 .license(mitLicense);
 
-        // Auth
-        SecurityScheme securityScheme = new SecurityScheme()
+        // Components setting
+        SecurityScheme securityAuthorization = new SecurityScheme()
                 .type(SecurityScheme.Type.APIKEY)
                 .in(SecurityScheme.In.HEADER)
-                .name("Set-Cookie");
+                .name(JwtUtil.AUTHORIZATION_HEADER);
 
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("Set-Cookie");
+        SecurityScheme securityRefresh = new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name(JwtUtil.REFRESH_HEADER);
+        Components willYouComponents = new Components().addSecuritySchemes(JwtUtil.AUTHORIZATION_HEADER, securityAuthorization);
+        willYouComponents.addSecuritySchemes(JwtUtil.REFRESH_HEADER, securityRefresh);
+
+        // Security Requirement
+        SecurityRequirement securityAuthorizationRequirement = new SecurityRequirement().addList(JwtUtil.AUTHORIZATION_HEADER);
+        SecurityRequirement securityRefreshRequirement = new SecurityRequirement().addList(JwtUtil.AUTHORIZATION_HEADER);
 
         return new OpenAPI()
-                .components(new Components().addSecuritySchemes("Set-Cookie", securityScheme))
-                .addSecurityItem(securityRequirement)
+                .components(willYouComponents)
+                .addSecurityItem(securityAuthorizationRequirement)
+                .addSecurityItem(securityRefreshRequirement)
                 .info(info)
                 .servers(List.of(localServer, deployServer));
     }
