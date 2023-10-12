@@ -26,6 +26,7 @@ public enum ErrorCode {
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임을 입력해야 합니다."),
     INVALID_GENDER(HttpStatus.BAD_REQUEST, "성별을 입력해야 합니다."),
     INVALID_IMAGE(HttpStatus.BAD_REQUEST, "이미지를 하나 이상 등록하여야 합니다."),
+    INVALID_MAXIMA(HttpStatus.BAD_REQUEST, "이미지는 최대 6장까지 등록 가능합니다."),
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 요청값입니다."),
     INVALID_ENUM_VAL(HttpStatus.BAD_REQUEST, "유효하지 않은 열거값입니다.");
 
