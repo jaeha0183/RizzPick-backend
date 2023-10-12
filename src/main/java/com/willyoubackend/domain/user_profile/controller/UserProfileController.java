@@ -42,6 +42,14 @@ public class UserProfileController {
         return userProfileService.getUserProfiles(userDetails.getUser());
     }
 
+    // 마이 프로필 조회
+    @Operation(summary = "마이 프로필 조회")
+    @GetMapping("/myProfile")
+    private ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userProfileService.getMyProfile(userDetails.getUser());
+    }
+
     // 프로필 상세 조회
     @Operation(summary = "프로필 상세 조회")
     @GetMapping("/userProfile/{userId}")
