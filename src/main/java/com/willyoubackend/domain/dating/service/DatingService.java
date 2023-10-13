@@ -31,6 +31,7 @@ public class DatingService {
     private final ActivitiesDatingRepository activitiesDatingRepository;
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> createDating(UserEntity user) {
+        if (datingRepository.findAllByUserOrderByCreatedAt(user).size() == 5) throw new CustomException(ErrorCode.INVALID_ARGUMENT);
         Dating dating = new Dating(
                 "이목을 끄는 이름을 지어주세요!",
                 "어디서 만나실건가요?",

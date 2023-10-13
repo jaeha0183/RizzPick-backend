@@ -28,6 +28,7 @@ public class ActivityService {
     private final DatingRepository datingRepository;
     private final ActivityRepository activityRepository;
     private final ActivitiesDatingRepository activitiesDatingRepository;
+
     public ResponseEntity<ApiResponse<ActivityResponseDto>> activityCreate(UserEntity user, ActivityRequestDto requestDto, Long datingId) {
         // Creating Activity
         Activity activity = new Activity(requestDto);
@@ -36,6 +37,8 @@ public class ActivityService {
 
         // Connecting Activity to specific Dating
         Dating selectedDate = findByIdDateAuthCheck(datingId, user);
+        if (activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate).size() == 5)
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
         ActivitiesDating activitiesDating = new ActivitiesDating(selectedDate, activity);
         activitiesDatingRepository.save(activitiesDating);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successData(responseDto));
@@ -70,17 +73,18 @@ public class ActivityService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 
-    private Activity findByIdActivityAuthCheck(Long id,UserEntity user) {
+    private Activity findByIdActivityAuthCheck(Long id, UserEntity user) {
         Activity selectedActivity = activityRepository.findById(id).orElseThrow(
-                () ->new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+                () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
-        if (!selectedActivity.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        if (!selectedActivity.getUser().getId().equals(user.getId()))
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedActivity;
     }
 
-    private Dating findByIdDateAuthCheck(Long id,UserEntity user) {
+    private Dating findByIdDateAuthCheck(Long id, UserEntity user) {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(
-                () ->new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+                () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
         if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
