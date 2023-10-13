@@ -15,6 +15,9 @@ import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,8 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final DatingRepository datingRepository;
+    // Wooyong Jeong
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public void updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
@@ -119,5 +124,33 @@ public class UserProfileService {
         );
         if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
+    }
+
+    // Wooyong Jeong
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getRecommendations(UserEntity userEntity) {
+        LocationEnum location = userEntity.getUserProfileEntity().getLocation();
+        GenderEnum gender = userEntity.getUserProfileEntity().getGender();
+        HashOperations<String, String, List<Long>> hashOperations = redisTemplate.opsForHash();
+        // if User already does not have any recommendations in Redis
+        // H: Recommendations, HK: username
+        if (hashOperations.get("Recommendations", userEntity.getUsername()) == null) {
+            List<Long> recommendationList = new ArrayList<>();
+            // Create recommendationList
+            if(gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
+                // List<String> field1List = entities.stream().map(YourEntity::getField1).collect(Collectors.toList());
+                recommendationList = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId())
+                        .stream()
+                        .map(UserEntity::getId)
+                        .collect(Collectors.toList());
+            } else {
+                recommendationList = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId())
+                        .stream()
+                        .map(UserEntity::getId)
+                        .collect(Collectors.toList());
+            }
+            hashOperations.put("Recommendations", userEntity.getUsername(), recommendationList);
+        }
+        // if not
+        return null;
     }
 }

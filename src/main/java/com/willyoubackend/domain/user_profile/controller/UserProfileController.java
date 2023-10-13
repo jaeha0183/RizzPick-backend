@@ -69,4 +69,13 @@ public class UserProfileController {
         return userProfileService.deleteMainDating(userDetails.getUser(), datingId);
     }
 
+    // Wooyong Jeong
+    // User Profile Recommendations
+    @Operation(summary = "유저 추천 로직")
+    @GetMapping("/userprofile/recommendations")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getRecommendations(
+            @AuthenticationPrincipal UserDetailsImpl userDetails )
+    {
+        return userProfileService.getRecommendations(userDetails.getUser());
+    }
 }
