@@ -56,6 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        Boolean userActiveStatus = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserProfileEntity().isUserActiveStatus();
 
         String token = jwtUtil.createToken(username, role);
         response.addHeader("Authorization", token);
@@ -73,11 +74,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // 유효 시간(5분)동안 {username, refreshToken} 저장
 //        redisUtil.setDataExpire(username, refresh, 3 * 60 * 1L); //3분
-        redisUtil.setDataExpire(username, refresh, 100 * 3 * 60 * 1L); //3분
+        redisUtil.setDataExpire(username, refresh, 100 * 3 * 60 * 1L); //300분
 
         // 로그인 성공시 "로그인 성공" 메시지를 반환
         response.setStatus(HttpServletResponse.SC_OK);
-        writeResponse(response, "로그인 성공");
+        writeResponse(response, "" + userActiveStatus);
     }
 
     @Override
