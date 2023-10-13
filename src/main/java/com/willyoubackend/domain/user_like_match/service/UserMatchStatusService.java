@@ -36,8 +36,6 @@ public class UserMatchStatusService {
         UserMatchStatus userMatchStatus = userMatchStatusRepository.findById(matchId).orElseThrow(
                 () -> new CustomException(ErrorCode.INVALID_ARGUMENT)
         );
-        log.info(userMatchStatus.getUserMatchedOne().getId().equals(user.getId())+ "");
-        log.info(userMatchStatus.getUserMatchedTwo().getId().equals(user.getId()) + "");
 
         if (!(userMatchStatus.getUserMatchedTwo().getId().equals(user.getId()) || userMatchStatus.getUserMatchedOne().getId().equals(user.getId()))) {
             throw new CustomException(ErrorCode.INVALID_ARGUMENT);
