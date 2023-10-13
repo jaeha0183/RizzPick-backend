@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Slf4j(topic = "KAKAO Login")
@@ -45,10 +46,9 @@ public class KakaoService {
 
     public ResponseEntity<ApiResponse<LoginResponseDto>> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getToken(code);
-
+        String[] tokens = new String[]{Arrays.toString(getToken(code))};
         // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(tokens[0], tokens[1]);
 
         // 3. 필요시에 회원가입
         UserEntity kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
@@ -67,7 +67,7 @@ public class KakaoService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(responseDto));
     }
 
-    private String getToken(String code) throws JsonProcessingException {
+    private String[] getToken(String code) throws JsonProcessingException {
         // 요청 URL 만들기
 //        log.info("인가코드:" + code);
         URI uri = UriComponentsBuilder
@@ -83,7 +83,7 @@ public class KakaoService {
 
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "authorization_code");
+        body.add("grant_type", "authorization");
         body.add("client_id", CLIENT_ID);
 //        body.add("client_id", CLIENT_ID); 프론트랑 맞추고 코드 수정예정
         body.add("redirect_uri", "http://localhost:3000/login/kakao/callback");
@@ -103,10 +103,12 @@ public class KakaoService {
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
         // log.info(jsonNode.get("access_token").asText());
-        return jsonNode.get("access_token").asText();
+        String accessToken = jsonNode.get("access_token").asText();
+        String refreshToken = jsonNode.get("refresh_token").asText();
+        return new String[]{accessToken, refreshToken};
     }
 
-    private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+    private KakaoUserInfoDto getKakaoUserInfo(String accessToken, String refreshToken) throws JsonProcessingException {
 //        log.info("accessToken:" + accessToken);
         // 요청 URL 만들기
         URI uri = UriComponentsBuilder
@@ -118,7 +120,8 @@ public class KakaoService {
 
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("accessToken", "Bearer " + accessToken);
+        headers.add("refreshToken", "Bearer " + refreshToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
@@ -143,7 +146,7 @@ public class KakaoService {
                 indexAt = i;
             }
         }
-        return new KakaoUserInfoDto(id, email.substring(0,indexAt), email);
+        return new KakaoUserInfoDto(id, email.substring(0, indexAt), email);
     }
 
     private UserEntity registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {

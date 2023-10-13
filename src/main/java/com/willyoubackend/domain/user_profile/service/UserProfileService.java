@@ -22,10 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +34,7 @@ public class UserProfileService {
     // Wooyong Jeong
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
         if (userProfileRequestDto.getNickname() == null || userProfileRequestDto.getNickname().isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_NICKNAME);
@@ -56,6 +53,10 @@ public class UserProfileService {
         userProfileEntity.setUserActiveStatus(true);
 
         userProfileRepository.save(userProfileEntity);
+
+        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(loggedInUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getUserProfiles(UserEntity userEntity) {
@@ -78,6 +79,11 @@ public class UserProfileService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
+    }
+
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile(UserEntity userEntity) {
+        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(findUserById(userEntity.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> getUserProfile(Long userId) {

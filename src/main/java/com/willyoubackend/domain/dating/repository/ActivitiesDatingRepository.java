@@ -1,7 +1,6 @@
 package com.willyoubackend.domain.dating.repository;
 
 import com.willyoubackend.domain.dating.entity.ActivitiesDating;
-import com.willyoubackend.domain.dating.entity.Activity;
 import com.willyoubackend.domain.dating.entity.Dating;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -30,10 +30,9 @@ public class UserProfileController {
     // 회원 프로필 업데이트
     @Operation(summary = "회원 프로필 업데이트")
     @PutMapping("/updateProfile")
-    public ResponseEntity<ApiResponse<String>> updateUserProfile(
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserProfileRequestDto userProfileRequestDto) {
-        userProfileService.updateUserProfile(userDetails.getUser(), userProfileRequestDto);
-        return ResponseEntity.ok(ApiResponse.successMessage("회원 프로필 업데이트 완료."));
+        return userProfileService.updateUserProfile(userDetails.getUser(), userProfileRequestDto);
     }
 
     // 프로필 전체 조회
@@ -41,6 +40,14 @@ public class UserProfileController {
     @GetMapping("/userProfiles")
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getUserProfiles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userProfileService.getUserProfiles(userDetails.getUser());
+    }
+
+    // 마이 프로필 조회
+    @Operation(summary = "마이 프로필 조회")
+    @GetMapping("/myProfile")
+    private ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userProfileService.getMyProfile(userDetails.getUser());
     }
 
     // 프로필 상세 조회

@@ -4,7 +4,6 @@ import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 

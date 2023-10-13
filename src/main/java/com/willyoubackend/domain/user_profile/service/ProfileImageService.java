@@ -2,13 +2,17 @@ package com.willyoubackend.domain.user_profile.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import com.willyoubackend.domain.user_profile.dto.ProfileImageRequestDto;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.repository.ProfileImageRepository;
+import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import com.willyoubackend.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,41 +27,61 @@ public class ProfileImageService {
     private final ProfileImageRepository profileImageRepository;
 
 
-    public void updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
+    public ResponseEntity<ApiResponse<ImageResponseDto>> updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
 
+        ProfileImageEntity profileImageEntity = null;
 
         switch (profileImageRequestDto.getAction()) {
-            case ADD -> addProfileImage(userEntity, profileImageRequestDto);
+            case ADD -> profileImageEntity = addProfileImage(userEntity, profileImageRequestDto);
             case DELETE -> deleteProfileImage(profileImageRequestDto.getId());
-            case MODIFY -> modifyProfileImage(userEntity, profileImageRequestDto);
+            case MODIFY -> profileImageEntity = modifyProfileImage(userEntity, profileImageRequestDto);
         }
 
-        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+        ImageResponseDto imageResponseDto = (profileImageEntity != null) ? new ImageResponseDto(profileImageEntity) : null;
 
-        if (profileImageEntities.isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_IMAGE);
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(imageResponseDto));
+
+//        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+
+//        if (profileImageEntities.isEmpty()) {
+//            throw new CustomException(ErrorCode.INVALID_IMAGE);
+//        }
+//
+//        List<ImageResponseDto> imageResponseDtoList = profileImageRepository.findAllByUserEntity(userEntity).stream().map(ImageResponseDto::new).toList();
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(imageResponseDtoList));
     }
 
-    private void addProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
+    private ProfileImageEntity addProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
+        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+        if (profileImageEntities.size() >= 6) {
+            throw new CustomException(ErrorCode.INVALID_MAXIMA);
+        }
         String fileName = s3Uploader.upload(profileImageRequestDto.getImage(), "profileImage/" + userEntity.getUsername());
         ProfileImageEntity profileImageEntity = new ProfileImageEntity(fileName);
         profileImageEntity.setUserEntity(userEntity);
         profileImageRepository.save(profileImageEntity);
+        return profileImageEntity;
     }
 
     private void deleteProfileImage(Long imageId) {
         ProfileImageEntity profileImageEntity = findImageById(imageId);
+        UserEntity userEntity = profileImageEntity.getUserEntity();
+        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+        if (profileImageEntities.size() <= 1) {
+            throw new CustomException(ErrorCode.INVALID_IMAGE);
+        }
         s3Uploader.delete(profileImageEntity.getImage());
         profileImageRepository.deleteById(imageId);
     }
 
-    private void modifyProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
+    private ProfileImageEntity modifyProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
         ProfileImageEntity profileImageEntity = findImageById(profileImageRequestDto.getId());
         s3Uploader.delete(profileImageEntity.getImage());
         String fileName = s3Uploader.upload(profileImageRequestDto.getImage(), "profileImage/" + userEntity.getUsername());
         profileImageEntity.setImage(fileName);
         profileImageRepository.save(profileImageEntity);
+        return profileImageEntity;
     }
 
     private UserEntity findUserById(Long userId) {
