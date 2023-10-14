@@ -46,16 +46,22 @@ public class KakaoService {
 
     public ResponseEntity<ApiResponse<LoginResponseDto>> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
-        String[] tokens = new String[]{Arrays.toString(getToken(code))};
+        String[] tokens = getToken(code);
+        String accessToken = tokens[0];
+        String refreshToken = tokens[1];
         // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(tokens[0], tokens[1]);
-
+        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken, refreshToken);
+        log.info(kakaoUserInfo.getUsername());
         // 3. 필요시에 회원가입
         UserEntity kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. JWT 토큰 반환
         String createToken = jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
+        // Wooyong
+        String createRefresh = jwtUtil.createRefreshToken(kakaoUser.getUsername(), kakaoUser.getRole());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
+        // Wooyong
+        response.addHeader(JwtUtil.REFRESH_HEADER, createRefresh);
 
         // Kakao User active status
         UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(kakaoUser);
@@ -69,7 +75,7 @@ public class KakaoService {
 
     private String[] getToken(String code) throws JsonProcessingException {
         // 요청 URL 만들기
-//        log.info("인가코드:" + code);
+        log.info("인가코드:" + code);
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
                 .path("/oauth/token")
@@ -83,7 +89,7 @@ public class KakaoService {
 
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "authorization");
+        body.add("grant_type", "authorization_code");
         body.add("client_id", CLIENT_ID);
 //        body.add("client_id", CLIENT_ID); 프론트랑 맞추고 코드 수정예정
         body.add("redirect_uri", "http://localhost:3000/login/kakao/callback");
@@ -102,14 +108,16 @@ public class KakaoService {
 
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
-        // log.info(jsonNode.get("access_token").asText());
+        log.info(jsonNode.get("access_token").asText());
+        log.info(jsonNode.get("refresh_token").asText());
         String accessToken = jsonNode.get("access_token").asText();
         String refreshToken = jsonNode.get("refresh_token").asText();
         return new String[]{accessToken, refreshToken};
     }
 
     private KakaoUserInfoDto getKakaoUserInfo(String accessToken, String refreshToken) throws JsonProcessingException {
-//        log.info("accessToken:" + accessToken);
+        log.info("accessToken:" + accessToken);
+        log.info("refreshToken:" + refreshToken);
         // 요청 URL 만들기
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
@@ -120,8 +128,8 @@ public class KakaoService {
 
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
-        headers.add("accessToken", "Bearer " + accessToken);
-        headers.add("refreshToken", "Bearer " + refreshToken);
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Authorization_Refresh", "Bearer " + refreshToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
