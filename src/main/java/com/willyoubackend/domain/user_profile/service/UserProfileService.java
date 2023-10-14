@@ -17,12 +17,13 @@ import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +67,7 @@ public class UserProfileService {
 
         List<UserProfileResponseDto> userProfileResponseDtoList;
 
-        if(gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
+        if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
             userProfileResponseDtoList = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId())
                     .stream()
                     .map(UserProfileResponseDto::new)
@@ -124,25 +125,25 @@ public class UserProfileService {
                 new CustomException(ErrorCode.NOT_FOUND_ENTITY));
     }
 
-    private Dating findByIdDateAuthCheck(Long id,UserEntity user) {
+    private Dating findByIdDateAuthCheck(Long id, UserEntity user) {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(
-                () ->new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+                () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
         if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
     }
 
     // Wooyong Jeong
-    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getRecommendations(UserEntity userEntity) {
+    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
         LocationEnum location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();
         HashOperations<String, String, List<Long>> hashOperations = redisTemplate.opsForHash();
         // if User already does not have any recommendations in Redis
         // H: Recommendations, HK: username
-        if (hashOperations.get("Recommendations", userEntity.getUsername()) == null) {
-            List<Long> recommendationList = new ArrayList<>();
+        List<Long> recommendationList = hashOperations.get("Recommendations", userEntity.getUsername());
+        if (recommendationList == null) {
             // Create recommendationList
-            if(gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
+            if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
                 // List<String> field1List = entities.stream().map(YourEntity::getField1).collect(Collectors.toList());
                 recommendationList = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId())
                         .stream()
@@ -156,7 +157,13 @@ public class UserProfileService {
             }
             hashOperations.put("Recommendations", userEntity.getUsername(), recommendationList);
         }
-        // if not
-        return null;
+
+        List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
+        for (Long userId : recommendationList) {
+            userProfileResponseDtoList.add(new UserProfileResponseDto(userRepository.findById(userId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+            )));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
     }
 }
