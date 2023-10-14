@@ -101,6 +101,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/users/**").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
+                .requestMatchers("/api/token/**").permitAll() // '/api/token/'로 시작하는 요청 모두 접근 허가
                 .requestMatchers("/ws/**").permitAll() // WebSocket 요청 경로 허용
                 .requestMatchers("/chat/**").permitAll() // chat 요청 경로 허용
                 .requestMatchers("/chatlogin/**").permitAll() // chat 요청 경로 허용
