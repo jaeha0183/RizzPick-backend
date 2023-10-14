@@ -29,7 +29,7 @@ public class JwtUtil {
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
 //    private final long TOKEN_TIME = 20 * 1000L; // 20초
-    private final long TOKEN_TIME = 100000 * 20 * 1000L; // 20초
+    private final long TOKEN_TIME = 200 * 120 * 1000L; // 200분
 
     //    private final long RefreshTOKEN_TIME = 3 * 60 * 1000L; //3분
     private final long RefreshTOKEN_TIME = 100 * 3 * 60 * 1000L; //300분
@@ -99,7 +99,7 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException | SignatureException e) {
+        } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 만료된 JWT token 입니다.");
