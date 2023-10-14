@@ -15,11 +15,15 @@ import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final DatingRepository datingRepository;
+    // Wooyong Jeong
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
@@ -61,7 +67,7 @@ public class UserProfileService {
 
         List<UserProfileResponseDto> userProfileResponseDtoList;
 
-        if(gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
+        if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
             userProfileResponseDtoList = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId())
                     .stream()
                     .map(UserProfileResponseDto::new)
@@ -119,11 +125,45 @@ public class UserProfileService {
                 new CustomException(ErrorCode.NOT_FOUND_ENTITY));
     }
 
-    private Dating findByIdDateAuthCheck(Long id,UserEntity user) {
+    private Dating findByIdDateAuthCheck(Long id, UserEntity user) {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(
-                () ->new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+                () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
         if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
+    }
+
+    // Wooyong Jeong
+    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
+        LocationEnum location = userEntity.getUserProfileEntity().getLocation();
+        GenderEnum gender = userEntity.getUserProfileEntity().getGender();
+        HashOperations<String, String, List<Long>> hashOperations = redisTemplate.opsForHash();
+        // if User already does not have any recommendations in Redis
+        // H: Recommendations, HK: username
+        List<Long> recommendationList = hashOperations.get("Recommendations", userEntity.getUsername());
+        if (recommendationList == null) {
+            // Create recommendationList
+            if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
+                // List<String> field1List = entities.stream().map(YourEntity::getField1).collect(Collectors.toList());
+                recommendationList = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId())
+                        .stream()
+                        .map(UserEntity::getId)
+                        .collect(Collectors.toList());
+            } else {
+                recommendationList = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId())
+                        .stream()
+                        .map(UserEntity::getId)
+                        .collect(Collectors.toList());
+            }
+            hashOperations.put("Recommendations", userEntity.getUsername(), recommendationList);
+        }
+
+        List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
+        for (Long userId : recommendationList) {
+            userProfileResponseDtoList.add(new UserProfileResponseDto(userRepository.findById(userId).orElseThrow(
+                    () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+            )));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
     }
 }
