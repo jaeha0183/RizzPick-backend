@@ -50,7 +50,7 @@ public class ChatRoomController {
     }
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")
-    @ResponseBody
+    @ResponseBody // JSON 형태로 객체 반환
     public ChatRoom roomInfo(@PathVariable String roomId) {
         return chatRoomRepository.findRoomById(roomId);
     }

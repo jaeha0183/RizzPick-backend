@@ -13,7 +13,7 @@ public class ChatRoom implements Serializable {
     private String roomId;
     private String name;
 
-    public static ChatRoom create(String name) {
+    public static ChatRoom create(String name) { // 채팅방 생성
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = UUID.randomUUID().toString();
         chatRoom.name = name;

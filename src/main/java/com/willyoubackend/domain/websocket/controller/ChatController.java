@@ -62,12 +62,12 @@ public class ChatController {
         redisTemplate.convertAndSend(channelTopic.getTopic(), message);
     }
 
-    @MessageMapping("/chat/deleteMessage")
+    @MessageMapping("/chat/deleteMessage") // 메시지 삭제
     public void deleteMessage(String messageId, @Header("token") String token) {
         chatMessageService.deleteMessage(messageId);
     }
 
-    @GetMapping("/room/{roomId}/messages")
+    @GetMapping("/room/{roomId}/messages") // 채팅방의 모든 메시지 조회
     public ResponseEntity<List<ChatMessage>> getMessages(@PathVariable String roomId) {
         List<ChatMessage> messages = chatMessageService.findNotDeletedMessagesByRoomId(roomId);
         return ResponseEntity.ok(messages);
