@@ -21,7 +21,7 @@ public class RedisSubscriber {
      */
     public void sendMessage(String publishMessage) {
         try {
-            // ChatMessage 객채로 맵핑
+            // ChatMessage 객채로 맵핑 // 채팅방에 발행된 메시지를 redis에서 받아 처리한다.
             ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
             // 채팅방을 구독한 클라이언트에게 메시지 발송
             messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(), chatMessage);

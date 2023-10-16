@@ -10,7 +10,7 @@ import java.util.Date;
 @Document(collection = "chatMessages")
 @Getter
 @Setter
-public class ChatMessage {
+public class ChatMessage { // 채팅 메시지 모델
 
     @Id
     private String id;
