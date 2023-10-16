@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class ChatRoomRepository {
     // Redis
-    private static final String CHAT_ROOMS = "CHAT_ROOM";
+    private static final String CHAT_ROOMS = "CHAT_ROOM"; // Redis의 Hash 타입의 key
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoom> opsHashChatRoom;
 

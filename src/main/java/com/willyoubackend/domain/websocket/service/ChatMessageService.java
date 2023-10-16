@@ -35,7 +35,7 @@ public class ChatMessageService {
         sendDeletionNotice();
     }
 
-    private void sendDeletionNotice() {
+    private void sendDeletionNotice() { // 삭제 알림 메시지 발송
         ChatMessage deleteNotice = new ChatMessage();
         deleteNotice.setType(ChatMessage.MessageType.TALK);
         deleteNotice.setSender("[알림]");
