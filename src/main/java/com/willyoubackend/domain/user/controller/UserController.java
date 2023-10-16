@@ -10,6 +10,7 @@ import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.global.dto.ApiResponse;
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -73,31 +74,16 @@ public class UserController {
     }
 
     // 엑세스 토큰 갱신
+    // 엑세스 토큰 갱신
     @GetMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<TokenResponseDto>> refreshAccessToken(@RequestParam String refreshToken, HttpServletResponse response) throws JsonProcessingException {
-        if (StringUtils.hasText(refreshToken)) {
-            // 리프레시 토큰을 사용하여 새로운 엑세스 토큰 생성
-            String newAccessToken = refreshAccessTokenWithRefreshToken(refreshToken, response);
-            if (newAccessToken != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new TokenResponseDto(newAccessToken)));
-            }
+    public ResponseEntity<ApiResponse<TokenResponseDto>> refreshAccessToken(@RequestBody TokenRequestDto requestDto) {
+
+        String newAccessToken = userService.refreshAccessToken(requestDto.getRefreshToken());
+
+        if (newAccessToken != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new TokenResponseDto(newAccessToken)));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Refresh token is invalid or missing."));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Refresh token is invalid or missing."));
-    }
-
-    private String refreshAccessTokenWithRefreshToken(String refreshToken, HttpServletResponse response) {
-        if (jwtUtil.validateToken(refreshToken)) {
-            Claims info = jwtUtil.getUserInfoFromToken(refreshToken);
-            String username = info.getSubject();
-            UserRoleEnum role = UserRoleEnum.valueOf(String.valueOf(info.get("auth")));
-            String newAccessToken = jwtUtil.createToken(username, role);
-
-            // 엑세스 토큰을 응답 헤더에 추가
-            response.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
-            newAccessToken = jwtUtil.substringToken(newAccessToken);
-
-            return newAccessToken;
-        }
-        return null;
     }
 }

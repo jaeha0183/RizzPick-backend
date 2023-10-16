@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -70,11 +71,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
 
         refreshTokenRepository.save(refreshToken);
-        response.addHeader(JwtUtil.REFRESH_HEADER, refreshToken.getToken());
+        response.addHeader(JwtUtil.REFRESH_HEADER, "Bearer " + refreshToken.getToken());
 
         // 유효 시간(5분)동안 {username, refreshToken} 저장
-//        redisUtil.setDataExpire(username, refresh, 3 * 60 * 1L); //3분
-        redisUtil.setDataExpire(username, refresh, 100 * 3 * 60 * 1L); //300분
+        // Wooyong Jeong
+        // redisUtil.setDataExpire(username, refresh, 100 * 3 * 60 * 1L); //300분
 
         // 로그인 성공시 "로그인 성공" 메시지를 반환
         response.setStatus(HttpServletResponse.SC_OK);

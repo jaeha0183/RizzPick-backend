@@ -6,6 +6,8 @@ import com.willyoubackend.domain.user.dto.SignupRequestDto;
 import com.willyoubackend.domain.user.dto.VerifiRequest;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
+import com.willyoubackend.domain.user.jwt.JwtUtil;
+import com.willyoubackend.domain.user.repository.RefreshTokenRepository;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
@@ -13,8 +15,12 @@ import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import com.willyoubackend.global.util.RedisUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +31,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +50,8 @@ public class UserService {
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil;
     private final UserProfileRepository userProfileRepository;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // 관리자 인증 토큰
     @Value("${admin.token}") // Base64 Encode 한 SecretKey
@@ -127,8 +137,8 @@ public class UserService {
 
 // 이메일 발송
         sendAuthEmail(request.getEmail(), authKey);
-            log.info("email : " + request.getEmail());
-            log.info("status : " + HttpStatus.OK);
+        log.info("email : " + request.getEmail());
+        log.info("status : " + HttpStatus.OK);
     }
 
     private void sendAuthEmail(String email, String authKey) {
@@ -149,7 +159,7 @@ public class UserService {
         }
 
 // 유효 시간(3분)동안 {email, authKey} 저장
-        redisUtil.setDataExpire(email, authKey,  3 * 60 * 1L);
+        redisUtil.setDataExpire(email, authKey, 3 * 60 * 1L);
     }
 
     // 이메일 인증
@@ -168,5 +178,25 @@ public class UserService {
 
         redisUtil.deleteData(email);
         return ApiResponse.successMessage("인증이 완료되었습니다.");
+    }
+
+    public String refreshAccessToken(String refreshToken) {
+        if (!jwtUtil.validateToken(refreshToken)) {
+            log.info("Token이 만료 되었습니다.");
+            throw new JwtException("Refresh Token Error");
+        }
+        if (!refreshTokenRepository.existsByToken(refreshToken)) {
+            log.info("Token이 만료 되었습니다.");
+            throw new JwtException("Refresh Token Error");
+        }
+        if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
+            Claims info = jwtUtil.getUserInfoFromToken(refreshToken);
+            String username = info.getSubject();
+            UserRoleEnum role = UserRoleEnum.valueOf(String.valueOf(info.get("auth")));
+            String newAccessToken = jwtUtil.createToken(username, role);
+            newAccessToken = jwtUtil.substringToken(newAccessToken);
+            return newAccessToken;
+        }
+        return null;
     }
 }
