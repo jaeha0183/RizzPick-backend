@@ -2,6 +2,7 @@ package com.willyoubackend.domain.websocket.controller;
 
 import com.willyoubackend.domain.websocket.dto.ChatRoom;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
+import com.willyoubackend.domain.websocket.repository.MongoChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final MongoChatRoomRepository mongoChatRoomRepository;
 
     // 채팅 리스트 화면
     @GetMapping("/room")
@@ -31,7 +33,14 @@ public class ChatRoomController {
     @PostMapping("/room")
     @ResponseBody
     public ChatRoom createRoom(@RequestParam String name) {
-        return chatRoomRepository.createChatRoom(name);
+        ChatRoom chatRoom = ChatRoom.create(name);
+        // Save to MongoDB
+        mongoChatRoomRepository.save(chatRoom);
+
+        // Save to Redis
+        chatRoomRepository.createChatRoom(name);
+        return chatRoom;
+//        return chatRoomRepository.createChatRoom(name);
     }
     // 채팅방 입장 화면
     @GetMapping("/room/enter/{roomId}")
