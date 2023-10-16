@@ -29,7 +29,7 @@ public class JwtUtil {
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
 //    private final long TOKEN_TIME = 20 * 1000L; // 20초
-    private final long TOKEN_TIME = 200 * 120 * 1000L; // 200분
+    private final long TOKEN_TIME =  60 * 1000L; // 200분
 
     //    private final long RefreshTOKEN_TIME = 3 * 60 * 1000L; //3분
     private final long RefreshTOKEN_TIME = 100 * 3 * 60 * 1000L; //300분
@@ -72,8 +72,8 @@ public class JwtUtil {
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
         // Redis에 리프레시 토큰 저장
-        String redisKey = username;
-        redisTemplate.opsForValue().set(redisKey, refreshToken);
+//        String redisKey = username;
+//        redisTemplate.opsForValue().set(redisKey, refreshToken.substring(0,7));
         return refreshToken;
     }
 
