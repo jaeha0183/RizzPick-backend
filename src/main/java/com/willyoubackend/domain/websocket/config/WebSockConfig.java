@@ -27,6 +27,7 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns("https://localhost:8080")
                 .setAllowedOriginPatterns("https://localhost:3000")
                 .setAllowedOriginPatterns("https://will-you-front-end.vercel.app")
+                .setAllowedOriginPatterns("https://willyouback.shop")
                 .withSockJS();
     }
 
