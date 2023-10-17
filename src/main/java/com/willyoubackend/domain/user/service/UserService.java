@@ -19,8 +19,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -158,7 +155,6 @@ public class UserService {
             e.printStackTrace();
         }
 
-// 유효 시간(3분)동안 {email, authKey} 저장
         redisUtil.setDataExpire(email, authKey, 3 * 60 * 1L);
     }
 
