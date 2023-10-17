@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user_like_match.controller;
 
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
+import com.willyoubackend.domain.user_like_match.dto.LikeAlertResponseDto;
 import com.willyoubackend.domain.user_like_match.dto.LikeStatusResponseDto;
 import com.willyoubackend.domain.user_like_match.service.UserLikeStatusService;
 import com.willyoubackend.global.dto.ApiResponse;
@@ -40,5 +41,14 @@ public class UserLikeNopeStatusController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         return userLikeStatusService.getUserLikedByStatus(userDetails.getUser());
+    }
+
+    // 사용자가 받은 좋아요를 간단히 정리해 알림에서 볼수 있게하는 API
+    @Operation(summary = "유저가 받은 좋아요 알림 추후 Socket 적용 예정", description = "유저가 받은 좋아요 상황을 간단하게 설명한다 그리고 가장 최근에 받은 좋아요 부터 리스트 형태로 반환한다.")
+    @GetMapping("/like/status/alert")
+    public ResponseEntity<ApiResponse<LikeAlertResponseDto>> getUserLikedByAlert(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return userLikeStatusService.getUserLikedByAlert(userDetails.getUser());
     }
 }
