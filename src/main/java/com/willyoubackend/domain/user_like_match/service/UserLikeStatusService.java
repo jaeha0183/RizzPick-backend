@@ -1,9 +1,11 @@
 package com.willyoubackend.domain.user_like_match.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user_like_match.dto.LikeAlertResponseDto;
 import com.willyoubackend.domain.user_like_match.dto.LikeStatusResponseDto;
 import com.willyoubackend.domain.user_like_match.entity.UserLikeStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
+import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,13 @@ public class UserLikeStatusService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(likeStatusResponseDtoList(userReceivedLikeStatusList)));
     }
 
+    public ResponseEntity<ApiResponse<LikeAlertResponseDto>> getUserLikedByAlert(UserEntity user) {
+        List<UserEntity> likeSenderList = userLikeStatusRepository.findAllByReceivedUser(user).stream().map(UserLikeStatus::getSentUser).toList();
+        int likeCount = likeSenderList.size();
+        List<UserProfileResponseDto> userProfileResponseDtoList = likeSenderList.stream().map(UserProfileResponseDto::new).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new LikeAlertResponseDto(likeCount,userProfileResponseDtoList)));
+    }
+
     public List<LikeStatusResponseDto> likeStatusResponseDtoList(List<UserLikeStatus> userLikeStatusList) {
         List<String> userEntityList = new ArrayList<>();
         for (UserLikeStatus userLikeStatus : userLikeStatusList) {
@@ -41,4 +51,5 @@ public class UserLikeStatusService {
                 .map(LikeStatusResponseDto::new)
                 .toList();
     }
+
 }
