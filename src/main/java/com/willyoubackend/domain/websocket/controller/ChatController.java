@@ -55,9 +55,6 @@ public class ChatController {
         // Redis List에 메시지 추가
         // listOpsChatMessage.leftPush(message.getRoomId(), message);
 
-        // 채팅방 메시지 10초마다 삭제
-        // redisTemplate.expire(message.getRoomId(), 20, TimeUnit.SECONDS);
-
         // Websocket에 발행된 메시지를 redis로 발행한다(publish)
         redisTemplate.convertAndSend(channelTopic.getTopic(), message);
     }

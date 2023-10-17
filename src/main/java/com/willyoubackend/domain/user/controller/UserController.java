@@ -2,13 +2,11 @@ package com.willyoubackend.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.willyoubackend.domain.user.dto.*;
-import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.global.dto.ApiResponse;
-import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,7 +53,7 @@ public class UserController {
         return kakaoService.kakaoLogin(code, response);
     }
 
-    // 유저 활성화 항새 확인
+    // 유저 활성화 상태 확인
     @GetMapping("/status")
     public ResponseEntity<ApiResponse<LoginResponseDto>> userStatusCheck(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userStatusCheck(userDetails.getUser());
@@ -74,11 +71,10 @@ public class UserController {
     }
 
     // 엑세스 토큰 갱신
-    // 엑세스 토큰 갱신
     @GetMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<TokenResponseDto>> refreshAccessToken(@RequestBody TokenRequestDto requestDto) {
-
-        String newAccessToken = userService.refreshAccessToken(requestDto.getRefreshToken());
+    public ResponseEntity<ApiResponse<TokenResponseDto>> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = request.getHeader(JwtUtil.REFRESH_HEADER);
+        String newAccessToken = userService.refreshAccessToken(refreshToken);
 
         if (newAccessToken != null) {
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new TokenResponseDto(newAccessToken)));
