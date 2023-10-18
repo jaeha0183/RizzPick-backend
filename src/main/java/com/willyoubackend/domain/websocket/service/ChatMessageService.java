@@ -1,45 +1,63 @@
 package com.willyoubackend.domain.websocket.service;
 
-import com.willyoubackend.domain.websocket.dto.ChatMessage;
+import com.willyoubackend.domain.user.jwt.JwtUtil;
+import com.willyoubackend.domain.user.service.UserService;
+import com.willyoubackend.domain.websocket.entity.ResponseDto;
+import com.willyoubackend.domain.websocket.entity.SocketMessage;
+import com.willyoubackend.domain.websocket.entity.SocketMessageRequsetDto;
+import com.willyoubackend.domain.websocket.entity.SocketMessageResponseDto;
 import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
-import com.willyoubackend.global.exception.CustomException;
-import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
 
+    private final JwtUtil jwtUtil;
+    private final ChatMessageRepository chatMessageRepository;
+    private final UserService userService;
 
-    private ChatMessageRepository chatMessageRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final ChannelTopic channelTopic;
+    // 메세지 저장
+    public SocketMessage getMessage(SocketMessageRequsetDto socketMessageRequsetDto){
 
-    public List<ChatMessage> findNotDeletedMessagesByRoomId(String roomId) {
-        return chatMessageRepository.findByRoomIdAndIsDeletedFalse(roomId);
+    // sender 추가
+        String userId = String.valueOf((jwtUtil.getUserInfoFromToken(socketMessageRequsetDto.getToken())));
+        String username = userService.getUserNameById(Long.valueOf(userId));
+    // time 추가
+        ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+
+        SocketMessage socketMessage = SocketMessage.builder()
+                .chatRoomId(socketMessageRequsetDto.getChatRoomId())
+                .sender(username)
+                .time(time)
+                .message(socketMessageRequsetDto.getMessage())
+                .build();
+
+        chatMessageRepository.save(socketMessage);
+
+        return socketMessage;
     }
 
-    public void deleteMessage(String messageId) {
-        ChatMessage message = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)); // 메시지가 없을 경우 예외 발생
-        message.setDeletedAt(Date.from(Instant.now()));
-        chatMessageRepository.save(message);
-        // 삭제 알림 메시지 발송
-        sendDeletionNotice();
-    }
+    // 이전 메세지 전송
+    public ResponseDto<List<SocketMessageResponseDto>> getMessages(Long chatRoomId){
+        List<SocketMessage> socketMessageList = chatMessageRepository.findAllByChatRoomId(chatRoomId);
 
-    private void sendDeletionNotice() { // 삭제 알림 메시지 발송
-        ChatMessage deleteNotice = new ChatMessage();
-        deleteNotice.setType(ChatMessage.MessageType.TALK);
-        deleteNotice.setSender("[알림]");
-        deleteNotice.setMessage("A message was deleted.");
-        redisTemplate.convertAndSend(channelTopic.getTopic(), deleteNotice);
+        List<SocketMessageResponseDto> socketMessageResponseDtoList = new ArrayList<>();
+
+        for (SocketMessage socketMessage : socketMessageList){
+            socketMessageResponseDtoList.add(SocketMessageResponseDto.builder()
+                    .sender(socketMessage.getSender())
+                    .message(socketMessage.getMessage())
+                    .time(socketMessage.getTime())
+                    .build()
+            );
+        }
+        return ResponseDto.success(socketMessageResponseDtoList);
     }
 }

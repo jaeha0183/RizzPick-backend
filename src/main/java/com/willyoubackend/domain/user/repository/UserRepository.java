@@ -4,6 +4,7 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
 import com.willyoubackend.domain.user_profile.entity.LocationEnum;
 import com.willyoubackend.domain.user_profile.repository.UserProfileRepositoryCustom;
+import io.jsonwebtoken.Claims;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
