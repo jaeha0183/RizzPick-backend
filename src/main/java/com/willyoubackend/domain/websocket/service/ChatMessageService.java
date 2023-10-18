@@ -2,11 +2,11 @@ package com.willyoubackend.domain.websocket.service;
 
 import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.service.UserService;
-import com.willyoubackend.domain.websocket.entity.ResponseDto;
 import com.willyoubackend.domain.websocket.entity.SocketMessage;
 import com.willyoubackend.domain.websocket.entity.SocketMessageRequsetDto;
 import com.willyoubackend.domain.websocket.entity.SocketMessageResponseDto;
 import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
+import com.willyoubackend.global.dto.ApiResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class ChatMessageService {
     }
 
     // 이전 메세지 전송
-    public ResponseDto<List<SocketMessageResponseDto>> getMessages(Long chatRoomId) {
+    public ApiResponse<List<SocketMessageResponseDto>> getMessages(Long chatRoomId) {
         List<SocketMessage> socketMessageList = chatMessageRepository.findAllByChatRoomId(chatRoomId);
 
         List<SocketMessageResponseDto> socketMessageResponseDtoList = new ArrayList<>();
@@ -59,6 +59,6 @@ public class ChatMessageService {
                     .build()
             );
         }
-        return ResponseDto.success(socketMessageResponseDtoList);
+        return ApiResponse.successData(socketMessageResponseDtoList);
     }
 }

@@ -5,6 +5,7 @@ import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.domain.websocket.entity.*;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
+import com.willyoubackend.global.dto.ApiResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
@@ -28,7 +29,7 @@ public class ChatRoomService {
     private HashOperations<String, String, ChatRoom> opsHashChatRoom;
 
     // 채팅방 생성
-    public ResponseDto<ChatRoomResponseDto> createRoom(ChatRoomRequestDto chatRoomRequestDto, UserEntity userentity) {
+    public ApiResponse<ChatRoomResponseDto> createRoom(ChatRoomRequestDto chatRoomRequestDto, UserEntity userentity) {
 
         Long chatRoomId = chatRoomRequestDto.getChatRoomId();
         String username = userentity.getUsername();
@@ -56,7 +57,7 @@ public class ChatRoomService {
                 .build();
 
         // 채팅방 Id값 리턴
-        return ResponseDto.success(chatRoomResponseDto);
+        return ApiResponse.successData(chatRoomResponseDto);
     }
 
     // 채팅방 단일 조회
