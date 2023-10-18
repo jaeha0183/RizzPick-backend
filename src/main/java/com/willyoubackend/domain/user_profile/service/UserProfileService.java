@@ -4,18 +4,21 @@ import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
 import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
 import com.willyoubackend.domain.user_profile.entity.LocationEnum;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
+import com.willyoubackend.domain.user_profile.entity.UserRecommendations;
 import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
+import com.willyoubackend.domain.user_profile.repository.UserRecommendationsRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,9 @@ public class UserProfileService {
     private final DatingRepository datingRepository;
     // Wooyong Jeong
     private final RedisTemplate<String, Object> redisTemplate;
+    private final UserRecommendationsRepository userRecommendationsRepository;
+    private final UserLikeStatusRepository userLikeStatusRepository;
+    private final UserNopeStatusRepository userNopeStatusRepository;
 
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
@@ -133,37 +138,34 @@ public class UserProfileService {
         return selectedDating;
     }
 
+
     // Wooyong Jeong
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
         LocationEnum location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();
-        HashOperations<String, String, List<Long>> hashOperations = redisTemplate.opsForHash();
-        // if User already does not have any recommendations in Redis
-        // H: Recommendations, HK: username
-        List<Long> recommendationList = hashOperations.get("Recommendations", userEntity.getUsername());
-        if (recommendationList == null) {
-            // Create recommendationList
+        UserRecommendations recommendations = userRecommendationsRepository.findByUsername(userEntity.getUsername());
+        if (recommendations == null) {
+            List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
+            List<UserEntity> filteredUsers;
             if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
-                // List<String> field1List = entities.stream().map(YourEntity::getField1).collect(Collectors.toList());
-                recommendationList = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId())
-                        .stream()
-                        .map(UserEntity::getId)
-                        .collect(Collectors.toList());
+                filteredUsers = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId());
             } else {
-                recommendationList = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId())
-                        .stream()
-                        .map(UserEntity::getId)
-                        .collect(Collectors.toList());
-            }
-            hashOperations.put("Recommendations", userEntity.getUsername(), recommendationList);
-        }
+                filteredUsers = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId());
 
-        List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
-        for (Long userId : recommendationList) {
-            userProfileResponseDtoList.add(new UserProfileResponseDto(userRepository.findById(userId).orElseThrow(
-                    () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
-            )));
+            }
+            for (UserEntity filteredUser : filteredUsers) {
+                if (!userNopeStatusRepository.existsByReceivedUser(filteredUser) &&
+                        !userLikeStatusRepository.existsByReceivedUser(filteredUser)) {
+                    userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
+                }
+            }
+            userRecommendationsRepository.save(new UserRecommendations(
+                    userEntity.getUsername(),
+                    userProfileResponseDtoList
+            ));
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(recommendations.getRecommendedUsers()));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
     }
 }

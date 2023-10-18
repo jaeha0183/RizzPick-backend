@@ -6,6 +6,7 @@ import lombok.Getter;
 public class UserProfileRequestDto {
     private String nickname;
     private int age;
+    private String intro;
     private String education;
     private boolean userActiveStatus;
     private String gender;
