@@ -5,6 +5,7 @@ import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.domain.websocket.entity.*;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
+import com.willyoubackend.global.dto.ApiResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
@@ -27,36 +28,41 @@ public class ChatRoomService {
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoom> opsHashChatRoom;
 
-    // 채팅방 생성
-    public ResponseDto<ChatRoomResponseDto> createRoom(ChatRoomRequestDto chatRoomRequestDto, UserEntity userentity) {
+    // 매치된 채팅방 생성
+    public ApiResponse<ChatRoomResponseDto> createRoom(ChatRoomRequestDto chatRoomRequestDto, UserEntity sentUser, UserEntity receivedUser) {
 
         Long chatRoomId = chatRoomRequestDto.getChatRoomId();
-        String username = userentity.getUsername();
 
-// 채팅방 없을시 저장
-        if (chatRoomRedisRepository.findById(chatRoomId).isEmpty()) {
+        List<String> users = new ArrayList<>();
+        users.add(sentUser.getUsername());
+        users.add(receivedUser.getUsername());
 
-// 초기값 생성, 초기값 없을시 NullpointException
-
-            List<String> users = new ArrayList<>();
-            users.add("chatRoomId" + chatRoomId);
-            users.add(username);
-
-            ChatRoom chatRoom = ChatRoom.builder()
-                    .id(chatRoomRequestDto.getChatRoomId())
-                    .users(users)
-                    .build();
-
-            chatRoomRedisRepository.save(chatRoom);
-        }
-
-        ChatRoom chatRoomRepo = chatRoomRedisRepository.findById(chatRoomId).get();
-        ChatRoomResponseDto chatRoomResponseDto = ChatRoomResponseDto.builder()
-                .chatRoomId(chatRoomRepo.getId())
+        ChatRoom chatRoom = ChatRoom.builder()
+                .id(chatRoomId)
+                .users(users)
                 .build();
 
-        // 채팅방 Id값 리턴
-        return ResponseDto.success(chatRoomResponseDto);
+        chatRoomRedisRepository.save(chatRoom);
+
+        ChatRoomResponseDto chatRoomResponseDto = ChatRoomResponseDto.builder()
+                .chatRoomId(chatRoom.getId())
+                .build();
+
+        return ApiResponse.successData(chatRoomResponseDto);
+    }
+
+    // 유저가 속한 채팅방 목록 조회
+    public List<ChatRoom> findChatRoomsByUsername(String username) {
+        List<ChatRoom> chatRooms = new ArrayList<>();
+        Iterable<ChatRoom> allChatRooms = chatRoomRedisRepository.findAll();
+
+        for (ChatRoom chatRoom : allChatRooms) {
+            if (chatRoom.getUsers().contains(username)) {
+                chatRooms.add(chatRoom);
+            }
+        }
+
+        return chatRooms;
     }
 
     // 채팅방 단일 조회

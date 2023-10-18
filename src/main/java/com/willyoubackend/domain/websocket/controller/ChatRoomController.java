@@ -1,11 +1,14 @@
 package com.willyoubackend.domain.websocket.controller;
 
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
-import com.willyoubackend.domain.websocket.entity.*;
+import com.willyoubackend.domain.websocket.entity.ChatRoom;
+import com.willyoubackend.domain.websocket.entity.SocketMessage;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,10 +17,13 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
-    // 채팅방 생성
-    @PostMapping("/room")
-    public ResponseDto<ChatRoomResponseDto> createRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return chatRoomService.createRoom(chatRoomRequestDto, userDetails.getUser());
+    @GetMapping("/rooms/me")
+    public List<ChatRoom> getMyChatRooms() {
+        // 현재 인증된 사용자의 username을 가져옴
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        return chatRoomService.findChatRoomsByUsername(username);
     }
 
     // 채팅방 단일 조회

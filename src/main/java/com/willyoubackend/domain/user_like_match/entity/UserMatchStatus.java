@@ -21,6 +21,7 @@ public class UserMatchStatus {
     @JoinColumn(name="user_matched_two")
     private UserEntity userMatchedTwo;
 
+
     public UserMatchStatus(UserEntity userMatchedOne, UserEntity userMatchedTwo) {
         this.userMatchedOne = userMatchedOne;
         this.userMatchedTwo = userMatchedTwo;
