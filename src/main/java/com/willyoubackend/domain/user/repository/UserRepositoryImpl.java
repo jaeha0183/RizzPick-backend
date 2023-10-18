@@ -21,6 +21,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
         QUserEntity user = QUserEntity.userEntity;
         return jpaQueryFactory.selectFrom(user)
                 .leftJoin(user.profileImages).fetchJoin()
+                .leftJoin(user.userProfileEntity).fetchJoin()
+                .leftJoin(user.userProfileEntity.dating).fetchJoin()
                 .where(user.userProfileEntity.location.eq(location)
                         .and(user.id.ne(id)))
                 .fetch();
@@ -31,6 +33,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
         QUserEntity user = QUserEntity.userEntity;
         return jpaQueryFactory.selectFrom(user)
                 .leftJoin(user.profileImages).fetchJoin()
+                .leftJoin(user.userProfileEntity).fetchJoin()
+                .leftJoin(user.userProfileEntity.dating).fetchJoin()
                 .where(user.userProfileEntity.location.eq(location)
                         .and(user.userProfileEntity.gender.ne(gender))
                         .and(user.id.ne(id)))
