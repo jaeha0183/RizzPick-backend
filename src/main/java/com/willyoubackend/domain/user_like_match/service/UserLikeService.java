@@ -54,7 +54,7 @@ public class UserLikeService {
             userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser)); // 매치 상태를 저장한다.
             // 매칭된 사람끼리 채팅방 생성
             // 랜덤한 채팅방 ID 생성
-            Long chatRoomId = random.nextLong();
+            Long chatRoomId = 1_000_000L + random.nextInt(9_000_000);
 
             ChatRoomRequestDto chatRoomRequestDto = new ChatRoomRequestDto();
             chatRoomRequestDto.setChatRoomId(chatRoomId); // 생성한 랜덤 채팅방 ID 설정
