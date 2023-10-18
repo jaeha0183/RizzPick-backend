@@ -31,6 +31,9 @@ public class UserProfileEntity {
     private Integer age;
 
     @Column(nullable = true)
+    private String intro;
+
+    @Column(nullable = true)
     private String education;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
@@ -63,6 +66,7 @@ public class UserProfileEntity {
     public void updateProfile(UserProfileRequestDto userProfileRequestDto) {
         this.nickname = userProfileRequestDto.getNickname();
         this.age = userProfileRequestDto.getAge();
+        this.intro = userProfileRequestDto.getIntro();
         this.education = userProfileRequestDto.getEducation();
         this.userActiveStatus = userProfileRequestDto.isUserActiveStatus();
 

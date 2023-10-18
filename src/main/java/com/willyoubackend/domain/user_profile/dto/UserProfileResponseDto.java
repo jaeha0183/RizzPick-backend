@@ -15,6 +15,7 @@ public class UserProfileResponseDto {
     private Long userId;
     private String nickname;
     private Integer age;
+    private String intro;
     private String education;
     private String gender;
     private String location;
@@ -27,6 +28,7 @@ public class UserProfileResponseDto {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
         this.age = userEntity.getUserProfileEntity().getAge();
+        this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
 
         if (userEntity.getUserProfileEntity().getGender() != null) {
