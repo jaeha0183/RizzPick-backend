@@ -8,4 +8,5 @@ import java.util.List;
 public interface ChatMessageRepository extends JpaRepository<SocketMessage, Long> {
     List<SocketMessage> findAllByChatRoomId(Long chatRoomId);
     SocketMessage findTopByChatRoomIdOrderByTimeDesc(Long chatRoomId);
+    void deleteByChatRoomId(Long chatRoomId);
 }
