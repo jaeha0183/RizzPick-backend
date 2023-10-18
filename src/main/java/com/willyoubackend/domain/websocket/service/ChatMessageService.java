@@ -7,7 +7,9 @@ import com.willyoubackend.domain.websocket.entity.SocketMessage;
 import com.willyoubackend.domain.websocket.entity.SocketMessageRequsetDto;
 import com.willyoubackend.domain.websocket.entity.SocketMessageResponseDto;
 import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j(topic = "Chat Message Service")
 @RequiredArgsConstructor
 public class ChatMessageService {
 
@@ -24,12 +27,10 @@ public class ChatMessageService {
     private final UserService userService;
 
     // 메세지 저장
-    public SocketMessage getMessage(SocketMessageRequsetDto socketMessageRequsetDto){
-
-    // sender 추가
-        String userId = String.valueOf((jwtUtil.getUserInfoFromToken(socketMessageRequsetDto.getToken())));
-        String username = userService.getUserNameById(Long.valueOf(userId));
-    // time 추가
+    public SocketMessage getMessage(SocketMessageRequsetDto socketMessageRequsetDto) {
+        Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessageRequsetDto.getToken());
+        String username = userInfoFromToken.getSubject();
+        // time 추가
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 
         SocketMessage socketMessage = SocketMessage.builder()
@@ -45,12 +46,12 @@ public class ChatMessageService {
     }
 
     // 이전 메세지 전송
-    public ResponseDto<List<SocketMessageResponseDto>> getMessages(Long chatRoomId){
+    public ResponseDto<List<SocketMessageResponseDto>> getMessages(Long chatRoomId) {
         List<SocketMessage> socketMessageList = chatMessageRepository.findAllByChatRoomId(chatRoomId);
 
         List<SocketMessageResponseDto> socketMessageResponseDtoList = new ArrayList<>();
 
-        for (SocketMessage socketMessage : socketMessageList){
+        for (SocketMessage socketMessage : socketMessageList) {
             socketMessageResponseDtoList.add(SocketMessageResponseDto.builder()
                     .sender(socketMessage.getSender())
                     .message(socketMessage.getMessage())
