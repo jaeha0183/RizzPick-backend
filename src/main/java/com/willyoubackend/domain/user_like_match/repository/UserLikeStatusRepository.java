@@ -10,4 +10,6 @@ public interface UserLikeStatusRepository extends JpaRepository<UserLikeStatus, 
     UserLikeStatus findBySentUserAndReceivedUser(UserEntity sentUser, UserEntity receivedUser);
     List<UserLikeStatus> findAllBySentUser(UserEntity sentUser);
     List<UserLikeStatus> findAllByReceivedUser(UserEntity receivedUser);
+
+    Boolean existsByReceivedUser(UserEntity user);
 }
