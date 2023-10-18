@@ -40,7 +40,7 @@ public class ChatRoomService {
 
             List<String> users = new ArrayList<>();
             users.add("chatRoomId" + chatRoomId);
-            users.add("username" + username);
+            users.add(username);
 
             ChatRoom chatRoom = ChatRoom.builder()
                     .id(chatRoomRequestDto.getChatRoomId())
