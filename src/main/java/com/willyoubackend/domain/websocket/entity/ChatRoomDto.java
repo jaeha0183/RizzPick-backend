@@ -19,4 +19,5 @@ public class ChatRoomDto {
 
     private String image; // 현재 인증된 사용자의 프로필 정보
 
+    private String latestMessage; // 가장 최근에 생성된 메시지
 }
