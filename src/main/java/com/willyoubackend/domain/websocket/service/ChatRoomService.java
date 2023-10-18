@@ -2,10 +2,10 @@ package com.willyoubackend.domain.websocket.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
-import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.domain.websocket.entity.*;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -66,14 +66,11 @@ public class ChatRoomService {
 
     // 채팅방 인원 추가, 삭제
     public ChatRoom setUser(Long chatRoomId, SocketMessage socketMessage) {
-
         ChatRoom chatRoom = chatRoomRedisRepository.findById(chatRoomId).get();
+        Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessage.getToken());
+        String username = userInfoFromToken.getSubject();
         //null값 예외처리추가
         Status status = socketMessage.getStatus();
-
-        // token 으로 userId 추출 -----> userId 로 닉네임 추출
-        String userId = String.valueOf((jwtUtil.getUserInfoFromToken(socketMessage.getToken())));
-        String username = userService.getUserNameById(Long.valueOf(userId));
         List<String> userList = chatRoom.getUsers();
 
         if (status.equals(JOIN) && !(userList.contains(username))) {
