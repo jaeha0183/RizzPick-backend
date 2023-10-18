@@ -195,4 +195,9 @@ public class UserService {
         }
         return null;
     }
+
+    //Id 로 userName 추축
+    public String getUserNameById(Long id){
+        return userRepository.findById(id).get().getUsername();
+    }
 }
