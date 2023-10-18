@@ -1,7 +1,6 @@
 package com.willyoubackend.domain.user_like_match.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
-import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user_like_match.dto.MatchResponseDto;
 import com.willyoubackend.domain.user_like_match.entity.UserMatchStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;

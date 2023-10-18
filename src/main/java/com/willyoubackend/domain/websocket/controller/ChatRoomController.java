@@ -2,6 +2,7 @@ package com.willyoubackend.domain.websocket.controller;
 
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
+import com.willyoubackend.domain.websocket.entity.ChatRoomDto;
 import com.willyoubackend.domain.websocket.entity.SocketMessage;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @GetMapping("/rooms/me")
-    public List<ChatRoom> getMyChatRooms() {
+    public List<ChatRoomDto> getMyChatRooms() {
         // 현재 인증된 사용자의 username을 가져옴
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
