@@ -7,6 +7,7 @@ import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.websocket.entity.*;
+import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import io.jsonwebtoken.Claims;
@@ -33,6 +34,7 @@ public class ChatRoomService {
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, ChatRoom> opsHashChatRoom;
     private final UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     // 매치된 채팅방 생성
     public ApiResponse<ChatRoomResponseDto> createRoom(ChatRoomRequestDto chatRoomRequestDto, UserEntity sentUser, UserEntity receivedUser) {
@@ -82,11 +84,15 @@ public class ChatRoomService {
                             ? profileImageEntities.get(0).getImage()
                             : null; // 첫 번째 이미지만 가져옴
 
+                    SocketMessage latestMessage = chatMessageRepository.findTopByChatRoomIdOrderByTimeDesc(chatRoom.getId());
+                    String latestMessageContent = latestMessage != null ? latestMessage.getMessage() : null;
+
                     ChatRoomDto chatRoomDto = ChatRoomDto.builder()
                             .chatRoomId(chatRoom.getId())
                             .users(otherUsers)
                             .nickname(nickname)
                             .image(image)  // 사용자의 첫 번째 이미지
+                            .latestMessage(latestMessageContent) // 가장 최근 메시지
                             .build();
 
                     chatRoomDtos.add(chatRoomDto);
