@@ -19,7 +19,6 @@ import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,8 +33,6 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final DatingRepository datingRepository;
-    // Wooyong Jeong
-    private final RedisTemplate<String, Object> redisTemplate;
     private final UserRecommendationsRepository userRecommendationsRepository;
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
@@ -114,7 +111,6 @@ public class UserProfileService {
 
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> deleteMainDating(UserEntity userEntity, Long datingId) {
         Dating dating = findByIdDateAuthCheck(datingId, userEntity);
-
         UserEntity loggedInUser = findUserById(userEntity.getId());
         UserProfileEntity userProfileEntity = loggedInUser.getUserProfileEntity();
 
@@ -138,8 +134,6 @@ public class UserProfileService {
         return selectedDating;
     }
 
-
-    // Wooyong Jeong
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
         LocationEnum location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();

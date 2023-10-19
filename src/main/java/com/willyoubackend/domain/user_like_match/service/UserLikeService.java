@@ -8,8 +8,6 @@ import com.willyoubackend.domain.user_like_match.entity.UserMatchStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
-import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
-import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import com.willyoubackend.domain.websocket.entity.ChatRoomRequestDto;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
@@ -35,7 +33,6 @@ public class UserLikeService {
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
     private final UserMatchStatusRepository userMatchStatusRepository;
-    private final UserProfileRepository userProfileRepository;
     private final ChatRoomRedisRepository chatRoomRedisRepository;
     private final ChatRoomService chatRoomService;
     private final Random random = new Random();
@@ -51,25 +48,22 @@ public class UserLikeService {
 
         userLikeStatusRepository.save(new UserLikeStatus(sentUser, receivedUser));
 
-        // 매치
-        if (userLikeStatusRepository.findBySentUserAndReceivedUser(receivedUser, sentUser) != null) { // 상대방이 나를 좋아요를 눌렀다면
-            userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser)); // 매치 상태를 저장한다.
+        if (userLikeStatusRepository.findBySentUserAndReceivedUser(receivedUser, sentUser) != null) {
+            userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser));
 
-            // Redis에 저장된 모든 채팅방 ID를 가져옴
             Set<Long> existingRoomIds = new HashSet<>();
             chatRoomRedisRepository.findAll().forEach(chatRoom -> existingRoomIds.add(chatRoom.getId()));
 
             Long chatRoomId;
             do {
                 chatRoomId = 1_000_000L + random.nextInt(9_000_000);
-            } while (existingRoomIds.contains(chatRoomId)); // 이미 존재하는 ID면 다시 생성
+            } while (existingRoomIds.contains(chatRoomId));
 
             ChatRoomRequestDto chatRoomRequestDto = new ChatRoomRequestDto();
-            chatRoomRequestDto.setChatRoomId(chatRoomId); // 생성한 랜덤 채팅방 ID 설정
+            chatRoomRequestDto.setChatRoomId(chatRoomId);
 
-            chatRoomService.createRoom(chatRoomRequestDto, sentUser, receivedUser); // 채팅방 생성
+            chatRoomService.createRoom(chatRoomRequestDto, sentUser, receivedUser);
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("행운을 빌어요!"));
     }
-
 }

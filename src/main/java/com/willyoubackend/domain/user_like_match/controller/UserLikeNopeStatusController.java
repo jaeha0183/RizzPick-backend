@@ -26,7 +26,6 @@ public class UserLikeNopeStatusController {
     private final UserLikeStatusService userLikeStatusService;
 
     @Operation(summary = "유조가 보낸 좋아요", description = "유저가 다른 유저에게 보낸 좋아요를 조회 할 수 있습니다.")
-    // 사용자가 보낸 좋아요를 조회한다.
     @GetMapping("/like/status")
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikeStatus(
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -34,7 +33,6 @@ public class UserLikeNopeStatusController {
         return userLikeStatusService.getUserLikeStatus(userDetails.getUser());
     }
 
-    // 사용자가 받은 좋아요를 조회한다.
     @Operation(summary = "유저가 받은 좋아요", description = "유저가 다른 유저에게 받은 좋아룔 조회 할 수 있습니다.")
     @GetMapping("/likedby/status")
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikedByStatus(
@@ -43,7 +41,6 @@ public class UserLikeNopeStatusController {
         return userLikeStatusService.getUserLikedByStatus(userDetails.getUser());
     }
 
-    // 사용자가 받은 좋아요를 간단히 정리해 알림에서 볼수 있게하는 API
     @Operation(summary = "유저가 받은 좋아요 알림 추후 Socket 적용 예정", description = "유저가 받은 좋아요 상황을 간단하게 설명한다 그리고 가장 최근에 받은 좋아요 부터 리스트 형태로 반환한다.")
     @GetMapping("/like/status/alert")
     public ResponseEntity<ApiResponse<LikeAlertResponseDto>> getUserLikedByAlert(

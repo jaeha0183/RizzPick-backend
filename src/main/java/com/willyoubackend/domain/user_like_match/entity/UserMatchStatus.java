@@ -14,11 +14,11 @@ public class UserMatchStatus {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_matched_one")
+    @JoinColumn(name = "user_matched_one")
     private UserEntity userMatchedOne;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_matched_two")
+    @JoinColumn(name = "user_matched_two")
     private UserEntity userMatchedTwo;
 
 

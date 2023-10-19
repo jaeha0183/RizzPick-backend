@@ -2,20 +2,17 @@ package com.willyoubackend.global.config;
 
 import com.willyoubackend.domain.user.jwt.JwtUtil;
 import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
-
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -27,12 +24,10 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI willYouOpenApi() {
-        // Local
         Server localServer = new Server();
         localServer.setUrl(localUrl);
         localServer.setDescription("Local Server");
 
-        // Deploy
         Server deployServer = new Server();
         deployServer.setUrl(deployUrl);
         deployServer.setDescription("Deploy Server");
@@ -51,7 +46,6 @@ public class OpenApiConfig {
                 .description("This API exposes endpoints to manage WillYou API.").termsOfService("https://www.scourt.go.kr/scourt/index.html")
                 .license(mitLicense);
 
-        // Components setting
         SecurityScheme securityAuthorization = new SecurityScheme()
                 .type(SecurityScheme.Type.APIKEY)
                 .in(SecurityScheme.In.HEADER)
@@ -64,7 +58,6 @@ public class OpenApiConfig {
         Components willYouComponents = new Components().addSecuritySchemes(JwtUtil.AUTHORIZATION_HEADER, securityAuthorization);
         willYouComponents.addSecuritySchemes(JwtUtil.REFRESH_HEADER, securityRefresh);
 
-        // Security Requirement
         SecurityRequirement securityAuthorizationRequirement = new SecurityRequirement().addList(JwtUtil.AUTHORIZATION_HEADER);
         SecurityRequirement securityRefreshRequirement = new SecurityRequirement().addList(JwtUtil.AUTHORIZATION_HEADER);
 

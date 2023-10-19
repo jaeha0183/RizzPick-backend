@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +37,7 @@ public class UserLikeStatusService {
         List<UserEntity> likeSenderList = userLikeStatusRepository.findAllByReceivedUser(user).stream().map(UserLikeStatus::getSentUser).toList();
         int likeCount = likeSenderList.size();
         List<UserProfileResponseDto> userProfileResponseDtoList = likeSenderList.stream().map(UserProfileResponseDto::new).toList();
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new LikeAlertResponseDto(likeCount,userProfileResponseDtoList)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new LikeAlertResponseDto(likeCount, userProfileResponseDtoList)));
     }
 
     public List<LikeStatusResponseDto> likeStatusResponseDtoList(List<UserLikeStatus> userLikeStatusList) {

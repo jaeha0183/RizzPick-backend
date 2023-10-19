@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface UserLikeStatusRepository extends JpaRepository<UserLikeStatus, Long> {
     UserLikeStatus findBySentUserAndReceivedUser(UserEntity sentUser, UserEntity receivedUser);
+
     List<UserLikeStatus> findAllBySentUser(UserEntity sentUser);
+
     List<UserLikeStatus> findAllByReceivedUser(UserEntity receivedUser);
 
     Boolean existsByReceivedUser(UserEntity user);

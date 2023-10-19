@@ -24,7 +24,6 @@ public class Dating extends Timestamped {
     @Column(name = "theme", nullable = false)
     private String theme;
 
-    // Relation field
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;

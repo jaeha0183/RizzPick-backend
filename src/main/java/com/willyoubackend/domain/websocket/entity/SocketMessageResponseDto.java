@@ -8,9 +8,8 @@ import java.time.ZonedDateTime;
 @Getter
 @Builder
 public class SocketMessageResponseDto {
-
-    private Long chatRoomId; //FE에서 전달
-    private String sender; // token에서 발췌
-    private String message; //FE에서 전달
-    private ZonedDateTime time; //BE에서 생성
+    private Long chatRoomId;
+    private String sender;
+    private String message;
+    private ZonedDateTime time;
 }

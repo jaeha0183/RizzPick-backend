@@ -16,7 +16,6 @@ import java.util.List;
 public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
-    // 이전 메세지들 불러오기
     @Operation(summary = "이전 메세지들 불러오기 ")
     @GetMapping("/message/{chatRoomId}")
     public ApiResponse<List<SocketMessageResponseDto>> getMessages(@PathVariable Long chatRoomId) {

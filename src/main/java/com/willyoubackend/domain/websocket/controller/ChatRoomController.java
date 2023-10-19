@@ -22,21 +22,17 @@ public class ChatRoomController {
     @Operation(summary = "내가 속한 체팅방 목록 조회")
     @GetMapping("/rooms/me")
     public List<ChatRoomDto> getMyChatRooms() {
-        // 현재 인증된 사용자의 username을 가져옴
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-
         return chatRoomService.findChatRoomsByUsername(username);
     }
 
-    // 채팅방 단일 조회
     @Operation(summary = "채팅방 단일 조회")
     @GetMapping("/room/{chatRoomId}")
     public ChatRoom getRoom(@PathVariable Long chatRoomId) {
         return chatRoomService.getRoom(chatRoomId);
     }
 
-    // // 채팅방 인원 추가, 삭제
     @Operation(summary = "채팅방 인원 추가, 삭제")
     @PostMapping("/room/person")
     public ChatRoom setUser(@RequestBody SocketMessage socketMessage) {

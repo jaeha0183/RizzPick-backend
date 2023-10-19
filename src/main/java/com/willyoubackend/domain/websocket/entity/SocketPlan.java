@@ -13,7 +13,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SocketPlan {
-
     private LocalDate startDate;
     private LocalDate endDate;
     private String title;

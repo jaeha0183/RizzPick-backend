@@ -28,7 +28,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.UUID;
 
 @Slf4j(topic = "KAKAO Login")
@@ -45,37 +44,24 @@ public class KakaoService {
     private String CLIENT_ID;
 
     public ResponseEntity<ApiResponse<LoginResponseDto>> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
-        // 1. "인가 코드"로 "액세스 토큰" 요청
         String[] tokens = getToken(code);
         String accessToken = tokens[0];
         String refreshToken = tokens[1];
-        // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken, refreshToken);
-        log.info(kakaoUserInfo.getUsername());
-        // 3. 필요시에 회원가입
         UserEntity kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
-
-        // 4. JWT 토큰 반환
         String createToken = jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
-        // Wooyong
         String createRefresh = jwtUtil.createRefreshToken(kakaoUser.getUsername(), kakaoUser.getRole());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
-        // Wooyong
         response.addHeader(JwtUtil.REFRESH_HEADER, createRefresh);
-
-        // Kakao User active status
         UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(kakaoUser);
         LoginResponseDto responseDto = new LoginResponseDto(
                 kakaoUser.getId(),
                 userProfileEntity.isUserActiveStatus()
-
         );
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(responseDto));
     }
 
     private String[] getToken(String code) throws JsonProcessingException {
-        // 요청 URL 만들기
-        log.info("인가코드:" + code);
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
                 .path("/oauth/token")
@@ -83,15 +69,12 @@ public class KakaoService {
                 .build()
                 .toUri();
 
-        // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", CLIENT_ID);
-//        body.add("client_id", CLIENT_ID); 프론트랑 맞추고 코드 수정예정
         body.add("redirect_uri", "http://localhost:3000/login/kakao/callback");
         body.add("code", code);
 
@@ -100,25 +83,18 @@ public class KakaoService {
                 .headers(headers)
                 .body(body);
 
-        // HTTP 요청 보내기
         ResponseEntity<String> response = restTemplate.exchange(
                 requestEntity,
                 String.class
         );
 
-        // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
-        log.info(jsonNode.get("access_token").asText());
-        log.info(jsonNode.get("refresh_token").asText());
         String accessToken = jsonNode.get("access_token").asText();
         String refreshToken = jsonNode.get("refresh_token").asText();
         return new String[]{accessToken, refreshToken};
     }
 
     private KakaoUserInfoDto getKakaoUserInfo(String accessToken, String refreshToken) throws JsonProcessingException {
-        log.info("accessToken:" + accessToken);
-        log.info("refreshToken:" + refreshToken);
-        // 요청 URL 만들기
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
@@ -126,7 +102,6 @@ public class KakaoService {
                 .build()
                 .toUri();
 
-        // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Authorization_Refresh", "Bearer " + refreshToken);
@@ -137,7 +112,6 @@ public class KakaoService {
                 .headers(headers)
                 .body(new LinkedMultiValueMap<>());
 
-        // HTTP 요청 보내기
         ResponseEntity<String> response = restTemplate.exchange(
                 requestEntity,
                 String.class
@@ -147,7 +121,6 @@ public class KakaoService {
         Long id = jsonNode.get("id").asLong();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
-        // Wooyong Jeong
         int indexAt = 0;
         for (int i = 0; i < email.length(); i++) {
             if (email.charAt(i) == '@') {
@@ -158,25 +131,18 @@ public class KakaoService {
     }
 
     private UserEntity registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
-        // DB 에 중복된 Kakao Id 가 있는지 확인
         Long kakaoId = kakaoUserInfo.getId();
         UserEntity kakaoUser = userRepository.findByKakaoId(kakaoId).orElse(null);
 
         if (kakaoUser == null) {
-            // 카카오 사용자 email 동일한 email 가진 회원이 있는지 확인
             String kakaoEmail = kakaoUserInfo.getEmail();
             UserEntity sameEmailUser = userRepository.findByEmail(kakaoEmail).orElse(null);
             if (sameEmailUser != null) {
                 kakaoUser = sameEmailUser;
-                // 기존 회원정보에 카카오 Id 추가
                 kakaoUser = kakaoUser.kakaoIdUpdate(kakaoId);
             } else {
-                // 신규 회원가입
-                // password: random UUID
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
-
-                // email: kakao email
                 String email = kakaoUserInfo.getEmail();
 
                 kakaoUser = new UserEntity(
@@ -187,7 +153,6 @@ public class KakaoService {
                 );
             }
             UserEntity savedUserEntity = userRepository.save(kakaoUser);
-            // Wooyong jeong - User Profile Create with dummy value
             UserProfileEntity userProfileEntity = new UserProfileEntity();
             userProfileEntity.setUserEntity(savedUserEntity);
             userProfileRepository.save(userProfileEntity);

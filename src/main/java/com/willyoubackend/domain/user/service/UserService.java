@@ -50,14 +50,10 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    // 관리자 인증 토큰
     @Value("${admin.token}") // Base64 Encode 한 SecretKey
     private String ADMIN_TOKEN;
 
-    // 회원가입
     public ResponseEntity<ApiResponse<String>> signup(SignupRequestDto requestDto, BindingResult bindingResult) {
-
-        // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if (!fieldErrors.isEmpty()) {
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -69,19 +65,16 @@ public class UserService {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String email = requestDto.getEmail();
 
-        // 회원 중복 확인
         Optional<UserEntity> checkUsername = userRepository.findByUsername(username);
         if (checkUsername.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
 
-        // 이메일 중복 확인
         Optional<UserEntity> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
-        //사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (requestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
@@ -90,11 +83,8 @@ public class UserService {
             role = UserRoleEnum.ADMIN;
         }
 
-        // 사용자 등록
         UserEntity userEntity = new UserEntity(username, password, email, role);
         userRepository.save(userEntity);
-
-        // userProfileEntity 생성
         UserProfileEntity userProfileEntity = new UserProfileEntity();
         userProfileEntity.setUserEntity(userEntity);
         userProfileRepository.save(userProfileEntity);
@@ -106,59 +96,40 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new LoginResponseDto(user.getId(), userProfileEntity.isUserActiveStatus())));
     }
 
-    // 회원정보 수정
-    @Transactional
-    public void update(UserEntity userEntity) {
-        userRepository.save(userEntity);
-    }
-
-    public UserEntity findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new CustomException(ErrorCode.NOT_FOUND_ENTITY));
-    }
-
-
     @Transactional
     public void authEmail(EmailRequest request) {
-// 임의의 authKey 생성
+        String email = request.getEmail();
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+        }
         try {
             if (redisUtil.getData(request.getEmail()) != null) {
                 throw new CustomException(ErrorCode.DUPLICATE_VERIFI_CODE);
             }
         } catch (NullPointerException e) {
-            log.info("email : " + request.getEmail());
         }
         Random random = new Random();
-        String authKey = String.valueOf(random.nextInt(888888) + 111111);// 범위 : 111111 ~ 999999
-        log.info("authKey : " + authKey);
-
-// 이메일 발송
+        String authKey = String.valueOf(random.nextInt(888888) + 111111);
         sendAuthEmail(request.getEmail(), authKey);
-        log.info("email : " + request.getEmail());
-        log.info("status : " + HttpStatus.OK);
     }
 
     private void sendAuthEmail(String email, String authKey) {
-
         String subject = "Will You 회원가입 인증 메일입니다.";
         String text = "인증번호는 " + authKey + "입니다. <br/>";
-
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
             helper.setTo(email);
             helper.setSubject(subject);
-            helper.setText(text, true); //포함된 텍스트가 HTML이라는 의미로 true.
+            helper.setText(text, true);
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
         redisUtil.setDataExpire(email, authKey, 3 * 60 * 1L);
     }
 
-    // 이메일 인증
     public ApiResponse<String> verifyEmail(VerifiRequest request) {
         String email = request.getEmail();
         String authKey = request.getAuthKey();
@@ -194,10 +165,5 @@ public class UserService {
             return newAccessToken;
         }
         return null;
-    }
-
-    //Id 로 userName 추축
-    public String getUserNameById(Long id){
-        return userRepository.findById(id).get().getUsername();
     }
 }

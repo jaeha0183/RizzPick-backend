@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
-
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
     private final KakaoService kakaoService;
-    private final JwtUtil jwtUtil;
-    // 회원 가입
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signup(
@@ -39,7 +34,6 @@ public class UserController {
         return userService.signup(signupRequestDto, bindingResult);
     }
 
-    // 회원 관련 정보 받기
     @GetMapping("/user-info")
     @ResponseBody
     public UserInfoDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -47,13 +41,11 @@ public class UserController {
         return new UserInfoDto(username);
     }
 
-    // 카카오 로그인
     @GetMapping("/kakao/callback")
     public ResponseEntity<ApiResponse<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         return kakaoService.kakaoLogin(code, response);
     }
 
-    // 유저 활성화 상태 확인
     @GetMapping("/status")
     public ResponseEntity<ApiResponse<LoginResponseDto>> userStatusCheck(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userStatusCheck(userDetails.getUser());
@@ -70,7 +62,6 @@ public class UserController {
         return userService.verifyEmail(request);
     }
 
-    // 엑세스 토큰 갱신
     @GetMapping("/refresh-token")
     public ResponseEntity<ApiResponse<TokenResponseDto>> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = request.getHeader(JwtUtil.REFRESH_HEADER);

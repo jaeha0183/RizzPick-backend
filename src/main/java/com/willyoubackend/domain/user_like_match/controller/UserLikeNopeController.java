@@ -25,7 +25,6 @@ public class UserLikeNopeController {
     private final UserLikeService userLikeService;
     private final UserNopeService userNopeService;
 
-    // 좋아요를 보낸다.
     @Operation(summary = "좋아요 누르기", description = "유저가 다른 유저에게 좋아요를 누르게 할 수 있습니다.")
     @PostMapping("/like/{userId}")
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createLike(
@@ -35,7 +34,6 @@ public class UserLikeNopeController {
 
     }
 
-    // 싫어요를 보낸다.
     @PostMapping("/nope/{userId}")
     @Operation(summary = "싫어요 누르기", description = "유저가 다른 유저에게 싫어요를 누르게 할 수 있습니다.")
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createNope(

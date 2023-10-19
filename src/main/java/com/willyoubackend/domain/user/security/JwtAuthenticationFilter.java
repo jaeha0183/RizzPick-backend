@@ -24,14 +24,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    //로그인
     public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository, RedisUtil redisUtil) {
         this.jwtUtil = jwtUtil;
         this.refreshTokenRepository = refreshTokenRepository;
         setFilterProcessesUrl("/api/users/login");
     }
 
-    // 로그인 토큰 생성
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
@@ -55,10 +53,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
         Boolean userActiveStatus = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserProfileEntity().isUserActiveStatus();
-
         String token = jwtUtil.createToken(username, role);
         response.addHeader("Authorization", token);
-
         RefreshToken refreshToken = refreshTokenRepository.findByUsername(username).orElse(null);
         String refresh = jwtUtil.createRefreshToken(username, role);
         if (refreshToken == null) {
@@ -66,18 +62,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } else {
             refreshToken.updateToken(refresh);
         }
-
         refreshTokenRepository.save(refreshToken);
         response.addHeader(JwtUtil.REFRESH_HEADER, "Bearer " + refreshToken.getToken());
-
-        // 로그인 성공시 "로그인 성공" 메시지를 반환
         response.setStatus(HttpServletResponse.SC_OK);
         writeResponse(response, "로그인 성공 프로필 설정현황" + userActiveStatus);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        // 로그인 실패시 "아이디 또는 비밀번호가 틀렸습니다." 메시지를 반환
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         writeResponse(response, "아이디 또는 비밀번호가 틀렸습니다.");
     }

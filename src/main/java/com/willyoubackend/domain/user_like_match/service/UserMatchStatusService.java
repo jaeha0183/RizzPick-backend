@@ -31,7 +31,7 @@ public class UserMatchStatusService {
         List<UserMatchStatus> userMatchStatusList = userMatchStatusRepository.findAllByUserMatchedOneOrUserMatchedTwo(user, user);
         List<MatchResponseDto> matchResponseDtoList = new ArrayList<>();
         for (UserMatchStatus userMatchStatus : userMatchStatusList) {
-            UserEntity notMe = (userMatchStatus.getUserMatchedOne().equals(user))?userMatchStatus.getUserMatchedOne():userMatchStatus.getUserMatchedTwo();
+            UserEntity notMe = (userMatchStatus.getUserMatchedOne().equals(user)) ? userMatchStatus.getUserMatchedOne() : userMatchStatus.getUserMatchedTwo();
             matchResponseDtoList.add(new MatchResponseDto(user.getUsername(), notMe.getUsername()));
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(matchResponseDtoList));
@@ -51,7 +51,7 @@ public class UserMatchStatusService {
         String username2 = userMatchStatus.getUserMatchedTwo().getUsername();
 
         Iterable<ChatRoom> allChatRooms = chatRoomRedisRepository.findAll();
-        for (ChatRoom chatRoom: allChatRooms) {
+        for (ChatRoom chatRoom : allChatRooms) {
             if (chatRoom.getUsers().contains(username1) && chatRoom.getUsers().contains(username2)) {
                 chatMessageRepository.deleteByChatRoomId(chatRoom.getId());
                 chatRoomRedisRepository.delete(chatRoom);
