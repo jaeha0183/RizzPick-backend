@@ -120,6 +120,11 @@ public class UserService {
 
     @Transactional
     public void authEmail(EmailRequest request) {
+        String email = request.getEmail();
+        // 이메일 중복 확인
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+        }
 // 임의의 authKey 생성
         try {
             if (redisUtil.getData(request.getEmail()) != null) {
