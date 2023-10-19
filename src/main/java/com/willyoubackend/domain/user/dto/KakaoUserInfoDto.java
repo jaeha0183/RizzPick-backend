@@ -10,7 +10,7 @@ public class KakaoUserInfoDto {
     private String username;
     private String email;
 
-    public KakaoUserInfoDto(Long id, String nickname, String email) {
+    public KakaoUserInfoDto(Long id, String username, String email) {
         this.id = id;
         this.username = username;
         this.email = email;

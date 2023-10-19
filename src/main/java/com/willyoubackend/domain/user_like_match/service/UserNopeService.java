@@ -6,7 +6,6 @@ import com.willyoubackend.domain.user_like_match.dto.LikeNopeResponseDto;
 import com.willyoubackend.domain.user_like_match.entity.UserNopeStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
-import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -23,7 +22,6 @@ public class UserNopeService {
     private final UserRepository userRepository;
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
-    private final UserProfileRepository userProfileRepository;
 
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createNope(UserEntity sentUser, Long userId) {
         UserEntity receivedUser = userRepository.findById(userId).orElseThrow(

@@ -10,7 +10,3 @@ public class TokenResponseDto {
         this.newAccessToken = newAccessToken;
     }
 }
-
-
-
-

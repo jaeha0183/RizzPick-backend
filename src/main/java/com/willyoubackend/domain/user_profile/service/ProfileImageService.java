@@ -1,7 +1,6 @@
 package com.willyoubackend.domain.user_profile.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
-import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import com.willyoubackend.domain.user_profile.dto.ProfileImageRequestDto;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
@@ -23,9 +22,7 @@ import java.util.List;
 public class ProfileImageService {
 
     private final S3Uploader s3Uploader;
-    private final UserRepository userRepository;
     private final ProfileImageRepository profileImageRepository;
-
 
     public ResponseEntity<ApiResponse<ImageResponseDto>> updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
 
@@ -38,18 +35,7 @@ public class ProfileImageService {
         }
 
         ImageResponseDto imageResponseDto = (profileImageEntity != null) ? new ImageResponseDto(profileImageEntity) : null;
-
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(imageResponseDto));
-
-//        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
-
-//        if (profileImageEntities.isEmpty()) {
-//            throw new CustomException(ErrorCode.INVALID_IMAGE);
-//        }
-//
-//        List<ImageResponseDto> imageResponseDtoList = profileImageRepository.findAllByUserEntity(userEntity).stream().map(ImageResponseDto::new).toList();
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(imageResponseDtoList));
     }
 
     private ProfileImageEntity addProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
@@ -82,11 +68,6 @@ public class ProfileImageService {
         profileImageEntity.setImage(fileName);
         profileImageRepository.save(profileImageEntity);
         return profileImageEntity;
-    }
-
-    private UserEntity findUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
-                new CustomException(ErrorCode.NOT_FOUND_ENTITY));
     }
 
     private ProfileImageEntity findImageById(Long imageId) {

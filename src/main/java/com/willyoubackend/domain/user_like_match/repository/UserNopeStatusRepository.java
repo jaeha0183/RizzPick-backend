@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserNopeStatusRepository extends JpaRepository<UserNopeStatus, Long> {
     UserNopeStatus findBySentUserAndReceivedUser(UserEntity sentUser, UserEntity receivedUser);
+
     Boolean existsByReceivedUser(UserEntity user);
 }

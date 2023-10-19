@@ -2,7 +2,6 @@ package com.willyoubackend.domain.user_profile.dto;
 
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
-import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,6 +1,5 @@
 package com.willyoubackend.domain.user_like_match.entity;
 
-import com.willyoubackend.domain.dating.entity.Activity;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

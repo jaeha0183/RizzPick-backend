@@ -21,7 +21,6 @@ public class Activity extends Timestamped {
     @Column(name="content", nullable = false)
     private String content;
 
-    // Relation field
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;

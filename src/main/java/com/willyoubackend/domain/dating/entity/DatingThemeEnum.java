@@ -21,8 +21,4 @@ public enum DatingThemeEnum {
     DatingThemeEnum(String themeName) {
         this.themeName = themeName;
     }
-
-    public String getThemeName() {
-        return this.themeName;
-    }
 }

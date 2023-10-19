@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class ProfileImageRepositoryImpl implements ProfileImageRepositoryCustom{
+public class ProfileImageRepositoryImpl implements ProfileImageRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 

@@ -81,7 +81,7 @@ public class UserProfileEntity {
             if (userProfileRequestDto.getReligion() != null) {
                 this.religion = ReligionEnum.valueOf(userProfileRequestDto.getReligion());
             }
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new CustomException(ErrorCode.INVALID_ENUM_VAL);
         }
     }
@@ -90,7 +90,7 @@ public class UserProfileEntity {
         this.userEntity = userEntity;
     }
 
-    public void setDating(Dating dating){
+    public void setDating(Dating dating) {
         this.dating = dating;
     }
 

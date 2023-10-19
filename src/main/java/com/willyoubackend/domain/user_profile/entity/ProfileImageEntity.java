@@ -25,11 +25,11 @@ public class ProfileImageEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    public ProfileImageEntity(String image){
+    public ProfileImageEntity(String image) {
         this.image = image;
     }
 
-    public void setUserEntity(UserEntity userEntity){
+    public void setUserEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
     }
 

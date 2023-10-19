@@ -8,7 +8,7 @@ public class ImageResponseDto {
     private Long id;
     private String image;
 
-    public ImageResponseDto(ProfileImageEntity profileImageEntity){
+    public ImageResponseDto(ProfileImageEntity profileImageEntity) {
         this.id = profileImageEntity.getId();
         this.image = profileImageEntity.getImage();
     }

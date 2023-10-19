@@ -30,12 +30,9 @@ public class ActivityService {
     private final ActivitiesDatingRepository activitiesDatingRepository;
 
     public ResponseEntity<ApiResponse<ActivityResponseDto>> activityCreate(UserEntity user, ActivityRequestDto requestDto, Long datingId) {
-        // Creating Activity
         Activity activity = new Activity(requestDto);
         activity.setUser(user);
         ActivityResponseDto responseDto = new ActivityResponseDto(activityRepository.save(activity));
-
-        // Connecting Activity to specific Dating
         Dating selectedDate = findByIdDateAuthCheck(datingId, user);
         if (activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate).size() == 5)
             throw new CustomException(ErrorCode.INVALID_ARGUMENT);

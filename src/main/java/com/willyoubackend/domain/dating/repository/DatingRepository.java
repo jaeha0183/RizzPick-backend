@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface DatingRepository extends JpaRepository<Dating, Long> {
     List<Dating> findAllByOrderByCreatedAt();
+
     List<Dating> findAllByUserOrderByCreatedAt(UserEntity user);
+
     List<Dating> findAllByLocationOrderByCreatedAt(String location);
 }

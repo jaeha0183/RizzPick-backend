@@ -16,8 +16,4 @@ public class VerifiRequest {
     public String getAuthKey() {
         return authKey;
     }
-
-    public void setAuthKey(String authKey) {
-        this.authKey = authKey;
-    }
 }

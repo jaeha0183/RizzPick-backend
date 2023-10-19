@@ -20,7 +20,6 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
-    //성공
     public static <T> ApiResponse<T> successData(T data) {
         return new ApiResponse<>(SUCCESS_STATUS, null, data);
     }
@@ -29,7 +28,6 @@ public class ApiResponse<T> {
         return new ApiResponse<>(SUCCESS_STATUS, message, null);
     }
 
-    //에러
     public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>(ERROR_STAUTS, message, null);
     }

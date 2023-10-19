@@ -28,7 +28,6 @@ public class ProfileImageController {
 
     private final ProfileImageService profileImageService;
 
-    // 프로필 이미지 설정
     @Operation(summary = "프로필 이미지 설정")
     @PutMapping(value = "/updateImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponseDto>> updateProfileImage(

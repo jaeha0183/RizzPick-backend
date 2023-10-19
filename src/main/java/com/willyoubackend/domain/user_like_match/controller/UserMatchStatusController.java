@@ -22,7 +22,6 @@ import java.util.List;
 public class UserMatchStatusController {
     private final UserMatchStatusService userMatchStatusService;
 
-    // 사용자와 매치된 사람을 조회한다.
     @Operation(summary = "유저의 현재 매치 상황", description = "유저의 현재 매치 상황을 조회 할 수 있습니다.")
     @GetMapping("/matches")
     public ResponseEntity<ApiResponse<List<MatchResponseDto>>> getMatches(
@@ -31,7 +30,6 @@ public class UserMatchStatusController {
         return userMatchStatusService.getMatches(userDetails.getUser());
     }
 
-    // 사용자가 매치를 취소한다.
     @Operation(summary = "매치 취소", description = "매치를 취소 할 수 있습니다.")
     @DeleteMapping("/match/{matchId}")
     public ResponseEntity<ApiResponse<MatchResponseDto>> deleteMatch(
