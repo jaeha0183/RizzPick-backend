@@ -5,6 +5,7 @@ import com.willyoubackend.domain.user_like_match.dto.MatchResponseDto;
 import com.willyoubackend.domain.user_like_match.entity.UserMatchStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
+import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
@@ -24,6 +25,7 @@ import java.util.List;
 public class UserMatchStatusService {
     private final UserMatchStatusRepository userMatchStatusRepository;
     private final ChatRoomRedisRepository chatRoomRedisRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     public ResponseEntity<ApiResponse<List<MatchResponseDto>>> getMatches(UserEntity user) {
         List<UserMatchStatus> userMatchStatusList = userMatchStatusRepository.findAllByUserMatchedOneOrUserMatchedTwo(user, user);
@@ -51,6 +53,7 @@ public class UserMatchStatusService {
         Iterable<ChatRoom> allChatRooms = chatRoomRedisRepository.findAll();
         for (ChatRoom chatRoom: allChatRooms) {
             if (chatRoom.getUsers().contains(username1) && chatRoom.getUsers().contains(username2)) {
+                chatMessageRepository.deleteByChatRoomId(chatRoom.getId());
                 chatRoomRedisRepository.delete(chatRoom);
             }
         }

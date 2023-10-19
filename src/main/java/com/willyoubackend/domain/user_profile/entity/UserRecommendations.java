@@ -1,6 +1,5 @@
 package com.willyoubackend.domain.user_profile.entity;
 
-import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import jakarta.persistence.Id;
 import lombok.Getter;

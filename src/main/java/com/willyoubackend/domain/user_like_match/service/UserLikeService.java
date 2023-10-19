@@ -22,7 +22,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -52,16 +54,22 @@ public class UserLikeService {
         // 매치
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(receivedUser, sentUser) != null) { // 상대방이 나를 좋아요를 눌렀다면
             userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser)); // 매치 상태를 저장한다.
-            // 매칭된 사람끼리 채팅방 생성
-            // 랜덤한 채팅방 ID 생성
-            Long chatRoomId = random.nextLong();
+
+            // Redis에 저장된 모든 채팅방 ID를 가져옴
+            Set<Long> existingRoomIds = new HashSet<>();
+            chatRoomRedisRepository.findAll().forEach(chatRoom -> existingRoomIds.add(chatRoom.getId()));
+
+            Long chatRoomId;
+            do {
+                chatRoomId = 1_000_000L + random.nextInt(9_000_000);
+            } while (existingRoomIds.contains(chatRoomId)); // 이미 존재하는 ID면 다시 생성
 
             ChatRoomRequestDto chatRoomRequestDto = new ChatRoomRequestDto();
             chatRoomRequestDto.setChatRoomId(chatRoomId); // 생성한 랜덤 채팅방 ID 설정
 
             chatRoomService.createRoom(chatRoomRequestDto, sentUser, receivedUser); // 채팅방 생성
-
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("행운을 빌어요!"));
     }
+
 }
