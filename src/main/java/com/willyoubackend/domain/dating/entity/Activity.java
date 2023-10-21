@@ -15,9 +15,6 @@ public class Activity extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
-
     @Column(name="content", nullable = false)
     private String content;
 
@@ -26,7 +23,6 @@ public class Activity extends Timestamped {
     private UserEntity user;
 
     public Activity(ActivityRequestDto requestDto) {
-        this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
     }
 
@@ -35,7 +31,6 @@ public class Activity extends Timestamped {
     }
 
     public void update(ActivityRequestDto requestDto) {
-        this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
     }
 }

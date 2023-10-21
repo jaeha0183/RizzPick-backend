@@ -34,8 +34,9 @@ public class ActivityService {
         activity.setUser(user);
         ActivityResponseDto responseDto = new ActivityResponseDto(activityRepository.save(activity));
         Dating selectedDate = findByIdDateAuthCheck(datingId, user);
-        if (activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate).size() == 5)
-            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+        // 배포후 수정
+//        if (activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate).size() == 5)
+//            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
         ActivitiesDating activitiesDating = new ActivitiesDating(selectedDate, activity);
         activitiesDatingRepository.save(activitiesDating);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successData(responseDto));
