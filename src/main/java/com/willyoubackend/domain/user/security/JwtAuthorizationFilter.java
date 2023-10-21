@@ -1,7 +1,6 @@
 package com.willyoubackend.domain.user.security;
 
 import com.willyoubackend.domain.user.jwt.JwtUtil;
-import com.willyoubackend.domain.user.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
