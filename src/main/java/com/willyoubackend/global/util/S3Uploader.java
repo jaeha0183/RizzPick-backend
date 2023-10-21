@@ -50,9 +50,9 @@ public class S3Uploader {
     }
 
     private void removeNewFile(File targetFile) {
-        if(targetFile.delete()) {
+        if (targetFile.delete()) {
             log.info("파일이 삭제되었습니다.");
-        }else {
+        } else {
             log.info("파일이 삭제되지 못했습니다.");
         }
     }
@@ -60,7 +60,7 @@ public class S3Uploader {
     private Optional<File> convert(MultipartFile file) throws IOException {
         //        File convertFile = new File(file.getOriginalFilename());
         File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        if(convertFile.createNewFile()) {
+        if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
