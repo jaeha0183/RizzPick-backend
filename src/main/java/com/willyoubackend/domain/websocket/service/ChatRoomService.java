@@ -10,6 +10,8 @@ import com.willyoubackend.domain.websocket.entity.*;
 import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -96,11 +98,13 @@ public class ChatRoomService {
     }
 
     public ChatRoom getRoom(Long chatRoomId) {
-        return chatRoomRedisRepository.findById(chatRoomId).get();
+        return chatRoomRedisRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM));
     }
 
     public ChatRoom setUser(Long chatRoomId, SocketMessage socketMessage) {
-        ChatRoom chatRoom = chatRoomRedisRepository.findById(chatRoomId).get();
+        ChatRoom chatRoom = getRoom(chatRoomId);
+
         Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessage.getToken());
         String username = userInfoFromToken.getSubject();
         Status status = socketMessage.getStatus();
@@ -108,16 +112,15 @@ public class ChatRoomService {
 
         if (status.equals(JOIN) && !(userList.contains(username))) {
             userList.add(username);
-
         } else if (status.equals(LEAVE) && userList.contains(username)) {
             userList.remove(username);
-
         }
-        chatRoom.setUsers(userList);
 
+        chatRoom.setUsers(userList);
         chatRoomRedisRepository.save(chatRoom);
 
         return chatRoom;
     }
+
 
 }
