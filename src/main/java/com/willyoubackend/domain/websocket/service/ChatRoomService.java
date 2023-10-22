@@ -98,11 +98,13 @@ public class ChatRoomService {
     }
 
     public ChatRoom getRoom(Long chatRoomId) {
+        validateChatRoomId(chatRoomId);  // chatRoomId 검사 추가
         return chatRoomRedisRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM));
     }
 
     public ChatRoom setUser(Long chatRoomId, SocketMessage socketMessage) {
+        validateChatRoomId(chatRoomId);  // chatRoomId 검사 추가
         ChatRoom chatRoom = getRoom(chatRoomId);
 
         Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessage.getToken());
@@ -120,6 +122,13 @@ public class ChatRoomService {
         chatRoomRedisRepository.save(chatRoom);
 
         return chatRoom;
+    }
+
+    // chatRoomId 검사 메서드
+    private void validateChatRoomId(Long chatRoomId) {
+        if (chatRoomId == null) {
+            throw new CustomException(ErrorCode.INVALID_CHATROOM_ID);
+        }
     }
 
 
