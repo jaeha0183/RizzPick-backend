@@ -12,7 +12,6 @@ import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.willyoubackend.domain.websocket.entity.Status.JOIN;
-import static com.willyoubackend.domain.websocket.entity.Status.LEAVE;
-
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
 
-    private final JwtUtil jwtUtil;
-    private final UserService userService;
     private final ChatRoomRedisRepository chatRoomRedisRepository;
     private final UserRepository userRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -97,39 +91,10 @@ public class ChatRoomService {
         return chatRoomDtos;
     }
 
-    public ChatRoom getRoom(Long chatRoomId) {
-        validateChatRoomId(chatRoomId);  // chatRoomId 검사 추가
-        return chatRoomRedisRepository.findById(chatRoomId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM));
-    }
-
-    public ChatRoom setUser(Long chatRoomId, SocketMessage socketMessage) {
-        validateChatRoomId(chatRoomId);  // chatRoomId 검사 추가
-        ChatRoom chatRoom = getRoom(chatRoomId);
-
-        Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessage.getToken());
-        String username = userInfoFromToken.getSubject();
-        Status status = socketMessage.getStatus();
-        List<String> userList = chatRoom.getUsers();
-
-        if (status.equals(JOIN) && !(userList.contains(username))) {
-            userList.add(username);
-        } else if (status.equals(LEAVE) && userList.contains(username)) {
-            userList.remove(username);
-        }
-
-        chatRoom.setUsers(userList);
-        chatRoomRedisRepository.save(chatRoom);
-
-        return chatRoom;
-    }
-
     // chatRoomId 검사 메서드
     private void validateChatRoomId(Long chatRoomId) {
         if (chatRoomId == null) {
             throw new CustomException(ErrorCode.INVALID_CHATROOM_ID);
         }
     }
-
-
 }

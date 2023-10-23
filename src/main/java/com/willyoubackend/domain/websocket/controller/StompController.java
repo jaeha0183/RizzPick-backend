@@ -1,9 +1,7 @@
 package com.willyoubackend.domain.websocket.controller;
 
-import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import com.willyoubackend.domain.websocket.entity.SocketMessage;
 import com.willyoubackend.domain.websocket.entity.SocketMessageRequsetDto;
-import com.willyoubackend.domain.websocket.entity.SocketPlan;
 import com.willyoubackend.domain.websocket.service.ChatMessageService;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +25,5 @@ public class StompController {
         Long chatRoomId = socketMessageRequsetDto.getChatRoomId();
         SocketMessage chatMessage = chatMessageService.getMessage(socketMessageRequsetDto);
         simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/message", chatMessage);
-    }
-
-    @MessageMapping("/plan")
-    public void receivePlan(@Payload SocketPlan socketPlan) {
-        Long chatRoomId = socketPlan.getChatRoomId();
-        simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/plan", socketPlan);
-    }
-
-    @MessageMapping("/user")
-    public void receiveUser(@Payload SocketMessage socketMessage) {
-        Long chatRoomId = socketMessage.getChatRoomId();
-        ChatRoom chatRoom = chatRoomService.setUser(chatRoomId, socketMessage);
-        simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/user", chatRoom.getUsers());
     }
 }
