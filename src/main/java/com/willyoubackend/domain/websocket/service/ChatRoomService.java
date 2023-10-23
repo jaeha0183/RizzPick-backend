@@ -1,17 +1,13 @@
 package com.willyoubackend.domain.websocket.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
-import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.repository.UserRepository;
-import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.websocket.entity.*;
 import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
 import com.willyoubackend.global.dto.ApiResponse;
-import com.willyoubackend.global.exception.CustomException;
-import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -89,12 +85,5 @@ public class ChatRoomService {
         }
 
         return chatRoomDtos;
-    }
-
-    // chatRoomId 검사 메서드
-    private void validateChatRoomId(Long chatRoomId) {
-        if (chatRoomId == null) {
-            throw new CustomException(ErrorCode.INVALID_CHATROOM_ID);
-        }
     }
 }
