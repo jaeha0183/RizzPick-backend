@@ -84,14 +84,14 @@ public class DatingService {
     @Transactional
     public ResponseEntity<ApiResponse<DatingResponseDto>> updateDating(UserEntity user, Long id, DatingRequestDto requestDto) {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
-        if (!selectedDate.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         selectedDate.update(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new DatingResponseDto(selectedDate)));
     }
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(UserEntity user, Long id) {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
-        if (!selectedDate.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        List<ActivitiesDating> activitiesDatingList = activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate);
+        activitiesDatingRepository.deleteAll(activitiesDatingList);
         datingRepository.delete(selectedDate);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }

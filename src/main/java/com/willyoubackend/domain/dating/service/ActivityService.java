@@ -67,7 +67,9 @@ public class ActivityService {
 
     public ResponseEntity<ApiResponse<ActivityResponseDto>> deleteActivity(UserEntity user, Long id) {
         Activity selectedActivity = findByIdActivityAuthCheck(id, user);
+        ActivitiesDating selectedActivityDating =  activitiesDatingRepository.findByActivity(selectedActivity);
         activityRepository.delete(selectedActivity);
+        activitiesDatingRepository.delete(selectedActivityDating);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 
