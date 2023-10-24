@@ -14,5 +14,12 @@ public class ChatRoomDto {
     private List<String> users;
     private String nickname;
     private String image;
+    private Integer age;
+    private String intro;
+    private String mbti;
+    private String religion;
+    private String education;
+    private String location;
     private String latestMessage;
+    private String latestMessageTime;
 }

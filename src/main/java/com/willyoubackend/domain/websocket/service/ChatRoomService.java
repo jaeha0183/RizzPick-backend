@@ -63,6 +63,12 @@ public class ChatRoomService {
                     List<ProfileImageEntity> profileImageEntities = userEntity.getProfileImages();
 
                     String nickname = userProfileEntity.getNickname();
+                    Integer age = userProfileEntity.getAge();
+                    String intro = userProfileEntity.getIntro();
+                    String mbti = userProfileEntity.getMbti() != null ? userProfileEntity.getMbti().toString() : null;
+                    String religion = userProfileEntity.getReligion() != null ? userProfileEntity.getReligion().toString() : null;
+                    String education = userProfileEntity.getEducation();
+                    String location = userProfileEntity.getLocation() != null ? userProfileEntity.getLocation().toString() : null;
 
                     String image = (profileImageEntities != null && !profileImageEntities.isEmpty())
                             ? profileImageEntities.get(0).getImage()
@@ -70,13 +76,21 @@ public class ChatRoomService {
 
                     SocketMessage latestMessage = chatMessageRepository.findTopByChatRoomIdOrderByTimeDesc(chatRoom.getId());
                     String latestMessageContent = latestMessage != null ? latestMessage.getMessage() : null;
+                    String latestMessageTime = latestMessage != null ? latestMessage.getTime().toString() : null;
 
                     ChatRoomDto chatRoomDto = ChatRoomDto.builder()
                             .chatRoomId(chatRoom.getId())
                             .users(otherUsers)
                             .nickname(nickname)
                             .image(image)
+                            .age(age)
+                            .intro(intro)
+                            .mbti(mbti)
+                            .religion(religion)
+                            .education(education)
+                            .location(location)
                             .latestMessage(latestMessageContent)
+                            .latestMessageTime(latestMessageTime)
                             .build();
 
                     chatRoomDtos.add(chatRoomDto);

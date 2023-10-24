@@ -19,10 +19,8 @@ public class SocketMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Status status;
     private String sender;
     private Long chatRoomId;
     private String message;
     private ZonedDateTime time;
-    private String token;
 }
