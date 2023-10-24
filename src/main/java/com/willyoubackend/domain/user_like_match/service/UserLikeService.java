@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user_like_match.service;
 
+import com.willyoubackend.domain.sse.service.AlertService;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_like_match.dto.LikeNopeResponseDto;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -38,8 +40,10 @@ public class UserLikeService {
     private final UserProfileRepository userProfileRepository;
     private final ChatRoomRedisRepository chatRoomRedisRepository;
     private final ChatRoomService chatRoomService;
+    private final AlertService alertService;
     private final Random random = new Random();
 
+    @Transactional
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createLike(UserEntity sentUser, Long userId) {
         UserEntity receivedUser = userRepository.findById(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
@@ -48,6 +52,8 @@ public class UserLikeService {
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(sentUser, receivedUser) != null ||
                 userNopeStatusRepository.findBySentUserAndReceivedUser(sentUser, receivedUser) != null)
             throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+
+        alertService.send(receivedUser, sentUser, "새로운 좋아요를 받았습니다.");
 
         userLikeStatusRepository.save(new UserLikeStatus(sentUser, receivedUser));
 
