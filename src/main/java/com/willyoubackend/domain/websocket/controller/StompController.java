@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.websocket.controller;
 
+import com.willyoubackend.domain.websocket.entity.ReadMessagePayload;
 import com.willyoubackend.domain.websocket.entity.SocketMessage;
 import com.willyoubackend.domain.websocket.entity.SocketMessageRequsetDto;
 import com.willyoubackend.domain.websocket.service.ChatMessageService;
@@ -10,6 +11,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,7 +25,16 @@ public class StompController {
     @MessageMapping("/message")
     public void receiveMessage(@Payload SocketMessageRequsetDto socketMessageRequsetDto) {
         Long chatRoomId = socketMessageRequsetDto.getChatRoomId();
-        SocketMessage chatMessage = chatMessageService.getMessage(socketMessageRequsetDto);
+        SocketMessage chatMessage = chatMessageService.saveMessage(socketMessageRequsetDto);
         simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/message", chatMessage);
     }
+
+    @Transactional
+    @MessageMapping("/readMessage")
+    public void handleReadMessage(@Payload ReadMessagePayload payload) {
+        Long messageId = payload.getMessageId();
+
+        chatMessageService.markMessageAsRead(messageId);
+    }
+
 }

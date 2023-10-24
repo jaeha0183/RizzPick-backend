@@ -76,6 +76,7 @@ public class ChatRoomService {
                             : null;
 
                     SocketMessage latestMessage = chatMessageRepository.findTopByChatRoomIdOrderByTimeDesc(chatRoom.getId());
+                    Long latestMessageId = latestMessage != null ? latestMessage.getId() : null;
                     String latestMessageContent = latestMessage != null ? latestMessage.getMessage() : null;
                     String latestMessageTime = latestMessage != null ? latestMessage.getTime().toString() : null;
 
@@ -90,6 +91,7 @@ public class ChatRoomService {
                             .religion(religion)
                             .education(education)
                             .location(location)
+                            .latestMessageId(latestMessageId)
                             .latestMessage(latestMessageContent)
                             .latestMessageTime(latestMessageTime)
                             .build();

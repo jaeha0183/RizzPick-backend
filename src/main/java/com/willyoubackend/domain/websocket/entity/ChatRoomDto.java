@@ -20,6 +20,7 @@ public class ChatRoomDto {
     private String religion;
     private String education;
     private String location;
+    private Long latestMessageId;
     private String latestMessage;
     private String latestMessageTime;
 }
