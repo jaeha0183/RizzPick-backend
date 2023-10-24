@@ -24,7 +24,7 @@ public class ChatMessageService {
     private final JwtUtil jwtUtil;
     private final ChatMessageRepository chatMessageRepository;
 
-    public SocketMessage getMessage(SocketMessageRequsetDto socketMessageRequsetDto) {
+    public SocketMessage saveMessage(SocketMessageRequsetDto socketMessageRequsetDto) {
         Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessageRequsetDto.getToken());
         String username = userInfoFromToken.getSubject();
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -40,6 +40,21 @@ public class ChatMessageService {
 
         return socketMessage;
     }
+
+
+    public void markMessageAsRead(Long messageId) {
+        SocketMessage message = chatMessageRepository.findById(messageId).orElseThrow(() -> new RuntimeException("Message not found"));
+        message.setIsRead(true);
+
+        // 지정된 메시지보다 오래된 모든 메시지의 isRead 상태도 true로 업데이트
+        List<SocketMessage> olderMessages = chatMessageRepository.findAllByTimeBeforeAndIsReadFalse(message.getTime());
+        for (SocketMessage olderMessage : olderMessages) {
+            olderMessage.setIsRead(true);
+        }
+        chatMessageRepository.save(message);
+        chatMessageRepository.saveAll(olderMessages);
+    }
+
 
     public ApiResponse<List<SocketMessageResponseDto>> getMessages(Long chatRoomId) {
         List<SocketMessage> socketMessageList = chatMessageRepository.findAllByChatRoomId(chatRoomId);
