@@ -21,7 +21,7 @@ public class SocketMessage {
     private String message;
     private ZonedDateTime time;
     @Column(nullable = false)
-    private boolean isRead;
+    private boolean isRead = false;
 
     public void setIsRead(boolean isRead) {
         this.isRead = isRead;
