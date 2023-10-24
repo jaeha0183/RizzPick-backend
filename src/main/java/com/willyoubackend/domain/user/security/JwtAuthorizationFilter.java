@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 @RequiredArgsConstructor
@@ -31,6 +32,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String accessToken = jwtUtil.getJwtFromHeader(req, JwtUtil.AUTHORIZATION_HEADER);
         if (StringUtils.hasText(accessToken)) {
             if (!jwtUtil.validateToken(accessToken)) {
+                res.setStatus(499);
+                writeResponse(res,"token 재발급이 필요합니다요");
                 throw new JwtException(499 + "");
             }
 
@@ -57,5 +60,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private Authentication createAuthentication(String username) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
+    private void writeResponse(HttpServletResponse response, String message) {
+        try {
+            response.setContentType("text/plain");
+            PrintWriter writer = response.getWriter();
+            writer.write(message);
+            writer.flush();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 }

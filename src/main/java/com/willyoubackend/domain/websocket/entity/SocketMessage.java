@@ -21,6 +21,7 @@ public class SocketMessage {
     private String message;
     private ZonedDateTime time;
     @Column(nullable = false)
+    @Builder.Default
     private boolean isRead = false;
 
     public void setIsRead(boolean isRead) {
