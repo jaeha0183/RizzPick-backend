@@ -13,6 +13,9 @@ import java.util.List;
 public class UserRecommendations {
     @Id
     private Long id;
+
+    private Long currIndex;
+
     @Indexed
     private String username;
 
@@ -21,5 +24,7 @@ public class UserRecommendations {
     public UserRecommendations(String username, List<UserProfileResponseDto> recommendedUsers) {
         this.username = username;
         this.recommendedUsers = recommendedUsers;
+        this.currIndex = 0L;
+
     }
 }
