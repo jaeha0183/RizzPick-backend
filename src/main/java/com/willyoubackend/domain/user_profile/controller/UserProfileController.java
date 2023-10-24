@@ -32,10 +32,10 @@ public class UserProfileController {
         return userProfileService.updateUserProfile(userDetails.getUser(), userProfileRequestDto);
     }
 
-    @Operation(summary = "프로필 전체 조회")
-    @GetMapping("/userProfiles")
+    @Operation(summary = "프로필 추천 MySQL")
+    @GetMapping("/userprofile/recommendations")
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getUserProfiles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userProfileService.getUserProfiles(userDetails.getUser());
+        return userProfileService.getRecommendations(userDetails.getUser());
     }
 
     @Operation(summary = "마이 프로필 조회")
@@ -67,10 +67,10 @@ public class UserProfileController {
         return userProfileService.deleteMainDating(userDetails.getUser(), datingId);
     }
 
-    @Operation(summary = "유저 추천 로직")
-    @GetMapping("/userprofile/recommendations")
+    @Operation(summary = "프로필 추천 Redis")
+    @GetMapping("/userprofile/recommendations/redis")
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userProfileService.getRecommendations(userDetails.getUser());
+        return userProfileService.getRecommendationsTemp(userDetails.getUser());
     }
 }

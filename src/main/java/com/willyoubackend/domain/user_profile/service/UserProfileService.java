@@ -62,23 +62,27 @@ public class UserProfileService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
-    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getUserProfiles(UserEntity userEntity) {
+    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
 
         LocationEnum location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();
 
-        List<UserProfileResponseDto> userProfileResponseDtoList;
-
+        List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
+        List<UserEntity> filteredUsers;
         if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
-            userProfileResponseDtoList = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId())
-                    .stream()
-                    .map(UserProfileResponseDto::new)
-                    .toList();
+            filteredUsers = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId());
         } else {
-            userProfileResponseDtoList = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId())
-                    .stream()
-                    .map(UserProfileResponseDto::new)
-                    .toList();
+            filteredUsers = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId());
+        }
+        int maxLimit = 0;
+        for (UserEntity filteredUser: filteredUsers) {
+            if (maxLimit == 100) break;
+            if (!userNopeStatusRepository.existsByReceivedUser(filteredUser) &&
+                    !userLikeStatusRepository.existsByReceivedUser(filteredUser) &&
+                    filteredUser.getUserProfileEntity().isUserActiveStatus()) {
+                userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
+            }
+            maxLimit ++;
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
@@ -134,7 +138,10 @@ public class UserProfileService {
         return selectedDating;
     }
 
-    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
+
+    // 보류
+    // 보류 이유: 굳이 Redis를 사용할 필요가 없어서
+    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendationsTemp(UserEntity userEntity) {
         LocationEnum location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();
         UserRecommendations recommendations = userRecommendationsRepository.findByUsername(userEntity.getUsername());
