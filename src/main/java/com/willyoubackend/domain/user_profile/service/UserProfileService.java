@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user_profile.service;
 
+import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
@@ -7,6 +8,7 @@ import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
 import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
+import com.willyoubackend.domain.user_profile.dto.UserOwnProfileResponseDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
@@ -88,8 +90,12 @@ public class UserProfileService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
     }
 
-    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile(UserEntity userEntity) {
-        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(findUserById(userEntity.getId()));
+    public ResponseEntity<ApiResponse<UserOwnProfileResponseDto>> getMyProfile(UserEntity userEntity) {
+        List<DatingResponseDto> datingList = datingRepository.findAllByUser(userEntity)
+                .stream()
+                .map(DatingResponseDto::new)
+                .toList();
+        UserOwnProfileResponseDto userProfileResponseDto = new UserOwnProfileResponseDto(findUserById(userEntity.getId()),datingList);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 

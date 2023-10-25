@@ -2,6 +2,7 @@ package com.willyoubackend.domain.user_profile.controller;
 
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
+import com.willyoubackend.domain.user_profile.dto.UserOwnProfileResponseDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.service.UserProfileService;
@@ -40,7 +41,7 @@ public class UserProfileController {
 
     @Operation(summary = "마이 프로필 조회")
     @GetMapping("/myProfile")
-    private ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile(
+    private ResponseEntity<ApiResponse<UserOwnProfileResponseDto>> getMyProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userProfileService.getMyProfile(userDetails.getUser());
     }
