@@ -65,11 +65,13 @@ public class ActivityService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new ActivityResponseDto(selectedActivity)));
     }
 
+
+    @Transactional
     public ResponseEntity<ApiResponse<ActivityResponseDto>> deleteActivity(UserEntity user, Long id) {
         Activity selectedActivity = findByIdActivityAuthCheck(id, user);
-        ActivitiesDating selectedActivityDating =  activitiesDatingRepository.findByActivity(selectedActivity);
-        activityRepository.delete(selectedActivity);
-        activitiesDatingRepository.delete(selectedActivityDating);
+        ActivitiesDating selectedActivityDating = activitiesDatingRepository.findByActivity(selectedActivity);
+        selectedActivity.setDeleteStatus(true);
+        selectedActivityDating.setDeleteStatus(true);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 

@@ -12,6 +12,9 @@ public class ActivitiesDating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "delete_status", nullable = false)
+    private Boolean deleteStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dating_id")
     private Dating dating;
@@ -23,5 +26,10 @@ public class ActivitiesDating {
     public ActivitiesDating(Dating dating, Activity activity) {
         this.dating = dating;
         this.activity = activity;
+        this.deleteStatus = false;
+    }
+
+    public void setDeleteStatus(Boolean status) {
+        this.deleteStatus = status;
     }
 }

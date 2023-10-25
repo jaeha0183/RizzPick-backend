@@ -10,6 +10,7 @@ import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.dating.repository.ActivitiesDatingRepository;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -29,6 +30,7 @@ import java.util.List;
 public class DatingService {
     private final DatingRepository datingRepository;
     private final ActivitiesDatingRepository activitiesDatingRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> createDating(UserEntity user) {
         // 배포시 변경
@@ -67,6 +69,17 @@ public class DatingService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(datingResponseDtoListByLocation));
     }
 
+    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingListBySelectedUser(Long userId) {
+        UserEntity selectedUser = userRepository.findById(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+        );
+        List<DatingResponseDto> datingResponseDtoList = datingRepository.findAllByUser(selectedUser)
+                .stream()
+                .map(DatingResponseDto::new)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(datingResponseDtoList));
+    }
+
     public ResponseEntity<ApiResponse<DatingDetailResponseDto>> getDatingDetail(Long id) {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ENTITY));
         List<Activity> activityList = new ArrayList<>();
@@ -88,11 +101,14 @@ public class DatingService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new DatingResponseDto(selectedDate)));
     }
 
+    @Transactional
     public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(UserEntity user, Long id) {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
         List<ActivitiesDating> activitiesDatingList = activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate);
-        activitiesDatingRepository.deleteAll(activitiesDatingList);
-        datingRepository.delete(selectedDate);
+        selectedDate.setDeleteStatus(true);
+        for (ActivitiesDating activitiesDating : activitiesDatingList) {
+            activitiesDating.setDeleteStatus(true);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 
@@ -100,7 +116,8 @@ public class DatingService {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
-        if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        if (!selectedDating.getUser().getId().equals(user.getId()) || selectedDating.getDeleteStatus())
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
     }
 }
