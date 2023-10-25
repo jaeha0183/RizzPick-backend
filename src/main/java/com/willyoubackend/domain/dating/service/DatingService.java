@@ -88,11 +88,12 @@ public class DatingService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new DatingResponseDto(selectedDate)));
     }
 
+    @Transactional
     public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(UserEntity user, Long id) {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
         List<ActivitiesDating> activitiesDatingList = activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate);
+        selectedDate.setDeleteStatus(true);
         activitiesDatingRepository.deleteAll(activitiesDatingList);
-        datingRepository.delete(selectedDate);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 
@@ -100,7 +101,7 @@ public class DatingService {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
-        if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        if (!selectedDating.getUser().getId().equals(user.getId()) || selectedDating.getDeleteStatus()) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
     }
 }

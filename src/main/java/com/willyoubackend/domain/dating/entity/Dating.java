@@ -24,6 +24,9 @@ public class Dating extends Timestamped {
     @Column(name = "theme", nullable = false)
     private String theme;
 
+    @Column(name = "delete_status", nullable = false)
+    private Boolean deleteStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
@@ -32,6 +35,7 @@ public class Dating extends Timestamped {
         this.title = title;
         this.location = location;
         this.theme = theme;
+        this.deleteStatus = false;
     }
 
     public void update(DatingRequestDto requestDto) {
@@ -42,5 +46,9 @@ public class Dating extends Timestamped {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public void setDeleteStatus(Boolean status) {
+        this.deleteStatus = status;
     }
 }

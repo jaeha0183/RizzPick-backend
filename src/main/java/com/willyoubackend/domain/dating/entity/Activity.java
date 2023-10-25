@@ -39,6 +39,6 @@ public class Activity extends Timestamped {
     }
 
     public void setDeleteStatus(Boolean status) {
-        this.deleteStatus = true;
+        this.deleteStatus = status;
     }
 }
