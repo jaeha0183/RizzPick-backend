@@ -11,4 +11,6 @@ public interface DatingCustomRepository {
     List<Dating> findAllByUserOrderByCreatedAt(UserEntity user);
 
     List<Dating> findAllByLocationOrderByCreatedAt(String location);
+
+    List<Dating> findAllByUser(UserEntity user);
 }

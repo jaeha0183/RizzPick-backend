@@ -48,6 +48,12 @@ public class DatingController {
         return datingService.getDatingListByLocation(location);
     }
 
+    @Operation(summary = "선택한 유저 데이트 조회", description = "선택한 유저가 작성한 데이트들을 반환합니다.")
+    @GetMapping("/dataings/user/{userId}")
+    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingListBySelectedUser(@PathVariable Long userId) {
+        return datingService.getDatingListBySelectedUser(userId);
+    }
+
     @Operation(summary = "특정 데이트 상세조회", description = "특정 데이트를 상세 조회 할 수 있습니다. 대표 데이트 조회 혹은 데이트 전체 조회에서의 선택에 사용될 수 있습니다.")
     @GetMapping("/dating/{id}")
     public ResponseEntity<ApiResponse<DatingDetailResponseDto>> getDatingDetail(@PathVariable Long id) {

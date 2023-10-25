@@ -25,17 +25,32 @@ public class DatingCustomRepositoryImpl implements DatingCustomRepository {
     @Override
     public List<Dating> findAllByUserOrderByCreatedAt(UserEntity user) {
         return jpaQueryFactory.selectFrom(qDating)
-                .where(qDating.deleteStatus.eq(false)
-                , qDating.user.eq(user))
+                .where(
+                        qDating.deleteStatus.eq(false),
+                        qDating.user.eq(user)
+                )
                 .fetch();
     }
 
     @Override
     public List<Dating> findAllByLocationOrderByCreatedAt(String location) {
         return jpaQueryFactory.selectFrom(qDating)
-                .where(qDating.deleteStatus.eq(false)
-                        , qDating.location.eq(location))
+                .where(
+                        qDating.deleteStatus.eq(false),
+                        qDating.location.eq(location)
+                )
                 .fetch();
+    }
+
+    @Override
+    public List<Dating> findAllByUser(UserEntity user) {
+        return jpaQueryFactory.selectFrom(qDating)
+                .where(
+                        qDating.deleteStatus.eq(false),
+                        qDating.user.eq(user)
+                )
+                .fetch();
+
     }
 
 }

@@ -10,6 +10,7 @@ import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.dating.repository.ActivitiesDatingRepository;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -29,6 +30,7 @@ import java.util.List;
 public class DatingService {
     private final DatingRepository datingRepository;
     private final ActivitiesDatingRepository activitiesDatingRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> createDating(UserEntity user) {
         // 배포시 변경
@@ -65,6 +67,17 @@ public class DatingService {
                 .map(DatingResponseDto::new)
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(datingResponseDtoListByLocation));
+    }
+
+    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingListBySelectedUser(Long userId) {
+        UserEntity selectedUser = userRepository.findById(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+        );
+        List<DatingResponseDto> datingResponseDtoList = datingRepository.findAllByUser(selectedUser)
+                .stream()
+                .map(DatingResponseDto::new)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(datingResponseDtoList));
     }
 
     public ResponseEntity<ApiResponse<DatingDetailResponseDto>> getDatingDetail(Long id) {
