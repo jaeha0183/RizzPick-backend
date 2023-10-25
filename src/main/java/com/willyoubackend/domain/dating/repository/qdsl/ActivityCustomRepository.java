@@ -1,4 +1,4 @@
-package com.willyoubackend.domain.dating.repository;
+package com.willyoubackend.domain.dating.repository.qdsl;
 
 import com.willyoubackend.domain.dating.entity.Activity;
 import com.willyoubackend.domain.user.entity.UserEntity;

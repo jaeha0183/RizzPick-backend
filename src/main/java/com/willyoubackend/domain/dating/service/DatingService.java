@@ -93,7 +93,9 @@ public class DatingService {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
         List<ActivitiesDating> activitiesDatingList = activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate);
         selectedDate.setDeleteStatus(true);
-        activitiesDatingRepository.deleteAll(activitiesDatingList);
+        for (ActivitiesDating activitiesDating : activitiesDatingList) {
+            activitiesDating.setDeleteStatus(true);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 

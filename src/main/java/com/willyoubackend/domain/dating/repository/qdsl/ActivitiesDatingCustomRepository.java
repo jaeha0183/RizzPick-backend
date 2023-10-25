@@ -1,14 +1,12 @@
-package com.willyoubackend.domain.dating.repository;
+package com.willyoubackend.domain.dating.repository.qdsl;
 
 import com.willyoubackend.domain.dating.entity.ActivitiesDating;
 import com.willyoubackend.domain.dating.entity.Activity;
 import com.willyoubackend.domain.dating.entity.Dating;
-import com.willyoubackend.domain.dating.repository.qdsl.ActivityCustomRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ActivitiesDatingRepository extends JpaRepository<ActivitiesDating, Long>, ActivityCustomRepository {
+public interface ActivitiesDatingCustomRepository {
     List<ActivitiesDating> findAllActivitiesDatingByDating(Dating dating);
     ActivitiesDating findByActivity(Activity activity);
 }

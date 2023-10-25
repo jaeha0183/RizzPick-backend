@@ -71,7 +71,7 @@ public class ActivityService {
         Activity selectedActivity = findByIdActivityAuthCheck(id, user);
         ActivitiesDating selectedActivityDating = activitiesDatingRepository.findByActivity(selectedActivity);
         selectedActivity.setDeleteStatus(true);
-        activitiesDatingRepository.delete(selectedActivityDating);
+        selectedActivityDating.setDeleteStatus(true);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
     }
 

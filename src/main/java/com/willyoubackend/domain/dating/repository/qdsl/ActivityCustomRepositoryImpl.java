@@ -1,4 +1,4 @@
-package com.willyoubackend.domain.dating.repository;
+package com.willyoubackend.domain.dating.repository.qdsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.dating.entity.Activity;
