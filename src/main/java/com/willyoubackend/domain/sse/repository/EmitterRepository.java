@@ -3,7 +3,6 @@ package com.willyoubackend.domain.sse.repository;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +11,9 @@ import java.util.stream.Collectors;
 @Repository
 public class EmitterRepository {
 
+    // sse 연결 저장하는 맵
     public final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    // 연결된 사용자에게 보낼 데이터 맵
     private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
     public SseEmitter save(String id, SseEmitter sseEmitter) {

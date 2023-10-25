@@ -4,12 +4,14 @@ import com.willyoubackend.domain.sse.dto.AlertResponseDto;
 import com.willyoubackend.domain.sse.entity.Alert;
 import com.willyoubackend.domain.sse.repository.AlertRepository;
 import com.willyoubackend.domain.sse.repository.EmitterRepository;
+import com.willyoubackend.domain.sse.service.redis.RedisPublisher;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.global.dto.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class AlertService {
 
     private final AlertRepository alertRepository;
     private final EmitterRepository emitterRepository;
+    private final RedisPublisher redisPublisher;
 
     public SseEmitter subscribe(UserDetailsImpl userDetails, String lastEventId) {
         Long userId = userDetails.getUser().getId();
@@ -63,10 +66,16 @@ public class AlertService {
         }
     }
 
-    public void send(UserEntity receiver, UserEntity sender, String message){
+    public void send(UserEntity receiver, UserEntity sender, String message) {
         Alert alert = createAlert(receiver, sender, message);
         String id = String.valueOf(receiver.getId());
         alertRepository.save(alert);
+
+        AlertResponseDto alertResponseDto = new AlertResponseDto(alert);
+        // Redis pub/sub 채널명 정의
+        ChannelTopic topic = new ChannelTopic("alertChannel");
+        redisPublisher.publishAlert(topic, alertResponseDto);
+
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach((key, emitter) -> {
             emitterRepository.saveEventCache(key, alert);
@@ -74,7 +83,7 @@ public class AlertService {
         });
     }
 
-    private Alert createAlert(UserEntity receiver, UserEntity sender, String message){
+    private Alert createAlert(UserEntity receiver, UserEntity sender, String message) {
         return Alert.builder()
                 .sender(sender)
                 .receiver(receiver)
@@ -94,7 +103,7 @@ public class AlertService {
     }
 
     public ResponseEntity<ApiResponse<AlertResponseDto>> readAlert(Long id) {
-        Alert alert = alertRepository.findById(id).orElseThrow(()->
+        Alert alert = alertRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("존재하지 않는 알림입니다."));
         alert.read();
         AlertResponseDto alertResponseDto = new AlertResponseDto(alert);
