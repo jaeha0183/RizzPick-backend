@@ -101,7 +101,8 @@ public class DatingService {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
-        if (!selectedDating.getUser().getId().equals(user.getId()) || selectedDating.getDeleteStatus()) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        if (!selectedDating.getUser().getId().equals(user.getId()) || selectedDating.getDeleteStatus())
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
     }
 }
