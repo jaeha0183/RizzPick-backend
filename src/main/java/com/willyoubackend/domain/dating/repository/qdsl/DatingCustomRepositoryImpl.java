@@ -4,6 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.dating.entity.QDating;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +26,7 @@ public class DatingCustomRepositoryImpl implements DatingCustomRepository {
 
     @Override
     public List<Dating> findAllByUserOrderByCreatedAt(UserEntity user) {
+        if (user == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         return jpaQueryFactory.selectFrom(qDating)
                 .where(
                         qDating.deleteStatus.eq(false),
@@ -44,6 +47,7 @@ public class DatingCustomRepositoryImpl implements DatingCustomRepository {
 
     @Override
     public List<Dating> findAllByUser(UserEntity user) {
+        if (user == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         return jpaQueryFactory.selectFrom(qDating)
                 .where(
                         qDating.deleteStatus.eq(false),
