@@ -67,7 +67,7 @@ jobs:
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
           docker push ${{ secrets.DOCKER_REPO }}
 
-        ## 서버에 접속하여 도커 이미지를 pull 받고 실행하기
+      ## 도커 이미지 풀 받고 실행 ㄱㄱ
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v0.1.6
         with:
