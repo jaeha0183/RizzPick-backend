@@ -122,6 +122,7 @@ public class KakaoService {
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
         int indexAt = 0;
+        log.info(email);
         for (int i = 0; i < email.length(); i++) {
             if (email.charAt(i) == '@') {
                 indexAt = i;
@@ -144,8 +145,15 @@ public class KakaoService {
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
                 String email = kakaoUserInfo.getEmail();
-
+                int indexAt = 0;
+                log.info(email);
+                for (int i = 0; i < email.length(); i++) {
+                    if (email.charAt(i) == '@') {
+                        indexAt = i;
+                    }
+                }
                 kakaoUser = new UserEntity(
+                        email.substring(0, indexAt),
                         encodedPassword,
                         email,
                         UserRoleEnum.USER,

@@ -15,11 +15,11 @@ public class ActivitiesDating {
     @Column(name = "delete_status", nullable = false)
     private Boolean deleteStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "dating_id")
     private Dating dating;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;
 

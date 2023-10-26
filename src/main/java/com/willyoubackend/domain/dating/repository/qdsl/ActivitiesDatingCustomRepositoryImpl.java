@@ -25,7 +25,7 @@ public class ActivitiesDatingCustomRepositoryImpl implements ActivitiesDatingCus
     @Override
     public ActivitiesDating findByActivity(Activity activity) {
         if (activity == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        return jpaQueryFactory.select(qActivitiesDating)
+        return jpaQueryFactory.selectFrom(qActivitiesDating)
                 .where(qActivitiesDating.activity.eq(activity))
                 .fetchOne();
     }

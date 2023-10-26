@@ -31,12 +31,16 @@ public class ActivityService {
 
     public ResponseEntity<ApiResponse<ActivityResponseDto>> activityCreate(UserEntity user, ActivityRequestDto requestDto, Long datingId) {
         Activity activity = new Activity(requestDto);
+        log.info("1");
         activity.setUser(user);
+        log.info("2");
         ActivityResponseDto responseDto = new ActivityResponseDto(activityRepository.save(activity));
+        log.info("3");
         Dating selectedDate = findByIdDateAuthCheck(datingId, user);
         // 배포후 수정
 //        if (activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate).size() == 5)
 //            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+        log.info("4");
         ActivitiesDating activitiesDating = new ActivitiesDating(selectedDate, activity);
         activitiesDatingRepository.save(activitiesDating);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successData(responseDto));
@@ -69,6 +73,7 @@ public class ActivityService {
     @Transactional
     public ResponseEntity<ApiResponse<ActivityResponseDto>> deleteActivity(UserEntity user, Long id) {
         Activity selectedActivity = findByIdActivityAuthCheck(id, user);
+        log.info(selectedActivity.getContent());
         ActivitiesDating selectedActivityDating = activitiesDatingRepository.findByActivity(selectedActivity);
         selectedActivity.setDeleteStatus(true);
         selectedActivityDating.setDeleteStatus(true);
@@ -79,7 +84,7 @@ public class ActivityService {
         Activity selectedActivity = activityRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
-        if (!selectedActivity.getUser().getId().equals(user.getId()))
+        if (!selectedActivity.getUser().getId().equals(user.getId()) || selectedActivity.getDeleteStatus())
             throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedActivity;
     }
@@ -88,7 +93,8 @@ public class ActivityService {
         Dating selectedDating = datingRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
-        if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        if (!selectedDating.getUser().getId().equals(user.getId()) || selectedDating.getDeleteStatus())
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
     }
 }
