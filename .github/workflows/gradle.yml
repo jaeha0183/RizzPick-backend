@@ -31,7 +31,9 @@ jobs:
       run: |
         # create application-aws.yml
         cd ./src/main
-        mkdir resources
+        if [ ! -d "resources" ]; then
+          mkdir resources
+        fi
         cd ./resources
 
         # application-aws.yml 파일 생성하기
