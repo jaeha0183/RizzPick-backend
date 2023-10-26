@@ -39,7 +39,7 @@ public class UserMatchStatusService {
 
     public ResponseEntity<ApiResponse<MatchResponseDto>> deleteMatch(UserEntity user, Long matchId) {
         UserMatchStatus userMatchStatus = userMatchStatusRepository.findById(matchId).orElseThrow(
-                () -> new CustomException(ErrorCode.INVALID_ARGUMENT)
+                () -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM)
         );
 
         if (!(userMatchStatus.getUserMatchedTwo().getId().equals(user.getId()) || userMatchStatus.getUserMatchedOne().getId().equals(user.getId()))) {

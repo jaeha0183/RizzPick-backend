@@ -20,12 +20,13 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 존재하는 아이디입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     DUPLICATE_VERIFI_CODE(HttpStatus.CONFLICT, "해당 이메일로 전송된 인증 번호가 존재합니다"),
-    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임을 입력해야 합니다."),
-    INVALID_GENDER(HttpStatus.BAD_REQUEST, "성별을 입력해야 합니다."),
-    INVALID_IMAGE(HttpStatus.BAD_REQUEST, "이미지를 하나 이상 등록하여야 합니다."),
-    INVALID_MAXIMA(HttpStatus.BAD_REQUEST, "이미지는 최대 6장까지 등록 가능합니다."),
+    DUPLICATED_LIKE(HttpStatus.CONFLICT, "이미 좋아요를 누른 상대입니다."),
+    INVALID_NICKNAME(HttpStatus.NOT_ACCEPTABLE, "닉네임을 입력해야 합니다."),
+    INVALID_GENDER(HttpStatus.NOT_ACCEPTABLE, "성별을 입력해야 합니다."),
+    INVALID_IMAGE(HttpStatus.NOT_ACCEPTABLE, "이미지를 하나 이상 등록하여야 합니다."),
+    INVALID_MAXIMA(HttpStatus.NOT_ACCEPTABLE, "이미지는 최대 6장까지 등록 가능합니다."),
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 요청값입니다."),
-    INVALID_ENUM_VAL(HttpStatus.BAD_REQUEST, "유효하지 않은 열거값입니다."),
+    INVALID_ENUM_VAL(HttpStatus.NOT_ACCEPTABLE, "유효하지 않은 열거값입니다."),
     TOKEN_REFRESH_REQUIRED(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, "새로운 토큰이 필요합니다.");
     private final HttpStatus httpStatus;
     private final String message;
