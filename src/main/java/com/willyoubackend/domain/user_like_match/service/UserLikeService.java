@@ -48,7 +48,7 @@ public class UserLikeService {
 
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(sentUser, receivedUser) != null ||
                 userNopeStatusRepository.findBySentUserAndReceivedUser(sentUser, receivedUser) != null)
-            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+            throw new CustomException(ErrorCode.DUPLICATED_LIKE);
 
         alertService.send(receivedUser, sentUser, "새로운 좋아요를 받았습니다.");
 
