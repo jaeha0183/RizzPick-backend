@@ -37,7 +37,7 @@ public class DatingController {
     }
 
     @Operation(summary = "유저가 작성한 데이트 조회", description = "로그인한 유저의 데이트를 조회 할 수 있습니다.")
-    @GetMapping("/datings/user")
+    @GetMapping("/datings/user/me")
     public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingListByUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return datingService.getDatingListByUser(userDetails.getUser());
     }
