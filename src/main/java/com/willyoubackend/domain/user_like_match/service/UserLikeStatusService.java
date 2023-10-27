@@ -25,12 +25,21 @@ public class UserLikeStatusService {
 
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikeStatus(UserEntity sentUser) {
         List<UserLikeStatus> userLikeStatusList = userLikeStatusRepository.findAllBySentUser(sentUser);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(likeStatusResponseDtoList(userLikeStatusList)));
+        return getApiResponseResponseEntity(userLikeStatusList);
     }
 
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikedByStatus(UserEntity receivedUser) {
-        List<UserLikeStatus> userReceivedLikeStatusList = userLikeStatusRepository.findAllByReceivedUser(receivedUser);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(likeStatusResponseDtoList(userReceivedLikeStatusList)));
+        List<UserLikeStatus> userLikeStatusList = userLikeStatusRepository.findAllByReceivedUser(receivedUser);
+        return getApiResponseResponseEntity(userLikeStatusList);
+    }
+
+    private ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getApiResponseResponseEntity(List<UserLikeStatus> userLikeStatusList) {
+        List<LikeStatusResponseDto> likeStatusResponseDtoList = new ArrayList<>();
+        for (UserLikeStatus userLikeStatus : userLikeStatusList) {
+            UserProfileResponseDto temp = new UserProfileResponseDto(userLikeStatus.getReceivedUser());
+            likeStatusResponseDtoList.add(new LikeStatusResponseDto(temp.getNickname(), temp.getUserId(), temp.getProfileImages().get(0)));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(likeStatusResponseDtoList));
     }
 
     public ResponseEntity<ApiResponse<LikeAlertResponseDto>> getUserLikedByAlert(UserEntity user) {
@@ -38,17 +47,6 @@ public class UserLikeStatusService {
         int likeCount = likeSenderList.size();
         List<UserProfileResponseDto> userProfileResponseDtoList = likeSenderList.stream().map(UserProfileResponseDto::new).toList();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new LikeAlertResponseDto(likeCount, userProfileResponseDtoList)));
-    }
-
-    public List<LikeStatusResponseDto> likeStatusResponseDtoList(List<UserLikeStatus> userLikeStatusList) {
-        List<String> userEntityList = new ArrayList<>();
-        for (UserLikeStatus userLikeStatus : userLikeStatusList) {
-            userEntityList.add(userLikeStatus.getReceivedUser().getUsername());
-        }
-        return userEntityList
-                .stream()
-                .map(LikeStatusResponseDto::new)
-                .toList();
     }
 
 }
