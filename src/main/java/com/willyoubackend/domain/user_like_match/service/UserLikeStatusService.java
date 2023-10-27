@@ -25,18 +25,19 @@ public class UserLikeStatusService {
 
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikeStatus(UserEntity sentUser) {
         List<UserLikeStatus> userLikeStatusList = userLikeStatusRepository.findAllBySentUser(sentUser);
-        return getApiResponseResponseEntity(userLikeStatusList);
+        List<LikeStatusResponseDto> likeStatusResponseDtoList = new ArrayList<>();
+        for (UserLikeStatus userLikeStatus : userLikeStatusList) {
+            UserProfileResponseDto temp = new UserProfileResponseDto(userLikeStatus.getReceivedUser());
+            likeStatusResponseDtoList.add(new LikeStatusResponseDto(temp.getNickname(), temp.getUserId(), temp.getProfileImages().get(0)));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(likeStatusResponseDtoList));
     }
 
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikedByStatus(UserEntity receivedUser) {
         List<UserLikeStatus> userLikeStatusList = userLikeStatusRepository.findAllByReceivedUser(receivedUser);
-        return getApiResponseResponseEntity(userLikeStatusList);
-    }
-
-    private ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getApiResponseResponseEntity(List<UserLikeStatus> userLikeStatusList) {
         List<LikeStatusResponseDto> likeStatusResponseDtoList = new ArrayList<>();
         for (UserLikeStatus userLikeStatus : userLikeStatusList) {
-            UserProfileResponseDto temp = new UserProfileResponseDto(userLikeStatus.getReceivedUser());
+            UserProfileResponseDto temp = new UserProfileResponseDto(userLikeStatus.getSentUser());
             likeStatusResponseDtoList.add(new LikeStatusResponseDto(temp.getNickname(), temp.getUserId(), temp.getProfileImages().get(0)));
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(likeStatusResponseDtoList));
