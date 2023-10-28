@@ -4,6 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.dating.entity.Activity;
 import com.willyoubackend.domain.dating.entity.QActivity;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +26,7 @@ public class ActivityCustomRepositoryImpl implements ActivityCustomRepository {
 
     @Override
     public List<Activity> findAllByUserOrderByCreatedAtDesc(UserEntity user) {
+        if (user == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         return jpaQueryFactory.selectFrom(qActivity)
                 .where(
                         qActivity.deleteStatus.eq(false),

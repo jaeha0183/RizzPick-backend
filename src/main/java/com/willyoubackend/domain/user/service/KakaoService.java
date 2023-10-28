@@ -75,7 +75,7 @@ public class KakaoService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", CLIENT_ID);
-        body.add("redirect_uri", "http://localhost:3000/login/kakao/callback");
+        body.add("redirect_uri", "https://will-you-front-end-fawn.vercel.app/login/kakao/callback");
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
@@ -122,6 +122,7 @@ public class KakaoService {
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
         int indexAt = 0;
+        log.info(email);
         for (int i = 0; i < email.length(); i++) {
             if (email.charAt(i) == '@') {
                 indexAt = i;
@@ -144,8 +145,15 @@ public class KakaoService {
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
                 String email = kakaoUserInfo.getEmail();
-
+                int indexAt = 0;
+                log.info(email);
+                for (int i = 0; i < email.length(); i++) {
+                    if (email.charAt(i) == '@') {
+                        indexAt = i;
+                    }
+                }
                 kakaoUser = new UserEntity(
+                        email.substring(0, indexAt),
                         encodedPassword,
                         email,
                         UserRoleEnum.USER,

@@ -2,6 +2,8 @@ package com.willyoubackend.domain.dating.repository.qdsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.dating.entity.*;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +16,7 @@ public class ActivitiesDatingCustomRepositoryImpl implements ActivitiesDatingCus
     private final QActivitiesDating qActivitiesDating = QActivitiesDating.activitiesDating;
     @Override
     public List<ActivitiesDating> findAllActivitiesDatingByDating(Dating dating) {
+        if (dating == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         return jpaQueryFactory.selectFrom(qActivitiesDating)
                 .where(qActivitiesDating.deleteStatus.eq(false), qActivitiesDating.dating.eq(dating))
                 .fetch();
@@ -21,7 +24,8 @@ public class ActivitiesDatingCustomRepositoryImpl implements ActivitiesDatingCus
 
     @Override
     public ActivitiesDating findByActivity(Activity activity) {
-        return jpaQueryFactory.select(qActivitiesDating)
+        if (activity == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        return jpaQueryFactory.selectFrom(qActivitiesDating)
                 .where(qActivitiesDating.activity.eq(activity))
                 .fetchOne();
     }

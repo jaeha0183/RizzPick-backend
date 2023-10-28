@@ -21,7 +21,7 @@ public class Activity extends Timestamped {
     @Column(name = "delete_status", nullable = false)
     private Boolean deleteStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
