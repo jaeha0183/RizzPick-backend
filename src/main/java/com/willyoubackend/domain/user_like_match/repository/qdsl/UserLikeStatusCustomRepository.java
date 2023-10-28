@@ -12,5 +12,5 @@ public interface UserLikeStatusCustomRepository {
 
     List<UserLikeStatus> findAllByReceivedUser(UserEntity receivedUser);
 
-    Boolean existsByReceivedUser(UserEntity user);
+    Boolean existBySentUserAndReceivedUser(UserEntity sentUser, UserEntity receivedUser);
 }

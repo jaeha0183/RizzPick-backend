@@ -49,11 +49,12 @@ public class UserLikeStatusCustomRepositoryImpl implements UserLikeStatusCustomR
     }
 
     @Override
-    public Boolean existsByReceivedUser(UserEntity user) {
-        if (user == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+    public Boolean existBySentUserAndReceivedUser(UserEntity sentUser, UserEntity receivedUser) {
+        if (sentUser == null || receivedUser == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         return jpaQueryFactory.selectFrom(qUserLikeStatus)
                 .where(
-                        qUserLikeStatus.receivedUser.eq(user)
+                        qUserLikeStatus.receivedUser.eq(receivedUser),
+                        qUserLikeStatus.sentUser.eq(sentUser)
                 )
                 .fetchFirst() != null;
     }
