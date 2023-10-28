@@ -21,6 +21,7 @@ import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "UserProfile Service")
 public class UserProfileService {
 
     private final UserRepository userRepository;
@@ -79,8 +81,9 @@ public class UserProfileService {
         int maxLimit = 0;
         for (UserEntity filteredUser: filteredUsers) {
             if (maxLimit == 100) break;
-            if (!userNopeStatusRepository.existsByReceivedUser(filteredUser) &&
-                    !userLikeStatusRepository.existsByReceivedUser(filteredUser) &&
+            log.info(userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) + "");
+            if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) &&
+                    !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) &&
                     filteredUser.getUserProfileEntity().isUserActiveStatus()) {
                 userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
             }
@@ -161,8 +164,8 @@ public class UserProfileService {
 
             }
             for (UserEntity filteredUser : filteredUsers) {
-                if (!userNopeStatusRepository.existsByReceivedUser(filteredUser) &&
-                        !userLikeStatusRepository.existsByReceivedUser(filteredUser)) {
+                if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) &&
+                        !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser)) {
                     userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
                 }
             }
