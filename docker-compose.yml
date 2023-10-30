@@ -7,12 +7,12 @@ services:
     expose:
       - 8080
     ports:
-      - 8080:8080
+      - "8080:8080"
 
   nginx:
     container_name: nginx
     image: jwywoo26/willyou-nginx
     ports:
-      - 80:80
+      - "80:80"
     depends_on:
       - web
