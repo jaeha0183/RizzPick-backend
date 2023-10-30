@@ -37,23 +37,8 @@ jobs:
           cd ./resources
           
           # application-aws.yml 파일 생성하기
-          touch ./application-aws.yml
-          
-          # Keys
-          # admin
-          echo "${{ secrets.ADMIN }}" >> ./application-aws.yml
-          # client
-          echo "${{ secrets.CLIENT }}" >> ./application-aws.yml
-          # cloud aws
-          echo "${{ secrets.CLOUD_AWS }}" >> ./application-aws.yml
-          # jwt
-          echo "${{ secrets.JWT }}" >> ./application-aws.yml
-          # server
-          echo "${{ secrets.SERVER }}" >> ./application-aws.yml
-          # spring
-          echo "${{ secrets.SPRING }}" >> ./application-aws.yml
-          # willyou
-          echo "${{ secrets.WILLYOU }}" >> ./application-aws.yml
+          touch ./application-aws.properties
+          echo "${{ secrets.ALL_IN_ONE }}" >> ./application-aws.properties
           
         
 
