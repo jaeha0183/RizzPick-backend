@@ -94,3 +94,7 @@ sourceSets {
 clean.doLast {
     file(querydslDir).deleteDir()
 }
+
+jar {
+    enabled = false
+}
