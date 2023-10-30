@@ -63,21 +63,21 @@ jobs:
       ## 도커 이미지 빌드 후 도커허브에 push하기
       - name: web docker build and push
         run: |
-          docker build -t ${{ secrets.DOCKER_REPO }} .
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
-          docker push ${{ secrets.DOCKER_REPO }}
+          docker build -t ${{ secrets.DOCKER_REPO_WEB }} .
+          docker push ${{ secrets.DOCKER_REPO_WEB }}
 
       ## 도커 이미지 풀 받고 실행 ㄱㄱ
       - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-            sudo docker stop prod-server
-            sudo docker rm prod-server
-            sudo docker image rm ${{ secrets.DOCKER_REPO }}
-            sudo docker pull ${{ secrets.DOCKER_REPO }}
-            sudo docker run -d -p 80:8080 ${{ secrets.DOCKER_REPO }}
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{ secrets.DOCKER_REPO_WEB }}
+            sudo docker pull ${{ secrets.DOCKER_REPO_NGINX }}
+            docker-compose up -d
+            docker image prune -f
