@@ -52,9 +52,7 @@ jobs:
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
           docker build -t ${{ secrets.DOCKER_REPO_WEB }} .
-          docker build -t ${{ secrets.DOCKER_REPO_NGINX }} .
           docker push ${{ secrets.DOCKER_REPO_WEB }}
-          docker push ${{ secrets.DOCKER_REPO_NGINX }}
 
       ## 도커 이미지 풀 받고 실행 ㄱㄱ
       - name: executing remote ssh commands using password
