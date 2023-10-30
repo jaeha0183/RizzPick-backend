@@ -1,6 +1,5 @@
 package com.willyoubackend.domain.websocket.repository;
 
-import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
