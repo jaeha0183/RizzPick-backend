@@ -27,7 +27,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: make application-aws.yml
+      - name: make application-aws.properties
         run: |
           # create application-aws.yml
           cd ./src/main
