@@ -3,7 +3,7 @@ services:
 
   web:
     container_name: web
-    image: rmswjdtn/second-eyes-web
+    image: jwywoo26/willyou_ci_cd
     expose:
       - 8080
     ports:
@@ -11,7 +11,7 @@ services:
 
   nginx:
     container_name: nginx
-    image: rmswjdtn/second-eyes-nginx
+    image: jwywoo26/willyou-nginx
     ports:
       - 80:80
     depends_on:
