@@ -23,7 +23,7 @@ public class ChatRoomController {
     @GetMapping("/rooms/me")
     public List<ChatRoomDto> getMyChatRooms() {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
-        return chatRoomService.findChatRoomsByUsername(username);
+
+        return chatRoomService.findChatRoomsByUserId(userDetails.getUser().getId());
     }
 }
