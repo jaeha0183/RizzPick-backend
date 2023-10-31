@@ -42,6 +42,7 @@ public class ChatMessageService {
         SocketMessage socketMessage = SocketMessage.builder()
                 .chatRoom(chatRoom)  // chatRoom 인스턴스 사용
                 .sender(username)
+                .senderId(userInfoFromToken.get("id", Long.class))
                 .time(time)
                 .message(socketMessageRequsetDto.getMessage())
                 .build();
