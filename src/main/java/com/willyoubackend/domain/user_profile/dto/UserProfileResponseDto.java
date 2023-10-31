@@ -34,13 +34,13 @@ public class UserProfileResponseDto {
             this.gender = userEntity.getUserProfileEntity().getGender().name();
         }
         if (userEntity.getUserProfileEntity().getLocation() != null) {
-            this.location = userEntity.getUserProfileEntity().getLocation().name();
+            this.location = userEntity.getUserProfileEntity().getLocation().getThemeName();
         }
         if (userEntity.getUserProfileEntity().getMbti() != null) {
             this.mbti = userEntity.getUserProfileEntity().getMbti().name();
         }
         if (userEntity.getUserProfileEntity().getReligion() != null) {
-            this.religion = userEntity.getUserProfileEntity().getReligion().name();
+            this.religion = userEntity.getUserProfileEntity().getReligion().getThemeName();
         }
 
         this.profileImages = userEntity.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
