@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class UserMatchStatusService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(matchResponseDtoList));
     }
 
+    @Transactional
     public ResponseEntity<ApiResponse<MatchResponseDto>> deleteMatch(UserEntity user, Long matchId) {
         UserMatchStatus userMatchStatus = userMatchStatusRepository.findById(matchId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM)

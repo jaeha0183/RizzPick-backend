@@ -13,6 +13,7 @@ import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,6 +40,8 @@ public class ChatRoomService {
 
         return ApiResponse.successData(chatRoomResponseDto);
     }
+
+    @Transactional
     public List<ChatRoomDto> findChatRoomsByUserId(Long userId) {
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByUserId(userId);
         return chatRooms.stream()
