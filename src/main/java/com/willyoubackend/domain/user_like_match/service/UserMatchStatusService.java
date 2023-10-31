@@ -42,9 +42,9 @@ public class UserMatchStatusService {
                 () -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM)
         );
 
-        if (!(userMatchStatus.getUserMatchedTwo().getId().equals(user.getId()) || userMatchStatus.getUserMatchedOne().getId().equals(user.getId()))) {
-            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
-        }
+//        if (!(userMatchStatus.getUserMatchedTwo().getId().equals(user.getId()) || userMatchStatus.getUserMatchedOne().getId().equals(user.getId()))) {
+//            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+//        }
 
         String username1 = userMatchStatus.getUserMatchedOne().getUsername();
         String username2 = userMatchStatus.getUserMatchedTwo().getUsername();
