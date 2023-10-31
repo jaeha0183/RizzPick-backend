@@ -27,7 +27,7 @@ public class ChatMessageService {
 
     private final JwtUtil jwtUtil;
     private final ChatMessageRepository chatMessageRepository;
-    private ChatRoomRepository chatRoomRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     public SocketMessage saveMessage(SocketMessageRequsetDto socketMessageRequsetDto) {
         Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessageRequsetDto.getToken());
