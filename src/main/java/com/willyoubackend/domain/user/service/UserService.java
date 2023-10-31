@@ -156,14 +156,12 @@ public class UserService {
             log.info("Token이 만료 되었습니다.");
             throw new JwtException("Refresh Token Error");
         }
-        if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
-            Claims info = jwtUtil.getUserInfoFromToken(refreshToken);
-            String username = info.getSubject();
-            UserRoleEnum role = UserRoleEnum.valueOf(String.valueOf(info.get("auth")));
-            String newAccessToken = jwtUtil.createToken(username, role);
-            newAccessToken = jwtUtil.substringToken(newAccessToken);
-            return newAccessToken;
-        }
-        return null;
+
+        Claims info = jwtUtil.getUserInfoFromToken(refreshToken);
+        String username = info.getSubject();
+        UserRoleEnum role = UserRoleEnum.valueOf(String.valueOf(info.get("auth")));
+        String newAccessToken = jwtUtil.createToken(username, role);
+        newAccessToken = jwtUtil.substringToken(newAccessToken);
+        return newAccessToken;
     }
 }

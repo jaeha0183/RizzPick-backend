@@ -2,13 +2,11 @@ package com.willyoubackend.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.willyoubackend.domain.user.dto.*;
-import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Hidden;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,9 +60,9 @@ public class UserController {
         return userService.verifyEmail(request);
     }
 
-    @GetMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<TokenResponseDto>> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = request.getHeader(JwtUtil.REFRESH_HEADER);
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<TokenResponseDto>> refreshAccessToken(@RequestBody TokenRequestDto refreshTokenRequest) {
+        String refreshToken = refreshTokenRequest.getRefreshToken();
         String newAccessToken = userService.refreshAccessToken(refreshToken);
 
         if (newAccessToken != null) {
