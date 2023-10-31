@@ -64,6 +64,7 @@ public class ChatRoomService {
         return ChatRoomDto.builder()
                 .chatRoomId(chatRoom.getId())
                 .users(Arrays.asList(otherUser.getUsername()))
+                .userId(otherUser.getId())
                 .nickname(userProfileEntity.getNickname())
                 .image(image)
                 .age(userProfileEntity.getAge())

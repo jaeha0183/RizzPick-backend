@@ -12,6 +12,7 @@ import java.util.List;
 public class ChatRoomDto {
     private Long chatRoomId;
     private List<String> users;
+    private Long userId;
     private String nickname;
     private String image;
     private Integer age;

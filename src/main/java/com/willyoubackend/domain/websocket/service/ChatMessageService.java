@@ -74,6 +74,7 @@ public class ChatMessageService {
         for (SocketMessage socketMessage : socketMessageList) {
             socketMessageResponseDtoList.add(SocketMessageResponseDto.builder()
                     .sender(socketMessage.getSender())
+                    .senderId(socketMessage.getSenderId())
                     .message(socketMessage.getMessage())
                     .time(socketMessage.getTime())
                     .build()
