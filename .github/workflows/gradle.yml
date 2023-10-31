@@ -66,4 +66,4 @@ jobs:
             sudo docker rm -f $(docker ps -qa)
             sudo docker image prune -f
             sudo docker pull ${{ secrets.DOCKER_REPO_WEB }}
-            sudo docker run -d -p 8080:80 ${{ secrets.DOCKER_REPO_WEB }}
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO_WEB }}
