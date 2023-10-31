@@ -8,6 +8,7 @@ build/
 ### Properties ###
 application-db.properties
 application-aws.properties
+application-aws.yml
 
 
 ### STS ###

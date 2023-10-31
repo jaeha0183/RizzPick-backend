@@ -1,0 +1,71 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up DJK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: make application-aws.properties
+        run: |
+          # create application-aws.yml
+          cd ./src/main
+          if [ ! -d "resources" ]; then
+            mkdir resources
+          fi
+          cd ./resources
+          
+          # application-aws.yml 파일 생성하기
+          touch ./application-aws.properties
+          echo "${{ secrets.ALL_IN_ONE }}" >> ./application-aws.properties
+          
+        
+
+        shell: bash
+
+      - name: Build with Gradle
+        run: ./gradlew bootJar
+
+      ## 도커 이미지 빌드 후 도커허브에 push하기
+      - name: web docker build and push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+          docker build -t ${{ secrets.DOCKER_REPO_WEB }} .
+          docker push ${{ secrets.DOCKER_REPO_WEB }}
+
+      ## 도커 이미지 풀 받고 실행 ㄱㄱ
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: 22
+          script: |
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker image prune -f
+            sudo docker pull ${{ secrets.DOCKER_REPO_WEB }}
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO_WEB }}
