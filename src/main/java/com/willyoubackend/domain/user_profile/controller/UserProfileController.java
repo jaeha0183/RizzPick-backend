@@ -9,6 +9,7 @@ import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import com.willyoubackend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class UserProfileController {
     @Operation(summary = "회원 프로필 업데이트")
     @PutMapping("/updateProfile")
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UserProfileRequestDto userProfileRequestDto) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody UserProfileRequestDto userProfileRequestDto) {
         return userProfileService.updateUserProfile(userDetails.getUser(), userProfileRequestDto);
     }
 
