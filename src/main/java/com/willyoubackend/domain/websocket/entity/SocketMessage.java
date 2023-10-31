@@ -16,8 +16,12 @@ public class SocketMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "chatroom_id")
+    private ChatRoom chatRoom;
+
     private String sender;
-    private Long chatRoomId;
     private String message;
     private ZonedDateTime time;
     @Column(nullable = false)

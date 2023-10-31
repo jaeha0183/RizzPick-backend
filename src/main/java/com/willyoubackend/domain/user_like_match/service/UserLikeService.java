@@ -10,7 +10,7 @@ import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusReposi
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
 import com.willyoubackend.domain.websocket.entity.ChatRoomRequestDto;
-import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
+import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
@@ -35,7 +35,7 @@ public class UserLikeService {
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
     private final UserMatchStatusRepository userMatchStatusRepository;
-    private final ChatRoomRedisRepository chatRoomRedisRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomService chatRoomService;
     private final AlertService alertService;
     private final Random random = new Random();
@@ -57,18 +57,7 @@ public class UserLikeService {
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(receivedUser, sentUser) != null) {
             userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser));
 
-            Set<Long> existingRoomIds = new HashSet<>();
-            chatRoomRedisRepository.findAll().forEach(chatRoom -> existingRoomIds.add(chatRoom.getId()));
-
-            Long chatRoomId;
-            do {
-                chatRoomId = 1_000_000L + random.nextInt(9_000_000);
-            } while (existingRoomIds.contains(chatRoomId));
-
-            ChatRoomRequestDto chatRoomRequestDto = new ChatRoomRequestDto();
-            chatRoomRequestDto.setChatRoomId(chatRoomId);
-
-            chatRoomService.createRoom(chatRoomRequestDto, sentUser, receivedUser);
+            chatRoomService.createRoom(sentUser, receivedUser);
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("행운을 빌어요!"));
     }

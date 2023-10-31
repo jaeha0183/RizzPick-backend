@@ -6,7 +6,7 @@ import com.willyoubackend.domain.user_like_match.entity.UserMatchStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
-import com.willyoubackend.domain.websocket.repository.ChatRoomRedisRepository;
+import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j(topic = "User Match Status Service")
 public class UserMatchStatusService {
     private final UserMatchStatusRepository userMatchStatusRepository;
-    private final ChatRoomRedisRepository chatRoomRedisRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
 
     public ResponseEntity<ApiResponse<List<MatchResponseDto>>> getMatches(UserEntity user) {
@@ -45,19 +45,19 @@ public class UserMatchStatusService {
         if (!(userMatchStatus.getUserMatchedTwo().getId().equals(user.getId()) || userMatchStatus.getUserMatchedOne().getId().equals(user.getId()))) {
             throw new CustomException(ErrorCode.INVALID_ARGUMENT);
         }
-        userMatchStatusRepository.delete(userMatchStatus);
 
         String username1 = userMatchStatus.getUserMatchedOne().getUsername();
         String username2 = userMatchStatus.getUserMatchedTwo().getUsername();
 
-        Iterable<ChatRoom> allChatRooms = chatRoomRedisRepository.findAll();
-        for (ChatRoom chatRoom : allChatRooms) {
-            if (chatRoom.getUsers().contains(username1) && chatRoom.getUsers().contains(username2)) {
-                chatMessageRepository.deleteByChatRoomId(chatRoom.getId());
-                chatRoomRedisRepository.delete(chatRoom);
-            }
+        ChatRoom chatRoom = chatRoomRepository.findByUser1_UsernameAndUser2_Username(username1, username2);
+        if (chatRoom != null) {
+            chatMessageRepository.deleteByChatRoomId(chatRoom.getId());
+            chatRoomRepository.delete(chatRoom);
         }
+
+        userMatchStatusRepository.delete(userMatchStatus);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("아쉽지만 다음에 더 좋은 기회가 있을거에요!"));
     }
+
 }
