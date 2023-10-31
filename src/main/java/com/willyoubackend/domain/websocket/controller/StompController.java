@@ -1,9 +1,6 @@
 package com.willyoubackend.domain.websocket.controller;
 
-import com.willyoubackend.domain.websocket.entity.ReadMessagePayload;
-import com.willyoubackend.domain.websocket.entity.SocketMessageDto;
-import com.willyoubackend.domain.websocket.entity.SocketMessage;
-import com.willyoubackend.domain.websocket.entity.SocketMessageRequsetDto;
+import com.willyoubackend.domain.websocket.entity.*;
 import com.willyoubackend.domain.websocket.service.ChatMessageService;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +25,7 @@ public class StompController {
         Long chatRoomId = socketMessageRequsetDto.getChatRoomId();
         SocketMessage socketMessage = chatMessageService.saveMessage(socketMessageRequsetDto);
 
-        SocketMessageDto chatMessage = SocketMessageDto.builder()
+        SocketMessageResponseDto chatMessage = SocketMessageResponseDto.builder()
                 .chatRoomId(chatRoomId)
                 .sender(socketMessage.getSender())
                 .time((socketMessage.getTime()))
