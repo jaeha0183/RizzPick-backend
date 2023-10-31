@@ -3,6 +3,7 @@ package com.willyoubackend.domain.user.entity;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
+import com.willyoubackend.domain.websocket.entity.ChatRoomFavorite;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,6 +51,9 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user2")
     private List<ChatRoom> chatroomsAsUser2;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatRoomFavorite> favoriteRooms = new ArrayList<>();
 
     public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
         this.username = username;
