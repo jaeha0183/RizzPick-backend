@@ -114,9 +114,4 @@ public class JwtUtil {
         token = cleanToken(token);
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
-
-    public String getUsernameFromToken(String token) {
-        token = cleanToken(token);
-        return getUserInfoFromToken(token).getSubject();
-    }
 }
