@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user.entity;
 
+import com.willyoubackend.domain.report.entity.Report;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
@@ -55,6 +56,13 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomFavorite> favoriteRooms = new ArrayList<>();
 
+    // 신고한 사람
+    @OneToMany(mappedBy = "reporter")
+    private List<Report> reporter;
+    // 신고 받은 사람
+    @OneToMany(mappedBy = "reported")
+    private List<Report> reported;
+
     public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
         this.username = username;
         this.password = password;
@@ -79,6 +87,13 @@ public class UserEntity {
     public List<ChatRoom> getChatrooms() {
         List<ChatRoom> combined = new ArrayList<>(chatroomsAsUser1);
         combined.addAll(chatroomsAsUser2);
+        return combined;
+    }
+
+    // 신고자와 신고한 사람을 리스트로 받아오는 편의 메서드
+    public List<Report> getReporter() {
+        List<Report> combined = new ArrayList<>(reporter);
+        combined.addAll(reported);
         return combined;
     }
 }
