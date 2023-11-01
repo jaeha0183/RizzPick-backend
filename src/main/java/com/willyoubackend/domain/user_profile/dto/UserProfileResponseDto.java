@@ -2,6 +2,7 @@ package com.willyoubackend.domain.user_profile.dto;
 
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +27,7 @@ public class UserProfileResponseDto {
     public UserProfileResponseDto(UserEntity userEntity) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
-        this.age = userEntity.getUserProfileEntity().getAge();
+        this.age = UserProfileService.calculateAge(userEntity.getUserProfileEntity().getBirthday().toString());
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
 

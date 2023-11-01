@@ -26,6 +26,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,5 +179,17 @@ public class UserProfileService {
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(recommendations.getRecommendedUsers()));
         }
+    }
+
+    public static int calculateAge(String birthday){
+        LocalDate now = LocalDate.now();
+        LocalDate parsedBirthday = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        int age = now.minusYears(parsedBirthday.getYear()).getYear();
+
+        if(parsedBirthday.plusYears(age).isAfter(now)){
+            age--;
+        }
+        return age;
     }
 }

@@ -4,6 +4,7 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
+import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import com.willyoubackend.domain.websocket.entity.ChatRoomDto;
 import com.willyoubackend.domain.websocket.entity.ChatRoomResponseDto;
@@ -67,7 +68,7 @@ public class ChatRoomService {
                 .userId(otherUser.getId())
                 .nickname(userProfileEntity.getNickname())
                 .image(image)
-                .age(userProfileEntity.getAge())
+                .age(UserProfileService.calculateAge(userProfileEntity.getBirthday().toString()))
                 .intro(userProfileEntity.getIntro())
                 .mbti(userProfileEntity.getMbti() != null ? userProfileEntity.getMbti().toString() : null)
                 .religion(userProfileEntity.getReligion() != null ? userProfileEntity.getReligion().toString() : null)
