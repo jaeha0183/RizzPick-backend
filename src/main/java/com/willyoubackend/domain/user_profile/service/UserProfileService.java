@@ -11,10 +11,8 @@ import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserOwnProfileResponseDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
-import com.willyoubackend.domain.user_profile.entity.GenderEnum;
-import com.willyoubackend.domain.user_profile.entity.LocationEnum;
-import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
-import com.willyoubackend.domain.user_profile.entity.UserRecommendations;
+import com.willyoubackend.domain.user_profile.entity.*;
+import com.willyoubackend.domain.user_profile.repository.ProfileImageRepository;
 import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
 import com.willyoubackend.domain.user_profile.repository.UserRecommendationsRepository;
 import com.willyoubackend.global.dto.ApiResponse;
@@ -40,6 +38,7 @@ public class UserProfileService {
     private final UserRecommendationsRepository userRecommendationsRepository;
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
+    private final ProfileImageRepository profileImageRepository;
 
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
@@ -57,7 +56,16 @@ public class UserProfileService {
 
         userProfileEntity.setUserEntity(loggedInUser);
         userProfileEntity.updateProfile(userProfileRequestDto);
-        userProfileEntity.setUserActiveStatus(true);
+
+        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
+
+        userProfileEntity.setUserActiveStatus(!profileImageEntities.isEmpty()); // 프로필 이미지가 있으면 true, 없으면 false
+
+//        if (!profileImageEntities.isEmpty()) {
+//            userProfileEntity.setUserActiveStatus(true);
+//        } else {
+//            userProfileEntity.setUserActiveStatus(false);
+//        }
 
         userProfileRepository.save(userProfileEntity);
 
