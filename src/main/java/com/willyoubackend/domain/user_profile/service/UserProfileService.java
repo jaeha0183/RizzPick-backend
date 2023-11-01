@@ -194,10 +194,11 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
     }
 
-    public boolean getIsNewStatus(Long id) {
-        UserProfileEntity userProfile = userProfileRepository.findById(id)
+    public void activateUserStatusByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        return userProfile.getIsNew();
+        UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(userEntity);
+        userProfileEntity.setUserActiveStatus(true);
+        userProfileRepository.save(userProfileEntity);
     }
-
 }

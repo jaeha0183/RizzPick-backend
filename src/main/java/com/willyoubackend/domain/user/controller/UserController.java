@@ -10,13 +10,16 @@ import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -94,5 +97,15 @@ public class UserController {
         }
 
         return userService.resetPassword(userDetails.getUsername(), requestDto);
+    }
+
+    @GetMapping("/is-new")
+    public ResponseEntity<ApiResponse<Boolean>> checkIsNewStatus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        boolean isNew = userService.checkIsNewByUsername(username);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(isNew));
     }
 }
