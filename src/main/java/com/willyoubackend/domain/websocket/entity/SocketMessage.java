@@ -22,7 +22,6 @@ public class SocketMessage {
     private ChatRoom chatRoom;
 
     private String sender;
-    private Long senderId;
     private String message;
     private ZonedDateTime time;
     @Column(nullable = false)

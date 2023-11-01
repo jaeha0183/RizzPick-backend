@@ -10,7 +10,6 @@ import java.time.ZonedDateTime;
 public class SocketMessageResponseDto {
     private Long chatRoomId;
     private String sender;
-    private Long senderId;
     private String message;
     private ZonedDateTime time;
 }
