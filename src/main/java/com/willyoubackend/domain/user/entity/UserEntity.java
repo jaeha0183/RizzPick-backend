@@ -81,4 +81,8 @@ public class UserEntity {
         combined.addAll(chatroomsAsUser2);
         return combined;
     }
+
+    public void setPassword(String encode) {
+        this.password = encode;
+    }
 }

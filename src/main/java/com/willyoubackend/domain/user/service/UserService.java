@@ -1,9 +1,6 @@
 package com.willyoubackend.domain.user.service;
 
-import com.willyoubackend.domain.user.dto.EmailRequest;
-import com.willyoubackend.domain.user.dto.LoginResponseDto;
-import com.willyoubackend.domain.user.dto.SignupRequestDto;
-import com.willyoubackend.domain.user.dto.VerifiRequest;
+import com.willyoubackend.domain.user.dto.*;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
@@ -163,5 +160,27 @@ public class UserService {
         String newAccessToken = jwtUtil.createToken(username, role);
         newAccessToken = jwtUtil.substringToken(newAccessToken);
         return newAccessToken;
+    }
+
+    @Transactional
+    public ApiResponse<String> resetPassword(String username, ResetPasswordRequestDto requestDto) {
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        userEntity.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userRepository.save(userEntity);
+
+        return ApiResponse.successMessage("비밀번호가 변경되었습니다.");
+    }
+
+    public void verifyPassword(String username, PasswordRequestDto requestDto) {
+        UserEntity currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        boolean isMatched = passwordEncoder.matches(requestDto.getPassword(), currentUser.getPassword());
+
+        if (!isMatched) {
+            throw new CustomException(ErrorCode.PASSWORD_VERIFICATION_FAILED);
+        }
     }
 }
