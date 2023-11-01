@@ -84,10 +84,4 @@ public class UserProfileController {
         return ResponseEntity.ok("사용자가 비활성화 되었습니다.");
     }
 
-    @Operation(summary = "사용자 신규 여부 조회")
-    @GetMapping("/userprofile/{id}/isNew")
-    public ResponseEntity<ApiResponse<Boolean>> getIsNewStatus(@PathVariable Long id) {
-        boolean isNew = userProfileService.getIsNewStatus(id);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(isNew));
-    }
 }

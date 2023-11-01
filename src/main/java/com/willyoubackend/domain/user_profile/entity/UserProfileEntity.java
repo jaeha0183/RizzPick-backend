@@ -104,7 +104,7 @@ public class UserProfileEntity {
         }
     }
 
-    public boolean getIsNew() {
+    public boolean isNew() {
         return isNew;
     }
 }

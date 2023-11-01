@@ -183,4 +183,11 @@ public class UserService {
             throw new CustomException(ErrorCode.PASSWORD_VERIFICATION_FAILED);
         }
     }
+
+    public boolean checkIsNewByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(userEntity);
+
+        return userProfileEntity.isNew();
+    }
 }
