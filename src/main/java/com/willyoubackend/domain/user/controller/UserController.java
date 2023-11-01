@@ -7,6 +7,8 @@ import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -74,6 +76,12 @@ public class UserController {
         }
     }
 
+    @PostMapping("/verify-password")
+    public ResponseEntity<ApiResponse<String>> verifyPassword(@RequestHeader("Authorization") String token, @RequestBody PasswordRequestDto requestDto) {
+        userService.verifyPassword(token, requestDto);
+        return ResponseEntity.ok(ApiResponse.successMessage("비밀번호 인증 성공"));
+    }
+
     @PostMapping("/reset-password")
     public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto,
                                              BindingResult bindingResult,
@@ -84,7 +92,7 @@ public class UserController {
             return ApiResponse.error(errorMessage);
         }
 
-        String username = jwtUtil.getUsernameFromToken(token); // 예제에서는 JWT를 사용
+        String username = jwtUtil.getUsernameFromToken(token);
         return userService.resetPassword(username, requestDto);
     }
 }

@@ -93,7 +93,7 @@ public class JwtUtil {
         return false;
     }
 
-    private String cleanToken(String token) {
+    public String cleanToken(String token) {
         if (token == null) {
             return null;
         }

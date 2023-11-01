@@ -12,6 +12,8 @@ public enum ErrorCode {
     UNSUPPORTED_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "지원되지 않는 토큰입니다."),
     WRONG_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 토큰입니다."),
     WRONG_VERIFI_CODE(HttpStatus.UNAUTHORIZED, "잘못된 인증 번호입니다."),
+    PASSWORD_VERIFICATION_FAILED(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
+
     NOT_FOUND_ENTITY(HttpStatus.NOT_FOUND, "해당 데이터가 존재하지 않습니다."),
     NOT_FOUND_CHATROOM(HttpStatus.NOT_FOUND, "해당 채팅방이 존재하지 않습니다."),
     NOT_FOUND_VERIFI_CODE(HttpStatus.NOT_FOUND, "해당 이메일로 전송된 인증 번호가 존재하지 않습니다."),

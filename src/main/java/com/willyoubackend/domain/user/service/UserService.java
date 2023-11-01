@@ -172,4 +172,17 @@ public class UserService {
 
         return ApiResponse.successMessage("비밀번호가 변경되었습니다.");
     }
+
+    public void verifyPassword(String token, PasswordRequestDto requestDto) {
+        token = jwtUtil.cleanToken(token);  // 토큰 정리
+        String username = jwtUtil.getUsernameFromToken(token);
+        UserEntity currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        boolean isMatched = passwordEncoder.matches(requestDto.getPassword(), currentUser.getPassword());
+
+        if (!isMatched) {
+            throw new CustomException(ErrorCode.PASSWORD_VERIFICATION_FAILED);
+        }
+    }
 }
