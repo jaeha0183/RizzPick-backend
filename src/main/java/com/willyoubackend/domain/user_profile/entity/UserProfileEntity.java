@@ -73,13 +73,13 @@ public class UserProfileEntity {
                 this.gender = GenderEnum.valueOf(userProfileRequestDto.getGender());
             }
             if (userProfileRequestDto.getLocation() != null) {
-                this.location = LocationEnum.valueOf(userProfileRequestDto.getLocation());
+                this.location = LocationEnum.findByThemeName(userProfileRequestDto.getLocation());
             }
             if (userProfileRequestDto.getMbti() != null) {
                 this.mbti = MbtiEnum.valueOf(userProfileRequestDto.getMbti());
             }
             if (userProfileRequestDto.getReligion() != null) {
-                this.religion = ReligionEnum.valueOf(userProfileRequestDto.getReligion());
+                this.religion = ReligionEnum.findByThemeName(userProfileRequestDto.getReligion());
             }
         } catch (IllegalArgumentException e) {
             throw new CustomException(ErrorCode.INVALID_ENUM_VAL);
