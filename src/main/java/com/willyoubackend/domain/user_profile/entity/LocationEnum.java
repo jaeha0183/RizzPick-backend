@@ -1,5 +1,7 @@
 package com.willyoubackend.domain.user_profile.entity;
 
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
@@ -15,7 +17,16 @@ public enum LocationEnum {
 
     private final String themeName;
 
-    LocationEnum(String themeName){
+    LocationEnum(String themeName) {
         this.themeName = themeName;
+    }
+
+    public static LocationEnum findByThemeName(String themeName) {
+        for (LocationEnum locationEnum : values()) {
+            if (locationEnum.getThemeName().equals(themeName)) {
+                return locationEnum;
+            }
+        }
+        throw new CustomException(ErrorCode.INVALID_ENUM_VAL);
     }
 }
