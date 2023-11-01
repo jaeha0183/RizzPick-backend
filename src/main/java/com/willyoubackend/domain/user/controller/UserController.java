@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,22 +78,21 @@ public class UserController {
     }
 
     @PostMapping("/verify-password")
-    public ResponseEntity<ApiResponse<String>> verifyPassword(@RequestHeader("Authorization") String token, @RequestBody PasswordRequestDto requestDto) {
-        userService.verifyPassword(token, requestDto);
+    public ResponseEntity<ApiResponse<String>> verifyPassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody PasswordRequestDto requestDto) {
+        userService.verifyPassword(userDetails.getUsername(), requestDto);
         return ResponseEntity.ok(ApiResponse.successMessage("비밀번호 인증 성공"));
     }
 
     @PostMapping("/reset-password")
     public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto,
                                              BindingResult bindingResult,
-                                             @RequestHeader("Authorization") String token) {
+                                             @AuthenticationPrincipal UserDetails userDetails) {
         if(bindingResult.hasErrors()) {
-            // 에러 메시지를 응답으로 전달
+
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
             return ApiResponse.error(errorMessage);
         }
 
-        String username = jwtUtil.getUsernameFromToken(token);
-        return userService.resetPassword(username, requestDto);
+        return userService.resetPassword(userDetails.getUsername(), requestDto);
     }
 }

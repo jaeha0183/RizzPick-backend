@@ -173,9 +173,7 @@ public class UserService {
         return ApiResponse.successMessage("비밀번호가 변경되었습니다.");
     }
 
-    public void verifyPassword(String token, PasswordRequestDto requestDto) {
-        token = jwtUtil.cleanToken(token);  // 토큰 정리
-        String username = jwtUtil.getUsernameFromToken(token);
+    public void verifyPassword(String username, PasswordRequestDto requestDto) {
         UserEntity currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
