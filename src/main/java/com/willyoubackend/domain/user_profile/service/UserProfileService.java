@@ -193,4 +193,12 @@ public class UserProfileService {
         userProfile.setUserActiveStatus(false);
         userProfileRepository.save(userProfile);
     }
+
+    public void activateUserStatusByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(userEntity);
+        userProfileEntity.setUserActiveStatus(true);
+        userProfileRepository.save(userProfileEntity);
+    }
 }

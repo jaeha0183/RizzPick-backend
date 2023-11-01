@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -78,10 +80,21 @@ public class UserProfileController {
     }
 
     @Operation(summary = "사용자 비활성화")
-    @PostMapping("/deactivate/{userId}")
-    public ResponseEntity<String> deactivateUser(@PathVariable Long userId) {
+    @PutMapping("/deactivate/{userId}")
+    public ResponseEntity<ApiResponse<String>> deactivateUser(@PathVariable Long userId) {
         userProfileService.deactivateUser(userId);
-        return ResponseEntity.ok("사용자가 비활성화 되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자 비활성화 성공"));
+    }
+
+    @Operation(summary = "사용자 활성화")
+    @PutMapping("/activate-status")
+    public ResponseEntity<ApiResponse<Void>> activateUserStatus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        userProfileService.activateUserStatusByUsername(username);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자 활성화 성공"));
     }
 
 }
