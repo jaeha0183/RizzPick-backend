@@ -93,7 +93,30 @@ public class JwtUtil {
         return false;
     }
 
+    private String cleanToken(String token) {
+        if (token == null) {
+            return null;
+        }
+
+        // 토큰 앞뒤 공백 제거
+        token = token.trim();
+
+        // "Bearer" 문자열 제거
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7).trim();
+        }
+
+        return token;
+    }
+
+
     public Claims getUserInfoFromToken(String token) {
+        token = cleanToken(token);
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    public String getUsernameFromToken(String token) {
+        token = cleanToken(token);
+        return getUserInfoFromToken(token).getSubject();
     }
 }

@@ -2,6 +2,7 @@ package com.willyoubackend.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.willyoubackend.domain.user.dto.*;
+import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final KakaoService kakaoService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signup(
@@ -70,5 +72,19 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Refresh token is invalid or missing."));
         }
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto,
+                                             BindingResult bindingResult,
+                                             @RequestHeader("Authorization") String token) {
+        if(bindingResult.hasErrors()) {
+            // 에러 메시지를 응답으로 전달
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            return ApiResponse.error(errorMessage);
+        }
+
+        String username = jwtUtil.getUsernameFromToken(token); // 예제에서는 JWT를 사용
+        return userService.resetPassword(username, requestDto);
     }
 }

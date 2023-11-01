@@ -16,6 +16,7 @@ public enum ErrorCode {
     NOT_FOUND_CHATROOM(HttpStatus.NOT_FOUND, "해당 채팅방이 존재하지 않습니다."),
     NOT_FOUND_VERIFI_CODE(HttpStatus.NOT_FOUND, "해당 이메일로 전송된 인증 번호가 존재하지 않습니다."),
     INVALID_CHATROOM_ID(HttpStatus.NOT_FOUND, "유효하지 않은 채팅방 아이디입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저가 존재하지 않습니다."),
     NOT_AUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 존재하는 아이디입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
