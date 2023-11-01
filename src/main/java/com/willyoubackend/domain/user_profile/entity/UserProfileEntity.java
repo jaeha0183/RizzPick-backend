@@ -103,4 +103,8 @@ public class UserProfileEntity {
             this.isNew = false;
         }
     }
+
+    public boolean getIsNew() {
+        return isNew;
+    }
 }
