@@ -178,4 +178,12 @@ public class UserProfileService {
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(recommendations.getRecommendedUsers()));
         }
     }
+
+    public void deactivateUser(Long userId) {
+        UserProfileEntity userProfile = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        userProfile.setUserActiveStatus(false);
+        userProfileRepository.save(userProfile);
+    }
+
 }

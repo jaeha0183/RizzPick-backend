@@ -75,4 +75,11 @@ public class UserProfileController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userProfileService.getRecommendationsTemp(userDetails.getUser());
     }
+
+    @Operation(summary = "사용자 비활성화")
+    @PostMapping("/deactivate/{userId}")
+    public ResponseEntity<String> deactivateUser(@PathVariable Long userId) {
+        userProfileService.deactivateUser(userId);
+        return ResponseEntity.ok("사용자가 비활성화 되었습니다.");
+    }
 }
