@@ -1,5 +1,7 @@
 package com.willyoubackend.domain.user_profile.controller;
 
+import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserOwnProfileResponseDto;
@@ -7,6 +9,8 @@ import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,6 +33,7 @@ import java.util.List;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "회원 프로필 업데이트")
     @PutMapping("/updateProfile")
@@ -82,6 +87,16 @@ public class UserProfileController {
     @Operation(summary = "사용자 비활성화")
     @PutMapping("/deactivate/{userId}")
     public ResponseEntity<ApiResponse<String>> deactivateUser(@PathVariable Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        UserEntity currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!currentUser.getId().equals(userId)) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        }
+
         userProfileService.deactivateUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자 비활성화 성공"));
     }
