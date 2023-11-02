@@ -272,5 +272,9 @@ public class UserService {
         }
     }
 
+    public boolean isUsernameExists(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
+
 
 }

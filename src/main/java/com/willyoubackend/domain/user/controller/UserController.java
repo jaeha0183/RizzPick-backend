@@ -115,4 +115,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<String>> resetPasswordByEmail(@RequestBody ResetPasswordByEmailRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.resetPasswordByEmail(requestDto));
     }
+
+    @GetMapping("/validate-username")
+    public ResponseEntity<ApiResponse<Boolean>> isUsernameExists(@RequestBody UsernameRequestDto requestDto) {
+        boolean exists = userService.isUsernameExists(requestDto.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(exists));
+    }
 }
