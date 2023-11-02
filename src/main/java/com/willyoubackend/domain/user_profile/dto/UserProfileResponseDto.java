@@ -3,6 +3,8 @@ package com.willyoubackend.domain.user_profile.dto;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.service.UserProfileService;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +30,9 @@ public class UserProfileResponseDto {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
         this.age = UserProfileService.calculateAge(userEntity.getUserProfileEntity().getBirthday().toString());
+        if(age<19){
+            throw new CustomException(ErrorCode.INVALID_AGE);
+        }
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
 
