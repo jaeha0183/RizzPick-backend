@@ -190,4 +190,33 @@ public class UserService {
 
         return userProfileEntity.isNew();
     }
+
+    @Transactional
+    public void sendUsernameByEmail(EmailRequest request) {
+        String email = request.getEmail();
+
+        // DB에서 email을 기반으로 username 찾기
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        String username = user.getUsername();
+
+        sendUsernameEmail(email, username);
+    }
+
+    private void sendUsernameEmail(String email, String username) {
+        String subject = "Will You ID 조회 서비스입니다.";
+        String text = "해당 이메일로 가입한 ID 는 " + username + " 입니다.";
+
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(text, true);
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -58,9 +58,9 @@ public class UserController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity<Void> authEmail(@RequestBody @Valid EmailRequest request) {
+    public ResponseEntity<ApiResponse<String>> authEmail(@RequestBody @Valid EmailRequest request) {
         userService.authEmail(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("인증번호가 전송되었습니다."));
     }
 
     @PostMapping("/email/verify")
@@ -107,5 +107,10 @@ public class UserController {
         boolean isNew = userService.checkIsNewByUsername(username);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(isNew));
+    }
+    @PostMapping("/send-username")
+    public ResponseEntity<ApiResponse<String>> sendUsernameToEmail(@RequestBody EmailRequest emailRequest) {
+        userService.sendUsernameByEmail(emailRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자의 username을 이메일로 전송하였습니다."));
     }
 }
