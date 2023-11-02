@@ -18,6 +18,7 @@ import com.willyoubackend.domain.user_profile.repository.UserRecommendationsRepo
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
+import com.willyoubackend.global.util.AuthorizationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

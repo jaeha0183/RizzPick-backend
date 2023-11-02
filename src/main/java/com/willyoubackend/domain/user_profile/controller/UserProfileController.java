@@ -11,6 +11,7 @@ import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
+import com.willyoubackend.global.util.AuthorizationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -93,13 +94,15 @@ public class UserProfileController {
         UserEntity currentUser = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (!currentUser.getId().equals(userId)) {
+        // 어드민 권한 확인
+        if (AuthorizationUtils.isAdmin(currentUser) || currentUser.getId().equals(userId)) {
+            userProfileService.deactivateUser(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자 비활성화 성공"));
+        } else {
             throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         }
-
-        userProfileService.deactivateUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자 비활성화 성공"));
     }
+
 
     @Operation(summary = "사용자 활성화")
     @PutMapping("/activate-status")
