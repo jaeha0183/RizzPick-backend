@@ -76,7 +76,7 @@ public class UserProfileService {
 
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
 
-        LocationEnum location = userEntity.getUserProfileEntity().getLocation();
+        String location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();
 
         List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
@@ -159,7 +159,7 @@ public class UserProfileService {
     // 보류
     // 보류 이유: 굳이 Redis를 사용할 필요가 없어서
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendationsTemp(UserEntity userEntity) {
-        LocationEnum location = userEntity.getUserProfileEntity().getLocation();
+        String location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();
         UserRecommendations recommendations = userRecommendationsRepository.findByUsername(userEntity.getUsername());
         if (recommendations == null) {
