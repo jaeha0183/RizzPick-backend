@@ -8,4 +8,3 @@ public class AuthorizationUtils {
         return userEntity.getRole() == UserRoleEnum.ADMIN;
     }
 }
-
