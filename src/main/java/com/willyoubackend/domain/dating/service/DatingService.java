@@ -34,8 +34,8 @@ public class DatingService {
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> createDating(UserEntity user) {
         // 배포시 변경
-//        if (datingRepository.findAllByUserOrderByCreatedAt(user).size() == 5)
-//            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+        if (datingRepository.findAllByUserOrderByCreatedAt(user).size() == 5)
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
         Dating dating = new Dating(
                 "이목을 끄는 이름을 지어주세요!",
                 "어디서 만나실건가요?",
@@ -45,8 +45,8 @@ public class DatingService {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successData(responseDto));
     }
 
-    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList() {
-        List<DatingResponseDto> datingResponseDtoList = datingRepository.findAllByOrderByCreatedAt()
+    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList(UserEntity user) {
+        List<DatingResponseDto> datingResponseDtoList = datingRepository.findAllByOrderByCreatedAt(user)
                 .stream()
                 .map(DatingResponseDto::new)
                 .toList();
