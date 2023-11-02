@@ -73,6 +73,7 @@ public class ChatMessageService {
 
         for (SocketMessage socketMessage : socketMessageList) {
             socketMessageResponseDtoList.add(SocketMessageResponseDto.builder()
+                    .chatRoomId(socketMessage.getChatRoom().getId())
                     .sender(socketMessage.getSender())
                     .message(socketMessage.getMessage())
                     .time(socketMessage.getTime())
