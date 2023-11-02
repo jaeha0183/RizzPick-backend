@@ -7,10 +7,7 @@ import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.global.dto.ApiResponse;
-import com.willyoubackend.global.exception.CustomException;
-import com.willyoubackend.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -112,5 +109,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<String>> sendUsernameToEmail(@RequestBody EmailRequest emailRequest) {
         userService.sendUsernameByEmail(emailRequest);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자의 username을 이메일로 전송하였습니다."));
+    }
+
+    @PostMapping("/reset-password-by-email")
+    public ResponseEntity<ApiResponse<String>> resetPasswordByEmail(@RequestBody ResetPasswordByEmailRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.resetPasswordByEmail(requestDto));
     }
 }
