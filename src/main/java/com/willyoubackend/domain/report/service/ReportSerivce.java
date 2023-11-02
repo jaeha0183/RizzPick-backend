@@ -4,9 +4,13 @@ import com.willyoubackend.domain.report.dto.ReportResponseDto;
 import com.willyoubackend.domain.report.entity.Report;
 import com.willyoubackend.domain.report.repository.ReportRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
+import com.willyoubackend.global.util.AuthorizationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,10 +35,17 @@ public class ReportSerivce {
     }
 
     public ResponseEntity<ApiResponse<List<ReportResponseDto>>> getReportList(UserDetailsImpl user) {
-        List<ReportResponseDto> reportResponseDtoList = reportRepository.findById(user.getUser().getId())
+        UserEntity currentUserEntity = user.getUser();
+
+        if (!AuthorizationUtils.isAdmin(currentUserEntity)) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        }
+
+        List<ReportResponseDto> reportResponseDtoList = reportRepository.findAll()
                 .stream()
                 .map(ReportResponseDto::new)
-                .toList();
+                .collect(Collectors.toList());
+
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(reportResponseDtoList));
     }
 }
