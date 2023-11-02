@@ -2,18 +2,25 @@ package com.willyoubackend.domain.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.willyoubackend.domain.user.dto.*;
+import com.willyoubackend.domain.user.jwt.JwtUtil;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final KakaoService kakaoService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signup(
@@ -70,5 +78,34 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Refresh token is invalid or missing."));
         }
+    }
+
+    @PostMapping("/verify-password")
+    public ResponseEntity<ApiResponse<String>> verifyPassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody PasswordRequestDto requestDto) {
+        userService.verifyPassword(userDetails.getUsername(), requestDto);
+        return ResponseEntity.ok(ApiResponse.successMessage("비밀번호 인증 성공"));
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto,
+                                             BindingResult bindingResult,
+                                             @AuthenticationPrincipal UserDetails userDetails) {
+        if(bindingResult.hasErrors()) {
+
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            return ApiResponse.error(errorMessage);
+        }
+
+        return userService.resetPassword(userDetails.getUsername(), requestDto);
+    }
+
+    @GetMapping("/is-new")
+    public ResponseEntity<ApiResponse<Boolean>> checkIsNewStatus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        boolean isNew = userService.checkIsNewByUsername(username);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(isNew));
     }
 }

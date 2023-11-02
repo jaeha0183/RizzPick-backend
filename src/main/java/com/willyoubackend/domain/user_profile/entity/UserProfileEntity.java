@@ -37,6 +37,9 @@ public class UserProfileEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean userActiveStatus;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean isNew = true;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private GenderEnum gender;
@@ -96,5 +99,12 @@ public class UserProfileEntity {
 
     public void setUserActiveStatus(boolean userActiveStatus) {
         this.userActiveStatus = userActiveStatus;
+        if (userActiveStatus) {
+            this.isNew = false;
+        }
+    }
+
+    public boolean isNew() {
+        return isNew;
     }
 }

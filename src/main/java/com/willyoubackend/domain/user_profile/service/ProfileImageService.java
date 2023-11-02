@@ -4,7 +4,9 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import com.willyoubackend.domain.user_profile.dto.ProfileImageRequestDto;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
+import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.user_profile.repository.ProfileImageRepository;
+import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -23,9 +25,9 @@ public class ProfileImageService {
 
     private final S3Uploader s3Uploader;
     private final ProfileImageRepository profileImageRepository;
+    private final UserProfileRepository userProfileRepository;
 
     public ResponseEntity<ApiResponse<ImageResponseDto>> updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
-
         ProfileImageEntity profileImageEntity = null;
 
         switch (profileImageRequestDto.getAction()) {
@@ -34,8 +36,20 @@ public class ProfileImageService {
             case MODIFY -> profileImageEntity = modifyProfileImage(userEntity, profileImageRequestDto);
         }
 
+        updateUserActiveStatus(userEntity);
+
         ImageResponseDto imageResponseDto = (profileImageEntity != null) ? new ImageResponseDto(profileImageEntity) : null;
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(imageResponseDto));
+    }
+
+    private void updateUserActiveStatus(UserEntity userEntity) {
+        UserProfileEntity userProfileEntity = userEntity.getUserProfileEntity();
+
+        boolean isActive = userProfileEntity.getNickname() != null && !userProfileEntity.getNickname().isEmpty() &&
+                userProfileEntity.getGender() != null;
+
+        userProfileEntity.setUserActiveStatus(isActive);
+        userProfileRepository.save(userProfileEntity);
     }
 
     private ProfileImageEntity addProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {

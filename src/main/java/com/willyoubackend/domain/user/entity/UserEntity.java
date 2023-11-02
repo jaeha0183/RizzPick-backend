@@ -90,10 +90,7 @@ public class UserEntity {
         return combined;
     }
 
-    // 신고자와 신고한 사람을 리스트로 받아오는 편의 메서드
-    public List<Report> getReporter() {
-        List<Report> combined = new ArrayList<>(reporter);
-        combined.addAll(reported);
-        return combined;
+    public void setPassword(String encode) {
+        this.password = encode;
     }
 }
