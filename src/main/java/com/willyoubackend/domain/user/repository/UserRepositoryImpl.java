@@ -20,7 +20,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     private final QUserEntity user = QUserEntity.userEntity;
 
     @Override
-    public List<UserEntity> findByUserProfileEntity_LocationAndIdNot(LocationEnum location, Long id) {
+    public List<UserEntity> findByUserProfileEntity_LocationAndIdNot(String location, Long id) {
         return jpaQueryFactory.selectFrom(user)
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
@@ -31,7 +31,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @Override
-    public List<UserEntity> findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(LocationEnum location, GenderEnum gender, Long id) {
+    public List<UserEntity> findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(String location, GenderEnum gender, Long id) {
         return jpaQueryFactory.selectFrom(user)
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
@@ -42,7 +42,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .fetch();
     }
 
-    private BooleanExpression locationEq(LocationEnum location) {
+    private BooleanExpression locationEq(String location) {
         return location != null ? user.userProfileEntity.location.eq(location) : null;
     }
 
