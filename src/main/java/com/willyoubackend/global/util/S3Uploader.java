@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,9 +37,9 @@ public class S3Uploader {
     }
 
     private String upload(File uploadFile, String dirName) {
+        log.info(uploadFile.getName());
         String fileName = dirName + "/" + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
-
         removeNewFile(uploadFile);
         return uploadImageUrl;
     }
@@ -58,15 +61,46 @@ public class S3Uploader {
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException {
-        //        File convertFile = new File(file.getOriginalFilename());
-        File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        if (convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-                fos.write(file.getBytes());
+        if (imageFormatCheck(file)) {
+            BufferedImage heicBufferedImage = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
+            BufferedImage jpgBufferedImage = new BufferedImage(heicBufferedImage.getWidth(), heicBufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            jpgBufferedImage.createGraphics().drawImage(heicBufferedImage, 0, 0, null);
+
+            File jpgFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+            ImageIO.write(jpgBufferedImage, "jpg", jpgFile);
+
+            return Optional.of(jpgFile);
+        } else {
+            File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+            if (convertFile.createNewFile()) {
+                try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+                    fos.write(file.getBytes());
+                }
+                return Optional.of(convertFile);
             }
-            return Optional.of(convertFile);
+            return Optional.empty();
         }
-        return Optional.empty();
+    }
+
+    private Boolean imageFormatCheck(MultipartFile file) throws IOException {
+        byte[] headerBytes = new byte[8]; // 최소 8바이트 필요
+        int bytesRead = file.getInputStream().read(headerBytes);
+
+        if (bytesRead >= 8 && isHEIC(headerBytes)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isHEIC(byte[] headerBytes) {
+        if (headerBytes.length < 12) {
+            return false;
+        }
+        return (headerBytes[4] == 0x66 && headerBytes[5] == 0x74 &&
+                headerBytes[6] == 0x79 && headerBytes[7] == 0x70 &&
+                headerBytes[8] == 0x68 && headerBytes[9] == 0x65 &&
+                headerBytes[10] == 0x69 && headerBytes[11] == 0x63);
     }
 
     public void delete(String fileName) {
