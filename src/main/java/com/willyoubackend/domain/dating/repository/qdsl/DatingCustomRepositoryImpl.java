@@ -27,10 +27,11 @@ public class DatingCustomRepositoryImpl implements DatingCustomRepository {
     @Override
     public List<Dating> findAllByOrderByCreatedAt(UserEntity user) {
         return jpaQueryFactory.selectFrom(qDating)
-                .where(qDating.deleteStatus.eq(false), qDating.activeStatus.eq(true))
-                .leftJoin(qUserLikeStatus)
-                .leftJoin(qUserNopeStatus)
-                .leftJoin(qUserMatchStatus)
+                .where(
+                        qDating.deleteStatus.eq(false),
+                        qDating.activeStatus.eq(true),
+                        qDating.user.ne(user)
+                )
                 .orderBy(qDating.createdAt.desc())
                 .fetch();
     }

@@ -25,7 +25,7 @@ import java.util.List;
 public class UserLikeNopeStatusController {
     private final UserLikeStatusService userLikeStatusService;
 
-    @Operation(summary = "유조가 보낸 좋아요", description = "유저가 다른 유저에게 보낸 좋아요를 조회 할 수 있습니다.")
+    @Operation(summary = "유저가 보낸 좋아요", description = "유저가 다른 유저에게 보낸 좋아요를 조회 할 수 있습니다.")
     @GetMapping("/like/status")
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikeStatus(
             @AuthenticationPrincipal UserDetailsImpl userDetails
