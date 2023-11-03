@@ -3,6 +3,7 @@ package com.willyoubackend.domain.dating.dto;
 import com.willyoubackend.domain.dating.entity.Dating;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -12,10 +13,12 @@ public class DatingDetailResponseDto {
     private final String datingTitle;
     private final String datingLocation;
     private final String datingTheme;
+    private final LocalDateTime createdAt;
     private final List<ActivityResponseDto> activityResponseDtoList;
 
     public DatingDetailResponseDto(Dating dating, List<ActivityResponseDto> activityResponseDtoList) {
         this.datingId = dating.getId();
+        this.createdAt = dating.getCreatedAt();
         this.userId = dating.getUser().getId();
         this.datingTitle = dating.getTitle();
         this.datingLocation = dating.getLocation();

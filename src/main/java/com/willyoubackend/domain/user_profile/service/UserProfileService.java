@@ -5,12 +5,11 @@ import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.domain.user_like_match.entity.UserMatchStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
-import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
-import com.willyoubackend.domain.user_profile.dto.UserOwnProfileResponseDto;
-import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
-import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
+import com.willyoubackend.domain.user_profile.dto.*;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
@@ -42,6 +41,7 @@ public class UserProfileService {
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
     private final ProfileImageRepository profileImageRepository;
+    private final UserMatchStatusRepository userMatchStatusRepository;
 
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
 
@@ -113,8 +113,10 @@ public class UserProfileService {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
-    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getUserProfile(Long userId) {
-        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(findUserById(userId));
+    public ResponseEntity<ApiResponse<UserProfileMatchResponseDto>> getUserProfile(UserEntity user, Long userId) {
+        UserMatchStatus matchStatus = (userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId)) == null) ? userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(findUserById(userId), user) : userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId));
+        Long matchId =(matchStatus == null)?null:matchStatus.getId();
+        UserProfileMatchResponseDto userProfileResponseDto = new UserProfileMatchResponseDto(findUserById(userId), matchId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
