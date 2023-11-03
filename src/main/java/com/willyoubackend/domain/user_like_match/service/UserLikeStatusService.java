@@ -5,6 +5,8 @@ import com.willyoubackend.domain.user_like_match.dto.LikeAlertResponseDto;
 import com.willyoubackend.domain.user_like_match.dto.LikeStatusResponseDto;
 import com.willyoubackend.domain.user_like_match.entity.UserLikeStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,8 @@ import java.util.List;
 @Slf4j(topic = "User Like Status Service")
 public class UserLikeStatusService {
     private final UserLikeStatusRepository userLikeStatusRepository;
+    private final UserNopeStatusRepository userNopeStatusRepository;
+    private final UserMatchStatusRepository userMatchStatusRepository;
 
 
     public ResponseEntity<ApiResponse<List<LikeStatusResponseDto>>> getUserLikeStatus(UserEntity sentUser) {
@@ -37,8 +41,12 @@ public class UserLikeStatusService {
         List<UserLikeStatus> userLikeStatusList = userLikeStatusRepository.findAllByReceivedUser(receivedUser);
         List<LikeStatusResponseDto> likeStatusResponseDtoList = new ArrayList<>();
         for (UserLikeStatus userLikeStatus : userLikeStatusList) {
-            UserProfileResponseDto temp = new UserProfileResponseDto(userLikeStatus.getSentUser());
-            likeStatusResponseDtoList.add(new LikeStatusResponseDto(temp.getNickname(), temp.getUserId(), temp.getProfileImages().get(0)));
+            if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userLikeStatus.getSentUser(),receivedUser) &&
+                    !userMatchStatusRepository.existByUserOneAndUserTwo(userLikeStatus.getSentUser(),receivedUser) &&
+                    !userMatchStatusRepository.existByUserTwoAndUserOne(userLikeStatus.getSentUser(),receivedUser)) {
+                UserProfileResponseDto temp = new UserProfileResponseDto(userLikeStatus.getSentUser());
+                likeStatusResponseDtoList.add(new LikeStatusResponseDto(temp.getNickname(), temp.getUserId(), temp.getProfileImages().get(0)));
+            }
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(likeStatusResponseDtoList));
     }
