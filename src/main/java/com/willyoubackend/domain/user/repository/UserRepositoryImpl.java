@@ -25,8 +25,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
                 .leftJoin(user.userProfileEntity.dating).fetchJoin()
-                .where(locationEq(location)
-                        .and(idNe(id)))
+                .where(
+                        idNe(id))
                 .fetch();
     }
 
@@ -36,8 +36,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
                 .leftJoin(user.userProfileEntity.dating).fetchJoin()
-                .where(locationEq(location)
-                        .and(genderNe(gender))
+                .where(
+                        genderNe(gender)
                         .and(idNe(id)))
                 .fetch();
     }
