@@ -48,7 +48,6 @@ public class UserLikeStatusCustomRepositoryImpl implements UserLikeStatusCustomR
                 .where(
                         qUserLikeStatus.receivedUser.eq(receivedUser)
                 )
-                .innerJoin(qUserMatchStatus)
                 .fetch();
     }
 
