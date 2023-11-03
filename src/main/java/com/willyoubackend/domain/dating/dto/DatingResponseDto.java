@@ -2,9 +2,7 @@ package com.willyoubackend.domain.dating.dto;
 
 import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
-import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 

@@ -27,7 +27,7 @@ public class Dating extends Timestamped {
     @Column(name = "delete_status", nullable = false)
     private Boolean deleteStatus;
 
-    @Column(name ="active_status", nullable = false)
+    @Column(name = "active_status", nullable = false)
     private Boolean activeStatus;
 
     @ManyToOne

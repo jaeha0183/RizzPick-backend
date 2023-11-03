@@ -10,9 +10,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UserMatchStatusCustomRepositoryImpl implements UserMatchStatusCustomRepository{
+public class UserMatchStatusCustomRepositoryImpl implements UserMatchStatusCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private final QUserMatchStatus qUserMatchStatus = QUserMatchStatus.userMatchStatus;
+
     @Override
     public Boolean existByUserOneAndUserTwo(UserEntity sentUser, UserEntity receivedUser) {
         if (sentUser == null || receivedUser == null) throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);

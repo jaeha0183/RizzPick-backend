@@ -9,8 +9,6 @@ import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 @RequiredArgsConstructor
 public class UserNopeStatusCustomRepositoryImpl implements UserNopeStatusCustomRepository {

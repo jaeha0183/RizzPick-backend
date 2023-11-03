@@ -2,7 +2,6 @@ package com.willyoubackend.domain.user.repository;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
-import com.willyoubackend.domain.user_profile.entity.LocationEnum;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

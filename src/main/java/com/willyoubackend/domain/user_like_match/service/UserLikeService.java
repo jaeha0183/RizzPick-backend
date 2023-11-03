@@ -9,7 +9,6 @@ import com.willyoubackend.domain.user_like_match.entity.UserMatchStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
-import com.willyoubackend.domain.websocket.entity.ChatRoomRequestDto;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
 import com.willyoubackend.global.dto.ApiResponse;
@@ -22,9 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

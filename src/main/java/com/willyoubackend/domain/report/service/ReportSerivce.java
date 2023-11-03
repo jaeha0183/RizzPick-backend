@@ -4,7 +4,6 @@ import com.willyoubackend.domain.report.dto.ReportResponseDto;
 import com.willyoubackend.domain.report.entity.Report;
 import com.willyoubackend.domain.report.repository.ReportRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
-import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.global.dto.ApiResponse;

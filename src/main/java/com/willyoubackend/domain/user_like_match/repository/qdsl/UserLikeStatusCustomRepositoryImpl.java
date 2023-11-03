@@ -1,7 +1,6 @@
 package com.willyoubackend.domain.user_like_match.repository.qdsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.willyoubackend.domain.dating.entity.QDating;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_like_match.entity.QUserLikeStatus;
 import com.willyoubackend.domain.user_like_match.entity.QUserMatchStatus;

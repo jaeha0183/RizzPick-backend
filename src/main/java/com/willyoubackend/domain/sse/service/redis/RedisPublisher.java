@@ -1,9 +1,7 @@
 package com.willyoubackend.domain.sse.service.redis;
 
 import com.willyoubackend.domain.sse.dto.AlertResponseDto;
-import com.willyoubackend.domain.sse.entity.Alert;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;

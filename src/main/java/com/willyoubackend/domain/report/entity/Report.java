@@ -3,10 +3,10 @@ package com.willyoubackend.domain.report.entity;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.global.entity.Timestamped;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor

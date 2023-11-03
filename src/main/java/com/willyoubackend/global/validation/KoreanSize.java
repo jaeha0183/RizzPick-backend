@@ -13,7 +13,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface KoreanSize {
     String message() default "닉네임은 최대 6글자 입니다.";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
+
     int max() default Integer.MAX_VALUE;
 }
