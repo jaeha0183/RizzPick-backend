@@ -11,14 +11,16 @@ import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserOwnProfileResponseDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
-import com.willyoubackend.domain.user_profile.entity.*;
+import com.willyoubackend.domain.user_profile.entity.GenderEnum;
+import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
+import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
+import com.willyoubackend.domain.user_profile.entity.UserRecommendations;
 import com.willyoubackend.domain.user_profile.repository.ProfileImageRepository;
 import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
 import com.willyoubackend.domain.user_profile.repository.UserRecommendationsRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
-import com.willyoubackend.global.util.AuthorizationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -88,15 +90,15 @@ public class UserProfileService {
             filteredUsers = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId());
         }
         int maxLimit = 0;
-        for (UserEntity filteredUser: filteredUsers) {
+        for (UserEntity filteredUser : filteredUsers) {
             if (maxLimit == 100) break;
-            log.info(userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) + "");
-            if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) &&
-                    !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) &&
+            log.info(userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) + "");
+            if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
+                    !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     filteredUser.getUserProfileEntity().isUserActiveStatus()) {
                 userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
             }
-            maxLimit ++;
+            maxLimit++;
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
@@ -107,7 +109,7 @@ public class UserProfileService {
                 .stream()
                 .map(DatingResponseDto::new)
                 .toList();
-        UserOwnProfileResponseDto userProfileResponseDto = new UserOwnProfileResponseDto(findUserById(userEntity.getId()),datingList);
+        UserOwnProfileResponseDto userProfileResponseDto = new UserOwnProfileResponseDto(findUserById(userEntity.getId()), datingList);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 
@@ -173,8 +175,8 @@ public class UserProfileService {
 
             }
             for (UserEntity filteredUser : filteredUsers) {
-                if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser) &&
-                        !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity,filteredUser)) {
+                if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
+                        !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser)) {
                     userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
                 }
             }

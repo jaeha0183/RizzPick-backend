@@ -4,15 +4,12 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import com.willyoubackend.domain.websocket.entity.ChatRoomFavorite;
-import com.willyoubackend.domain.websocket.entity.FavoriteChatRoomsResponseDto;
 import com.willyoubackend.domain.websocket.repository.ChatRoomFavoriteRepository;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
-import com.willyoubackend.global.dto.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ChatRoomFavoriteService {
@@ -28,7 +25,8 @@ public class ChatRoomFavoriteService {
 
     /**
      * 즐겨찾기에 채팅방을 추가
-     * @param userId 사용자 ID
+     *
+     * @param userId     사용자 ID
      * @param chatRoomId 채팅방 ID
      */
     public void addToFavorites(Long userId, Long chatRoomId) {
@@ -46,7 +44,8 @@ public class ChatRoomFavoriteService {
 
     /**
      * 즐겨찾기에서 채팅방을 제거
-     * @param userId 사용자 ID
+     *
+     * @param userId     사용자 ID
      * @param chatRoomId 채팅방 ID
      */
     public void removeFromFavorites(Long userId, Long chatRoomId) {

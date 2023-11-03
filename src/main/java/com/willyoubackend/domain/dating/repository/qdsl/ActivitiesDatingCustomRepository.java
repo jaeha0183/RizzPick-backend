@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ActivitiesDatingCustomRepository {
     List<ActivitiesDating> findAllActivitiesDatingByDating(Dating dating);
+
     ActivitiesDating findByActivity(Activity activity);
 }

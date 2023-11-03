@@ -41,9 +41,9 @@ public class UserLikeStatusService {
         List<UserLikeStatus> userLikeStatusList = userLikeStatusRepository.findAllByReceivedUser(receivedUser);
         List<LikeStatusResponseDto> likeStatusResponseDtoList = new ArrayList<>();
         for (UserLikeStatus userLikeStatus : userLikeStatusList) {
-            if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userLikeStatus.getSentUser(),receivedUser) &&
-                    !userMatchStatusRepository.existByUserOneAndUserTwo(userLikeStatus.getSentUser(),receivedUser) &&
-                    !userMatchStatusRepository.existByUserTwoAndUserOne(userLikeStatus.getSentUser(),receivedUser)) {
+            if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userLikeStatus.getSentUser(), receivedUser) &&
+                    !userMatchStatusRepository.existByUserOneAndUserTwo(userLikeStatus.getSentUser(), receivedUser) &&
+                    !userMatchStatusRepository.existByUserTwoAndUserOne(userLikeStatus.getSentUser(), receivedUser)) {
                 UserProfileResponseDto temp = new UserProfileResponseDto(userLikeStatus.getSentUser());
                 likeStatusResponseDtoList.add(new LikeStatusResponseDto(temp.getNickname(), temp.getUserId(), temp.getProfileImages().get(0)));
             }

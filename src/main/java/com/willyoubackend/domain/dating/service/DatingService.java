@@ -55,10 +55,10 @@ public class DatingService {
         List<Dating> datingList = datingRepository.findAllByOrderByCreatedAt(user);
         List<DatingResponseDto> responseDtoList = new ArrayList<>();
         for (Dating dating : datingList) {
-            if(!userLikeStatusRepository.existBySentUserAndReceivedUser(user, dating.getUser()) &&
+            if (!userLikeStatusRepository.existBySentUserAndReceivedUser(user, dating.getUser()) &&
                     !userNopeStatusRepository.existBySentUserAndReceivedUser(user, dating.getUser()) &&
-                    !userMatchStatusRepository.existByUserOneAndUserTwo(user,dating.getUser()) &&
-                    !userMatchStatusRepository.existByUserTwoAndUserOne(user,dating.getUser())
+                    !userMatchStatusRepository.existByUserOneAndUserTwo(user, dating.getUser()) &&
+                    !userMatchStatusRepository.existByUserTwoAndUserOne(user, dating.getUser())
             ) {
                 responseDtoList.add(new DatingResponseDto(dating));
             }

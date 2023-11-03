@@ -87,7 +87,7 @@ public class UserController {
     public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto,
                                              BindingResult bindingResult,
                                              @AuthenticationPrincipal UserDetails userDetails) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
 
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
             return ApiResponse.error(errorMessage);
@@ -105,6 +105,7 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(isNew));
     }
+
     @PostMapping("/send-username")
     public ResponseEntity<ApiResponse<String>> sendUsernameToEmail(@RequestBody EmailRequest emailRequest) {
         userService.sendUsernameByEmail(emailRequest);

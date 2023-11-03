@@ -3,6 +3,7 @@ package com.willyoubackend.domain.user_profile.entity;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
+
 @Deprecated
 @Getter
 public enum LocationEnum {

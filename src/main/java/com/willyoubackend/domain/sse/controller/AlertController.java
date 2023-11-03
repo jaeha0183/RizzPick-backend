@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-@Tag(name= "알림", description = "sse")
+
+@Tag(name = "알림", description = "sse")
 @Slf4j
 @RequiredArgsConstructor
 @RestController

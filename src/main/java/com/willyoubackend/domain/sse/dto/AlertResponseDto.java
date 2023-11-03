@@ -1,7 +1,6 @@
 package com.willyoubackend.domain.sse.dto;
 
 import com.willyoubackend.domain.sse.entity.Alert;
-import com.willyoubackend.domain.user.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,7 +14,7 @@ public class AlertResponseDto {
     private String url;
     private boolean readStatus;
 
-    public AlertResponseDto (Alert alert){
+    public AlertResponseDto(Alert alert) {
         this.id = alert.getId();
         this.receiver = new UserDto(alert.getReceiver());
         this.sender = new UserDto(alert.getSender());
