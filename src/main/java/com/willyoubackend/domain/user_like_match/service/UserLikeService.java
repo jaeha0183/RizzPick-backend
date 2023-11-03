@@ -55,6 +55,9 @@ public class UserLikeService {
         userLikeStatusRepository.save(new UserLikeStatus(sentUser, receivedUser));
 
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(receivedUser, sentUser) != null) {
+
+            alertService.send(receivedUser, sentUser, "새로운 매치가 있습니다.");
+
             userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser));
             chatRoomService.createRoom(sentUser, receivedUser);
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("새로운 인연이 시작 됐습니다!"));
