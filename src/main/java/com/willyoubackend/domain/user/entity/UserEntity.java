@@ -43,7 +43,7 @@ public class UserEntity {
     @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL)
     private UserProfileEntity userProfileEntity;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ProfileImageEntity> profileImages;
 
     // 사용자가 참여하는 채팅방 목록
