@@ -11,6 +11,7 @@ import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import com.willyoubackend.global.util.S3Uploader;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class ProfileImageService {
     private final ProfileImageRepository profileImageRepository;
     private final UserProfileRepository userProfileRepository;
 
+    @Transactional
     public ResponseEntity<ApiResponse<ImageResponseDto>> updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
         ProfileImageEntity profileImageEntity = null;
 
@@ -73,6 +75,7 @@ public class ProfileImageService {
         }
         s3Uploader.delete(profileImageEntity.getImage());
         profileImageRepository.deleteById(imageId);
+        // Jwywoo
     }
 
     private ProfileImageEntity modifyProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
