@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user.entity;
 
-import com.willyoubackend.domain.report.entity.Report;
+import com.willyoubackend.domain.report.entity.ReportDating;
+import com.willyoubackend.domain.report.entity.ReportUser;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
@@ -58,10 +59,19 @@ public class UserEntity {
 
     // 신고한 사람
     @OneToMany(mappedBy = "reporter")
-    private List<Report> reporter;
+    private List<ReportUser> UserReporter;
     // 신고 받은 사람
     @OneToMany(mappedBy = "reported")
-    private List<Report> reported;
+    private List<ReportUser> UserReorted;
+
+    // 신고한 사람
+    @OneToMany(mappedBy = "reporter")
+    private List<ReportDating> DatingReporter;
+    // 신고 받은 사람
+    @OneToMany(mappedBy = "reported")
+    private List<ReportDating> DatingReported;
+
+
 
     public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
         this.username = username;

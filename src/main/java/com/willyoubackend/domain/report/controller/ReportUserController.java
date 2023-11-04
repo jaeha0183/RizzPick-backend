@@ -1,10 +1,11 @@
 package com.willyoubackend.domain.report.controller;
 
-import com.willyoubackend.domain.report.dto.ReportResponseDto;
-import com.willyoubackend.domain.report.service.ReportSerivce;
+import com.willyoubackend.domain.report.dto.ReportUserResponseDto;
+import com.willyoubackend.domain.report.service.ReportUserSerivce;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
+import com.willyoubackend.domain.user_profile.service.ProfileImageService;
 import com.willyoubackend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,18 +18,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "유저 신고", description = "불건전한 유저를 신고하는 URL입니다.")
+@Tag(name = "불건전한 유저 신고", description = "불건전한 유저를 신고하는 URL입니다.")
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Slf4j(topic = "User Report Controller")
-public class ReportController {
-    private final ReportSerivce reportSerivce;
+@Slf4j(topic = "User ReportUser Controller")
+public class ReportUserController {
+    private final ReportUserSerivce reportUserSerivce;
     private final UserRepository userRepository;
 
+
     @Operation(summary = "신고하기", description = "유저가 다른 유저를 신고할 수 있습니다.")
-    @PostMapping("/report")
-    public ResponseEntity<ApiResponse<ReportResponseDto>> createReport(
+    @PostMapping("/report/user")
+    public ResponseEntity<ApiResponse<ReportUserResponseDto>> createReportUser(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam Long reportedUserId,
             @RequestParam String content) {
@@ -36,12 +38,12 @@ public class ReportController {
         UserEntity reported = userRepository.findById(reportedUserId)
                 .orElseThrow(() -> new EntityNotFoundException("Reported user not found"));
 
-        return reportSerivce.createReport(reporter, reported, content);
+        return reportUserSerivce.createReportUser(reporter, reported, content);
     }
 
     @Operation(summary = "신고내용 전체 조회", description = "신고당한 유저를 전부 조회할 수 있습니다.")
-    @GetMapping("/reports")
-    public ResponseEntity<ApiResponse<List<ReportResponseDto>>> getReportList(@AuthenticationPrincipal UserDetailsImpl user) {
-        return reportSerivce.getReportList(user);
+    @GetMapping("/reports/user")
+    public ResponseEntity<ApiResponse<List<ReportUserResponseDto>>> getReportUserList(@AuthenticationPrincipal UserDetailsImpl user) {
+        return reportUserSerivce.getReportUserList(user);
     }
 }

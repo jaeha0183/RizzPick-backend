@@ -4,16 +4,13 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-public class Report extends Timestamped {
+public class ReportUser extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
