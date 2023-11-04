@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -103,7 +104,9 @@ public class S3Uploader {
                 headerBytes[10] == 0x69 && headerBytes[11] == 0x63);
     }
 
-    public void delete(String fileName) {
+    public void delete(String url) {
+        String[] urlArray = url.split("/");
+        String fileName = urlArray[3] + "/" + urlArray[4] + "/" + urlArray[5];
         amazonS3Client.deleteObject(bucket, fileName);
     }
 }
