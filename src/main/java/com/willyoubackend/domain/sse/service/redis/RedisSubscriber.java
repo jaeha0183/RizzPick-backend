@@ -33,7 +33,7 @@ public class RedisSubscriber implements MessageListener {
             String userId = String.valueOf(alertResponseDto.getReceiver().getId());
             Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(userId);
 
-            sseEmitters.forEach((id, emitter)->{
+            sseEmitters.forEach((id, emitter) -> {
                 try {
                     emitter.send(SseEmitter.event().name("Redis").data(alertResponseDto));
                 } catch (IOException e) {

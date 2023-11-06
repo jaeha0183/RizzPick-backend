@@ -3,10 +3,7 @@ package com.willyoubackend.domain.user_profile.controller;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
-import com.willyoubackend.domain.user_profile.dto.SetMainDatingRequestDto;
-import com.willyoubackend.domain.user_profile.dto.UserOwnProfileResponseDto;
-import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
-import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
+import com.willyoubackend.domain.user_profile.dto.*;
 import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
@@ -68,8 +65,10 @@ public class UserProfileController {
 
     @Operation(summary = "프로필 상세 조회")
     @GetMapping("/userProfile/{userId}")
-    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getUserProfile(@PathVariable Long userId) {
-        return userProfileService.getUserProfile(userId);
+    public ResponseEntity<ApiResponse<UserProfileMatchResponseDto>> getUserProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long userId) {
+        return userProfileService.getUserProfile(userDetails.getUser(), userId);
     }
 
     @Operation(summary = "대표 데이트 설정 및 수정")

@@ -40,8 +40,8 @@ public class DatingController {
 
     @Operation(summary = "데이트 전체 조회", description = "앱에 등록 돼있는 모든 데이트를 반환 합니다.")
     @GetMapping("/datings")
-    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList() {
-        return datingService.getDatingList();
+    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return datingService.getDatingList(userDetails.getUser());
     }
 
     @Operation(summary = "유저가 작성한 데이트 조회", description = "로그인한 유저의 데이트를 조회 할 수 있습니다.")

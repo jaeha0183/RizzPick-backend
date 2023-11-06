@@ -56,9 +56,7 @@ public class UserMatchStatusService {
             chatMessageRepository.deleteByChatRoomId(chatRoom.getId());
             chatRoomRepository.delete(chatRoom);
         }
-
-        userMatchStatusRepository.delete(userMatchStatus);
-
+        userMatchStatus.setDeleteStatus(true);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("아쉽지만 다음에 더 좋은 기회가 있을거에요!"));
     }
 

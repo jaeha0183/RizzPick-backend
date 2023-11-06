@@ -1,15 +1,10 @@
 package com.willyoubackend.domain.websocket.controller;
 
-import com.willyoubackend.domain.websocket.entity.ChatRoom;
-import com.willyoubackend.domain.websocket.entity.FavoriteChatRoomsResponseDto;
 import com.willyoubackend.domain.websocket.service.ChatRoomFavoriteService;
 import com.willyoubackend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/favorites")

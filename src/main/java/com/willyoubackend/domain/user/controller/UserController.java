@@ -7,10 +7,7 @@ import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.domain.user.service.KakaoService;
 import com.willyoubackend.domain.user.service.UserService;
 import com.willyoubackend.global.dto.ApiResponse;
-import com.willyoubackend.global.exception.CustomException;
-import com.willyoubackend.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,9 +55,9 @@ public class UserController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity<Void> authEmail(@RequestBody @Valid EmailRequest request) {
+    public ResponseEntity<ApiResponse<String>> authEmail(@RequestBody @Valid EmailRequest request) {
         userService.authEmail(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("인증번호가 전송되었습니다."));
     }
 
     @PostMapping("/email/verify")
@@ -90,7 +87,7 @@ public class UserController {
     public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto,
                                              BindingResult bindingResult,
                                              @AuthenticationPrincipal UserDetails userDetails) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
 
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
             return ApiResponse.error(errorMessage);
@@ -107,5 +104,22 @@ public class UserController {
         boolean isNew = userService.checkIsNewByUsername(username);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(isNew));
+    }
+
+    @PostMapping("/send-username")
+    public ResponseEntity<ApiResponse<String>> sendUsernameToEmail(@RequestBody EmailRequest emailRequest) {
+        userService.sendUsernameByEmail(emailRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("사용자의 username을 이메일로 전송하였습니다."));
+    }
+
+    @PostMapping("/reset-password-by-email")
+    public ResponseEntity<ApiResponse<String>> resetPasswordByEmail(@RequestBody ResetPasswordByEmailRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.resetPasswordByEmail(requestDto));
+    }
+
+    @GetMapping("/validate-username")
+    public ResponseEntity<ApiResponse<Boolean>> isUsernameExists(@RequestBody UsernameRequestDto requestDto) {
+        boolean exists = userService.isUsernameExists(requestDto.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(exists));
     }
 }

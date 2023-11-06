@@ -13,6 +13,9 @@ public class UserMatchStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "delete_status", nullable = false)
+    private Boolean deleteStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_matched_one")
     private UserEntity userMatchedOne;
@@ -25,5 +28,10 @@ public class UserMatchStatus {
     public UserMatchStatus(UserEntity userMatchedOne, UserEntity userMatchedTwo) {
         this.userMatchedOne = userMatchedOne;
         this.userMatchedTwo = userMatchedTwo;
+        this.deleteStatus = false;
+    }
+
+    public void setDeleteStatus(Boolean status) {
+        this.deleteStatus = status;
     }
 }

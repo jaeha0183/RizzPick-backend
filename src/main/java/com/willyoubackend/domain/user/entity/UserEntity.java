@@ -41,10 +41,10 @@ public class UserEntity {
 
     private Long kakaoId;
 
-    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "userEntity")
     private UserProfileEntity userProfileEntity;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER)
     private List<ProfileImageEntity> profileImages;
 
     // 사용자가 참여하는 채팅방 목록

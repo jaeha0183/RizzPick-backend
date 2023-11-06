@@ -2,13 +2,9 @@ package com.willyoubackend.domain.dating.controller;
 
 import com.willyoubackend.domain.dating.dto.ActivityRequestDto;
 import com.willyoubackend.domain.dating.dto.ActivityResponseDto;
-import com.willyoubackend.domain.dating.entity.Activity;
-import com.willyoubackend.domain.dating.repository.ActivityRepository;
 import com.willyoubackend.domain.dating.service.ActivityService;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.global.dto.ApiResponse;
-import com.willyoubackend.global.exception.CustomException;
-import com.willyoubackend.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +22,7 @@ import java.util.List;
 @Slf4j(topic = "Activity Controller")
 public class ActivityController {
     private final ActivityService activityService;
+
     @Operation(summary = "활동 추가", description = "선택한 데이트를 위한 활동 추가")
     @PostMapping("/activity/{datingId}")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> createActivity(

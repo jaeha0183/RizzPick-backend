@@ -5,11 +5,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.user.entity.QUserEntity;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
-import com.willyoubackend.domain.user_profile.entity.LocationEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.stream.Location;
 import java.util.List;
 
 @Repository
@@ -25,8 +23,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
                 .leftJoin(user.userProfileEntity.dating).fetchJoin()
-                .where(locationEq(location)
-                        .and(idNe(id)))
+                .where(
+                        idNe(id))
                 .fetch();
     }
 
@@ -36,9 +34,9 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
                 .leftJoin(user.userProfileEntity.dating).fetchJoin()
-                .where(locationEq(location)
-                        .and(genderNe(gender))
-                        .and(idNe(id)))
+                .where(
+                        genderNe(gender)
+                                .and(idNe(id)))
                 .fetch();
     }
 
