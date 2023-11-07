@@ -66,13 +66,13 @@ public class ProfileImageService {
         return profileImageEntity;
     }
 
-    private void deleteProfileImage(Long imageId) {
+    public void deleteProfileImage(Long imageId) {
         ProfileImageEntity profileImageEntity = findImageById(imageId);
         UserEntity userEntity = profileImageEntity.getUserEntity();
         List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
-        if (profileImageEntities.size() <= 1) {
-            throw new CustomException(ErrorCode.INVALID_IMAGE);
-        }
+//        if (profileImageEntities.size() <= 1) {
+//            throw new CustomException(ErrorCode.INVALID_IMAGE);
+//        }
         s3Uploader.delete(profileImageEntity.getImage());
         profileImageRepository.deleteById(imageId);
         // Jwywoo
