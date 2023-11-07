@@ -20,6 +20,7 @@ import com.willyoubackend.domain.user_profile.repository.UserRecommendationsRepo
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
+import com.willyoubackend.global.util.AuthorizationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -43,38 +44,22 @@ public class UserProfileService {
     private final ProfileImageRepository profileImageRepository;
     private final UserMatchStatusRepository userMatchStatusRepository;
 
-    public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(UserEntity userEntity, UserProfileRequestDto userProfileRequestDto) {
+    public UserProfileResponseDto updateUserProfile(UserEntity requestingUser, Long userId, UserProfileRequestDto userProfileRequestDto) {
 
-        if (userProfileRequestDto.getNickname() == null || userProfileRequestDto.getNickname().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_NICKNAME);
+        if (!requestingUser.getId().equals(userId) && !AuthorizationUtils.isAdmin(requestingUser)) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         }
 
-        if (userProfileRequestDto.getGender() == null || userProfileRequestDto.getGender().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_GENDER);
-        }
-
-        UserEntity loggedInUser = findUserById(userEntity.getId());
-
-        UserProfileEntity userProfileEntity = userEntity.getUserProfileEntity();
-
-        userProfileEntity.setUserEntity(loggedInUser);
+        UserEntity userToUpdate = findUserById(userId);
+        UserProfileEntity userProfileEntity = userToUpdate.getUserProfileEntity();
         userProfileEntity.updateProfile(userProfileRequestDto);
 
-        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userEntity);
-
-        userProfileEntity.setUserActiveStatus(!profileImageEntities.isEmpty()); // 프로필 이미지가 있으면 true, 없으면 false
-
-//        if (!profileImageEntities.isEmpty()) {
-//            userProfileEntity.setUserActiveStatus(true);
-//        } else {
-//            userProfileEntity.setUserActiveStatus(false);
-//        }
+        List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userToUpdate);
+        userProfileEntity.setUserActiveStatus(!profileImageEntities.isEmpty());
 
         userProfileRepository.save(userProfileEntity);
 
-        UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(loggedInUser);
-
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
+        return new UserProfileResponseDto(userToUpdate);
     }
 
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
