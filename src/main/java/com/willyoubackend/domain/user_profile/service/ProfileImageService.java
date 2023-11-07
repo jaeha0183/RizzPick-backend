@@ -14,6 +14,7 @@ import com.willyoubackend.global.exception.ErrorCode;
 import com.willyoubackend.global.util.S3Uploader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@Slf4j(topic = "PROFILE_IMAGE_SERVICE")
 @RequiredArgsConstructor
 public class ProfileImageService {
 
@@ -36,14 +38,31 @@ public class ProfileImageService {
 
         switch (profileImageRequestDto.getAction()) {
             case ADD -> profileImageEntity = addProfileImage(userEntity, profileImageRequestDto);
-            case DELETE -> deleteProfileImage(profileImageRequestDto.getId());
-            case MODIFY -> profileImageEntity = modifyProfileImage(userEntity, profileImageRequestDto);
+            case DELETE -> {
+                profileImageEntity = findImageById(profileImageRequestDto.getId());
+                // 사용자가 이미지 소유자인지 확인
+                validateUserImageOwnership(userEntity, profileImageEntity);
+                deleteProfileImage(profileImageRequestDto.getId());
+            }
+            case MODIFY -> {
+                profileImageEntity = findImageById(profileImageRequestDto.getId());
+                // 사용자가 이미지 소유자인지 확인
+                validateUserImageOwnership(userEntity, profileImageEntity);
+                profileImageEntity = modifyProfileImage(userEntity, profileImageRequestDto);
+            }
         }
 
         updateUserActiveStatus(userEntity);
 
         ImageResponseDto imageResponseDto = (profileImageEntity != null) ? new ImageResponseDto(profileImageEntity) : null;
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(imageResponseDto));
+    }
+
+    private void validateUserImageOwnership(UserEntity userEntity, ProfileImageEntity profileImageEntity) {
+        log.info("Validating image ownership: userEntity ID = {}, profileImageEntity user ID = {}", userEntity.getId(), profileImageEntity.getUserEntity().getId());
+        if (!profileImageEntity.getUserEntity().getId().equals(userEntity.getId())) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        }
     }
 
     private void updateUserActiveStatus(UserEntity userEntity) {
