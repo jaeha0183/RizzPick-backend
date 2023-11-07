@@ -37,6 +37,16 @@ public class UserProfileController {
     @PutMapping("/updateProfile")
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody UserProfileRequestDto userProfileRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        UserEntity currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 어드민 권한 확인
+        if (AuthorizationUtils.isAdmin(currentUser) || currentUser.getId().equals(userDetails.getUser().getId())) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        }
         return userProfileService.updateUserProfile(userDetails.getUser(), userProfileRequestDto);
     }
 
@@ -94,7 +104,6 @@ public class UserProfileController {
             throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         }
     }
-
 
     @Operation(summary = "사용자 활성화")
     @PutMapping("/activate-status")

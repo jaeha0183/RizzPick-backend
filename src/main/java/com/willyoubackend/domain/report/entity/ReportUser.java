@@ -3,17 +3,14 @@ package com.willyoubackend.domain.report.entity;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.global.entity.Timestamped;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-public class Report extends Timestamped {
+public class ReportUser extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

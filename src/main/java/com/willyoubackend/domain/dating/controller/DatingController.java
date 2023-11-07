@@ -4,14 +4,21 @@ import com.willyoubackend.domain.dating.dto.DatingDetailResponseDto;
 import com.willyoubackend.domain.dating.dto.DatingRequestDto;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.dating.service.DatingService;
+import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
+import com.willyoubackend.global.util.AuthorizationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +30,7 @@ import java.util.List;
 @Slf4j(topic = "Dating Controller")
 public class DatingController {
     private final DatingService datingService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "데이트 생성", description = "더미 값이 들어 있는 데이트를 생성(및 저장)합니다. 추후 Update를 이용해 저장을 해야합니다.")
     @PostMapping("/dating")
@@ -74,6 +82,16 @@ public class DatingController {
     public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        UserEntity currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 어드민 권한 확인
+        if (AuthorizationUtils.isAdmin(currentUser) || currentUser.getId().equals(userDetails.getUser().getId())) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        }
         return datingService.deleteDating(userDetails.getUser(), id);
     }
 }
