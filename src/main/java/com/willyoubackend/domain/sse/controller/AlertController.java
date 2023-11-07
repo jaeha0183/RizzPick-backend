@@ -6,6 +6,7 @@ import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,10 @@ public class AlertController {
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
     public SseEmitter subscribe(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId) {
+            @RequestHeader(value = "Last-Event-ID", required = false) String lastEventId,
+            HttpServletResponse response) {
+        // nginx 리버스 프록시에서 버퍼링 기능으로 인한 오동작 방지
+        response.setHeader("X-Accel-Buffering", "no");
         return alertService.subscribe(userDetails, lastEventId);
     }
 
