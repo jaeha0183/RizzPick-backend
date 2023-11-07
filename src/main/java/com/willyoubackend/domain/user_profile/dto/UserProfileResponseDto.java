@@ -22,6 +22,8 @@ public class UserProfileResponseDto {
     private String religion;
     private List<ImageResponseDto> profileImages;
     private DatingResponseDto dating;
+//    private boolean isNew;
+//    private boolean userActiveStatus;
 
     public UserProfileResponseDto(UserEntity userEntity) {
         this.userId = userEntity.getId();
@@ -48,5 +50,7 @@ public class UserProfileResponseDto {
 
         this.profileImages = userEntity.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
         this.dating = (userEntity.getUserProfileEntity().getDating() != null) ? new DatingResponseDto(userEntity.getUserProfileEntity().getDating()) : null;
+//        this.isNew = userEntity.getUserProfileEntity().isNew();
+//        this.userActiveStatus = userEntity.getUserProfileEntity().isUserActiveStatus();
     }
 }

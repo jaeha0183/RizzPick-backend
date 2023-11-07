@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -97,10 +98,19 @@ public class UserProfileService {
         List<DatingResponseDto> datingList = datingRepository.findAllByUser(userEntity)
                 .stream()
                 .map(DatingResponseDto::new)
-                .toList();
-        UserOwnProfileResponseDto userProfileResponseDto = new UserOwnProfileResponseDto(findUserById(userEntity.getId()), datingList);
+                .collect(Collectors.toList());
+        boolean isNew = userEntity.getUserProfileEntity().isNew();
+        boolean userActiveStatus = userEntity.getUserProfileEntity().isUserActiveStatus();
+        UserOwnProfileResponseDto userProfileResponseDto =
+                new UserOwnProfileResponseDto(
+                        userEntity,
+                        datingList,
+                        isNew,
+                        userActiveStatus
+                );
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
+
 
     public ResponseEntity<ApiResponse<UserProfileMatchResponseDto>> getUserProfile(UserEntity user, Long userId) {
         UserMatchStatus matchStatus = (userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId)) == null) ? userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(findUserById(userId), user) : userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId));
