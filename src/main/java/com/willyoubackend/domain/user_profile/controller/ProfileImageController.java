@@ -62,4 +62,20 @@ public class ProfileImageController {
             throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         }
     }
+
+    @Operation(summary = "다른 사용자의 프로필 이미지 수정 (관리자만 가능)")
+    @PutMapping(value = "/admin/updateImage/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ImageResponseDto>> updateOtherUserProfileImage(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long userId,
+            @ModelAttribute ProfileImageRequestDto profileImageRequestDto) throws IOException {
+
+        // 여기에서 사용자가 관리자인지 확인
+        if (!AuthorizationUtils.isAdmin(userDetails.getUser())) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        }
+
+        log.info("Admin {} updating image for user ID: {}", userDetails.getUsername(), userId);
+        return profileImageService.updateProfileImage(userId, profileImageRequestDto);
+    }
 }

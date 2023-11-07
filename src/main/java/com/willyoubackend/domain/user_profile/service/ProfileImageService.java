@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user_profile.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import com.willyoubackend.domain.user_profile.dto.ProfileImageRequestDto;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
@@ -27,6 +28,7 @@ public class ProfileImageService {
     private final S3Uploader s3Uploader;
     private final ProfileImageRepository profileImageRepository;
     private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public ResponseEntity<ApiResponse<ImageResponseDto>> updateProfileImage(UserEntity userEntity, ProfileImageRequestDto profileImageRequestDto) throws IOException {
@@ -90,5 +92,26 @@ public class ProfileImageService {
     private ProfileImageEntity findImageById(Long imageId) {
         return profileImageRepository.findById(imageId).orElseThrow(() ->
                 new CustomException(ErrorCode.NOT_FOUND_ENTITY));
+    }
+
+    @Transactional
+    public ResponseEntity<ApiResponse<ImageResponseDto>> updateProfileImage(Long userId, ProfileImageRequestDto profileImageRequestDto) throws IOException {
+        // userId를 이용하여 UserEntity 객체를 조회
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 기존 로직 실행
+        ProfileImageEntity profileImageEntity = null;
+
+        switch (profileImageRequestDto.getAction()) {
+            case ADD -> profileImageEntity = addProfileImage(userEntity, profileImageRequestDto);
+            case DELETE -> deleteProfileImage(profileImageRequestDto.getId());
+            case MODIFY -> profileImageEntity = modifyProfileImage(userEntity, profileImageRequestDto);
+        }
+
+        updateUserActiveStatus(userEntity);
+
+        ImageResponseDto imageResponseDto = (profileImageEntity != null) ? new ImageResponseDto(profileImageEntity) : null;
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(imageResponseDto));
     }
 }
