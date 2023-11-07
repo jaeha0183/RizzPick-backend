@@ -44,24 +44,24 @@ public class ProfileImageController {
         return profileImageService.updateProfileImage(userDetails.getUser(), profileImageRequestDto);
     }
 
-    @Operation(summary = "관리자가 프로필 이미지 삭제")
-    @DeleteMapping("/deleteImage")
-    public ResponseEntity<ApiResponse<String>> deleteProfileImage(
-            @AuthenticationPrincipal UserDetails userDetails, @RequestParam(required = false) Long imageId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
-
-        UserEntity currentUser = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        // 어드민 권한 확인
-        if (AuthorizationUtils.isAdmin(currentUser) || currentUser.getId().equals(userDetails.getUsername())) {
-            profileImageService.deleteProfileImage(imageId); // ProfileImageService 객체를 주입받아서 메서드 호출
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("프로필 이미지 삭제 완료"));
-        } else {
-            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
-        }
-    }
+//    @Operation(summary = "관리자가 프로필 이미지 삭제")
+//    @DeleteMapping("/deleteImage")
+//    public ResponseEntity<ApiResponse<String>> deleteProfileImage(
+//            @AuthenticationPrincipal UserDetails userDetails, @RequestParam(required = false) Long imageId) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String currentUsername = authentication.getName();
+//
+//        UserEntity currentUser = userRepository.findByUsername(currentUsername)
+//                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+//
+//        // 어드민 권한 확인
+//        if (AuthorizationUtils.isAdmin(currentUser) || currentUser.getId().equals(userDetails.getUsername())) {
+//            profileImageService.deleteProfileImage(imageId); // ProfileImageService 객체를 주입받아서 메서드 호출
+//            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("프로필 이미지 삭제 완료"));
+//        } else {
+//            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+//        }
+//    }
 
     @Operation(summary = "다른 사용자의 프로필 이미지 수정 (관리자만 가능)")
     @PutMapping(value = "/admin/updateImage/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
