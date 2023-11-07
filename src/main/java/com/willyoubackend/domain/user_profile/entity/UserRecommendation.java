@@ -42,11 +42,23 @@ public class UserRecommendation {
     private UserEntity userEntity;
 
     public UserRecommendation(UserRecommendationRequestDto requestDto) {
-
+        this.recGender = requestDto.getRecGender();
+        this.selectedGender = requestDto.getSelectedGender();
+        this.recAge = requestDto.getRecAge();
+        this.ageGap = requestDto.getAgeGap();
+        this.recLocation = requestDto.getRecLocation();
+        this.longitude = requestDto.getLongitude();
+        this.latitude = requestDto.getLatitude();
     }
 
     public void update(UserRecommendationRequestDto requestDto) {
-
+        this.recGender = requestDto.getRecGender();
+        this.selectedGender = requestDto.getSelectedGender();
+        this.recAge = requestDto.getRecAge();
+        this.ageGap = requestDto.getAgeGap();
+        this.recLocation = requestDto.getRecLocation();
+        this.longitude = requestDto.getLongitude();
+        this.latitude = requestDto.getLatitude();
     }
 
     public void setUserEntity(UserEntity userEntity) {
