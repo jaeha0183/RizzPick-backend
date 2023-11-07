@@ -13,10 +13,8 @@ import com.willyoubackend.domain.user_profile.dto.*;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
-import com.willyoubackend.domain.user_profile.entity.UserRecommendations;
 import com.willyoubackend.domain.user_profile.repository.ProfileImageRepository;
 import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
-import com.willyoubackend.domain.user_profile.repository.UserRecommendationsRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -37,7 +35,6 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final DatingRepository datingRepository;
-    private final UserRecommendationsRepository userRecommendationsRepository;
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
     private final ProfileImageRepository profileImageRepository;
@@ -158,38 +155,6 @@ public class UserProfileService {
         );
         if (!selectedDating.getUser().getId().equals(user.getId())) throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         return selectedDating;
-    }
-
-
-    // 보류
-    // 보류 이유: 굳이 Redis를 사용할 필요가 없어서
-    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendationsTemp(UserEntity userEntity) {
-        String location = userEntity.getUserProfileEntity().getLocation();
-        GenderEnum gender = userEntity.getUserProfileEntity().getGender();
-        UserRecommendations recommendations = userRecommendationsRepository.findByUsername(userEntity.getUsername());
-        if (recommendations == null) {
-            List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
-            List<UserEntity> filteredUsers;
-            if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
-                filteredUsers = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId());
-            } else {
-                filteredUsers = userRepository.findByUserProfileEntity_LocationAndIdNot(location, userEntity.getId());
-
-            }
-            for (UserEntity filteredUser : filteredUsers) {
-                if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
-                        !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser)) {
-                    userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
-                }
-            }
-            userRecommendationsRepository.save(new UserRecommendations(
-                    userEntity.getUsername(),
-                    userProfileResponseDtoList
-            ));
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDtoList));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(recommendations.getRecommendedUsers()));
-        }
     }
 
     public void deactivateUser(Long userId) {

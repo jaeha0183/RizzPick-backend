@@ -1,4 +1,4 @@
-package com.willyoubackend.domain.user_profile.repository;
+package com.willyoubackend.domain.user_profile.repository.qdsl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

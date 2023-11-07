@@ -77,13 +77,6 @@ public class UserProfileController {
         return userProfileService.deleteMainDating(userDetails.getUser(), datingId);
     }
 
-    @Operation(summary = "프로필 추천 Redis")
-    @GetMapping("/userprofile/recommendations/redis")
-    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userProfileService.getRecommendationsTemp(userDetails.getUser());
-    }
-
     @Operation(summary = "사용자 비활성화")
     @PutMapping("/deactivate/{userId}")
     public ResponseEntity<ApiResponse<String>> deactivateUser(@PathVariable Long userId) {

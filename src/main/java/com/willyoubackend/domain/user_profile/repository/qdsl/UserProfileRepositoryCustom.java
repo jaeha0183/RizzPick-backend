@@ -1,4 +1,4 @@
-package com.willyoubackend.domain.user_profile.repository;
+package com.willyoubackend.domain.user_profile.repository.qdsl;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
