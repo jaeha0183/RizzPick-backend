@@ -46,19 +46,23 @@ public class UserProfileService {
 
     public UserProfileResponseDto updateUserProfile(UserEntity requestingUser, Long userId, UserProfileRequestDto userProfileRequestDto) {
 
+        if (userProfileRequestDto.getNickname() == null || userProfileRequestDto.getNickname().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_NICKNAME);
+        }
+
+        if (userProfileRequestDto.getGender() == null || userProfileRequestDto.getGender().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_GENDER);
+        }
+
         if (!requestingUser.getId().equals(userId) && !AuthorizationUtils.isAdmin(requestingUser)) {
             throw new CustomException(ErrorCode.NOT_AUTHORIZED);
         }
-
         UserEntity userToUpdate = findUserById(userId);
         UserProfileEntity userProfileEntity = userToUpdate.getUserProfileEntity();
         userProfileEntity.updateProfile(userProfileRequestDto);
-
         List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userToUpdate);
         userProfileEntity.setUserActiveStatus(!profileImageEntities.isEmpty());
-
         userProfileRepository.save(userProfileEntity);
-
         return new UserProfileResponseDto(userToUpdate);
     }
 
