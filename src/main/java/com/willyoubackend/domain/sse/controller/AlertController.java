@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "알림", description = "sse")
 @Slf4j
 @RequiredArgsConstructor
-@RestController
+@RestController("/sse")
 public class AlertController {
 
     private final AlertService alertService;
