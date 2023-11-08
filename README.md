@@ -21,12 +21,10 @@
 
 ---
 ## ⚙️ 서비스 아키텍처
-![Component 1.jpg](..%2F..%2F..%2FDownloads%2FComponent%201.jpg)
-
+![ServiceArc.jpg](..%2F..%2F..%2FDownloads%2FServiceArc.jpg)
 ---
 ## 📑 ERD
 ![rizzpickERD.png](..%2F..%2FrizzpickERD.png)
-
 ---
 
 ## 🧑🏻‍💻 팀원 소개
