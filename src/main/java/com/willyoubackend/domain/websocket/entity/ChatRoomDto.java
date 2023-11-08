@@ -16,7 +16,7 @@ public class ChatRoomDto {
     private Long userId;
     private String nickname;
     private String image;
-    private String birthday;
+    private LocalDate birthday;
     private String intro;
     private String mbti;
     private String religion;

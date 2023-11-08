@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user_profile.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.service.UserProfileService;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 public class UserProfileResponseDto {
     private Long userId;
     private String nickname;
-    private String birthday;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthday;
     private String intro;
     private String education;
     private String gender;

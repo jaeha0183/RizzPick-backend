@@ -13,8 +13,8 @@ public class UserProfileRequestDto {
     @Size(max = 8, message = "닉네임은 최대 8자 입니다.")
     private String nickname;
 //    private int age;
-    @JsonFormat(pattern = "yyyyMMdd")
-    private String birthday;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthday;
     private String intro;
     private String education;
     private boolean userActiveStatus;
