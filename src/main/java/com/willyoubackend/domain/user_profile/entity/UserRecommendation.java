@@ -15,10 +15,9 @@ public class UserRecommendation {
     private Long id;
 
     // 성별
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean recGender;
-
-    private String selectedGender;
+    private GenderRecommendationEnum recGender;
 
     // 나이
     @Column(nullable = false)
@@ -30,6 +29,9 @@ public class UserRecommendation {
     // 지역
     @Column(nullable = false)
     private Boolean recLocation;
+    // Distnace
+    @Column(nullable = true)
+    private Float distance;
     // 경도
     @Column(nullable = true)
     private Float longitude;
@@ -43,20 +45,20 @@ public class UserRecommendation {
 
     public UserRecommendation(UserRecommendationRequestDto requestDto) {
         this.recGender = requestDto.getRecGender();
-        this.selectedGender = requestDto.getSelectedGender();
         this.recAge = requestDto.getRecAge();
         this.ageGap = requestDto.getAgeGap();
         this.recLocation = requestDto.getRecLocation();
+        this.distance = requestDto.getDistance();
         this.longitude = requestDto.getLongitude();
         this.latitude = requestDto.getLatitude();
     }
 
     public void update(UserRecommendationRequestDto requestDto) {
         this.recGender = requestDto.getRecGender();
-        this.selectedGender = requestDto.getSelectedGender();
         this.recAge = requestDto.getRecAge();
         this.ageGap = requestDto.getAgeGap();
         this.recLocation = requestDto.getRecLocation();
+        this.distance = requestDto.getDistance();
         this.longitude = requestDto.getLongitude();
         this.latitude = requestDto.getLatitude();
     }

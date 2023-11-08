@@ -89,7 +89,6 @@ public class UserProfileService {
         int maxLimit = 0;
         for (UserEntity filteredUser : filteredUsers) {
             if (maxLimit == 100) break;
-            log.info(userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) + "");
             if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     filteredUser.getUserProfileEntity().isUserActiveStatus()) {

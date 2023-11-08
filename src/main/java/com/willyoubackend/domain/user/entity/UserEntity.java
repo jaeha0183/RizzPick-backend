@@ -4,6 +4,7 @@ import com.willyoubackend.domain.report.entity.ReportDating;
 import com.willyoubackend.domain.report.entity.ReportUser;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
+import com.willyoubackend.domain.user_profile.entity.UserRecommendation;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import com.willyoubackend.domain.websocket.entity.ChatRoomFavorite;
 import jakarta.persistence.*;
@@ -43,6 +44,10 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "userEntity")
     private UserProfileEntity userProfileEntity;
+
+    // 유저추천을 위한 양방향 설정
+    @OneToOne(mappedBy = "userEntity")
+    private UserRecommendation userRecommendation;
 
     @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER)
     private List<ProfileImageEntity> profileImages;

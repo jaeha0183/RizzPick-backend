@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user_profile.controller;
 
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
+import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.dto.UserRecommendationRequestDto;
 import com.willyoubackend.domain.user_profile.dto.UserRecommendationResponseDto;
 import com.willyoubackend.domain.user_profile.service.UserRecommendationService;
@@ -11,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "회원 추천 로직", description = "회원 추천 로직입니다")
 @RestController
@@ -22,32 +22,39 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserRecommendationController {
-    private final UserRecommendationService UserRecommendationService;
+    private final UserRecommendationService userRecommendationService;
 
     @Operation(summary = "Recommendation create")
-    @PostMapping("/recommendation/create")
+    @PostMapping("/recommendation")
     public ResponseEntity<ApiResponse<UserRecommendationResponseDto>> createUserRecommendation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UserRecommendationRequestDto requestDto
             ) {
-        return UserRecommendationService.createRecommendation(userDetails.getUser(), requestDto);
+        return userRecommendationService.createRecommendation(userDetails.getUser(), requestDto);
     }
 
     @Operation(summary = "Recommendation Read")
-    @PostMapping("/recommendation/create")
+    @GetMapping("/recommendation")
     public ResponseEntity<ApiResponse<UserRecommendationResponseDto>> getUserRecommendation(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return UserRecommendationService.getUserRecommendation(userDetails.getUser());
+        return userRecommendationService.getUserRecommendation(userDetails.getUser());
     }
 
     @Operation(summary = "Recommendation Update")
-    @PostMapping("/recommendation/create")
+    @PutMapping("/recommendation")
     public ResponseEntity<ApiResponse<UserRecommendationResponseDto>> updateUserRecommendation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody UserRecommendationRequestDto requestDto
     ) {
-        return UserRecommendationService.updateUserRecommendation(userDetails.getUser(), requestDto);
+        return userRecommendationService.updateUserRecommendation(userDetails.getUser(), requestDto);
     }
 
+    @Operation(summary = "Recommended Users Test")
+    @GetMapping("/recommendation/profile")
+    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendedUsers(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return userRecommendationService.getRecommendedUsers(userDetails.getUser());
+    }
 }
