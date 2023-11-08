@@ -68,7 +68,7 @@ public class ChatRoomService {
                 .userId(otherUser.getId())
                 .nickname(userProfileEntity.getNickname())
                 .image(image)
-                .age(UserProfileService.calculateAge(userProfileEntity.getBirthday().toString()))
+                .birthday(userProfileEntity.getBirthday())
                 .intro(userProfileEntity.getIntro())
                 .mbti(userProfileEntity.getMbti() != null ? userProfileEntity.getMbti().toString() : null)
                 .religion(userProfileEntity.getReligion() != null ? userProfileEntity.getReligion().toString() : null)

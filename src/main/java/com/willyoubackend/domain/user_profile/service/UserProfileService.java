@@ -181,15 +181,15 @@ public class UserProfileService {
         }
     }
 
-    public static int calculateAge(String birthday){
-        LocalDate now = LocalDate.now();
-        LocalDate parsedBirthday = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        int age = now.minusYears(parsedBirthday.getYear()).getYear();
-
-        if(parsedBirthday.plusYears(age).isAfter(now)){
-            age--;
-        }
-        return age;
-    }
+//    public static int calculateAge(String birthday){
+//        LocalDate now = LocalDate.now();
+//        LocalDate parsedBirthday = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//
+//        int age = now.minusYears(parsedBirthday.getYear()).getYear();
+//
+//        if(parsedBirthday.plusYears(age).isAfter(now)){
+//            age--;
+//        }
+//        return age;
+//    }
 }

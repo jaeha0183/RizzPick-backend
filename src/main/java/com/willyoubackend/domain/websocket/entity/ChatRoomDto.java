@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -15,7 +16,7 @@ public class ChatRoomDto {
     private Long userId;
     private String nickname;
     private String image;
-    private Integer age;
+    private String birthday;
     private String intro;
     private String mbti;
     private String religion;

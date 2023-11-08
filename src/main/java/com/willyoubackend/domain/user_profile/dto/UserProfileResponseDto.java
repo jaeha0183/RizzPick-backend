@@ -8,6 +8,7 @@ import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 public class UserProfileResponseDto {
     private Long userId;
     private String nickname;
-    private Integer age;
+    private String birthday;
     private String intro;
     private String education;
     private String gender;
@@ -29,10 +30,10 @@ public class UserProfileResponseDto {
     public UserProfileResponseDto(UserEntity userEntity) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
-        this.age = UserProfileService.calculateAge(userEntity.getUserProfileEntity().getBirthday().toString());
-        if(age<19){
-            throw new CustomException(ErrorCode.INVALID_AGE);
-        }
+        this.birthday = userEntity.getUserProfileEntity().getBirthday();
+//        if(age<19){
+//            throw new CustomException(ErrorCode.INVALID_AGE);
+//        }
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
 

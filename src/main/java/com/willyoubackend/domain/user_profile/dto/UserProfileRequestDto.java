@@ -14,7 +14,7 @@ public class UserProfileRequestDto {
     private String nickname;
 //    private int age;
     @JsonFormat(pattern = "yyyyMMdd")
-    private LocalDate birthday;
+    private String birthday;
     private String intro;
     private String education;
     private boolean userActiveStatus;

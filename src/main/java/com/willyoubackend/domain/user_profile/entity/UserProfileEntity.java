@@ -32,8 +32,7 @@ public class UserProfileEntity {
 //    private Integer age;
 
     @Column(nullable = true)
-    @JsonFormat(pattern = "yyyyMMdd")
-    private LocalDate birthday;
+    private String birthday;
 
     @Column(nullable = true)
     private String intro;

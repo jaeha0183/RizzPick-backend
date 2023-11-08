@@ -6,6 +6,7 @@ import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 public class UserOwnProfileResponseDto {
     private Long userId;
     private String nickname;
-    private Integer age;
+    private String birthday;
     private String intro;
     private String education;
     private String gender;
@@ -27,7 +28,7 @@ public class UserOwnProfileResponseDto {
     public UserOwnProfileResponseDto(UserEntity userEntity, List<DatingResponseDto> datingResponseDtoList) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
-        this.age = UserProfileService.calculateAge(userEntity.getUserProfileEntity().getBirthday().toString());
+        this.birthday = userEntity.getUserProfileEntity().getBirthday();
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
 
