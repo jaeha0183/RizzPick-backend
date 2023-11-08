@@ -58,7 +58,6 @@ public class AlertService {
         try {
             emitter.send(SseEmitter.event()
                     .id(id)
-                    .name("sse")
                     .data(data));
         } catch (IOException exception) {
             emitterRepository.deleteById(id);
