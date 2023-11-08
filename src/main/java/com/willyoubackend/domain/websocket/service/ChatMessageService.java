@@ -1,8 +1,6 @@
 package com.willyoubackend.domain.websocket.service;
 
-import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
-import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
 import com.willyoubackend.domain.websocket.entity.SocketMessage;
 import com.willyoubackend.domain.websocket.entity.SocketMessageRequsetDto;
@@ -73,6 +71,7 @@ public class ChatMessageService {
 
         for (SocketMessage socketMessage : socketMessageList) {
             socketMessageResponseDtoList.add(SocketMessageResponseDto.builder()
+                    .chatRoomId(socketMessage.getChatRoom().getId())
                     .sender(socketMessage.getSender())
                     .message(socketMessage.getMessage())
                     .time(socketMessage.getTime())

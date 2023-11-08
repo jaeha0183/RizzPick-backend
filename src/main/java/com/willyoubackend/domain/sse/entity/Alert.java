@@ -38,7 +38,7 @@ public class Alert {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity receiver;
 
-    public void read(){
+    public void read() {
         this.readStatus = true;
     }
 

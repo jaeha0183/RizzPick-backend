@@ -4,6 +4,7 @@ import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
 
+@Deprecated
 @Getter
 public enum LocationEnum {
     NONE("없음"),

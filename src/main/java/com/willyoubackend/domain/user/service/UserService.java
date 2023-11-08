@@ -1,9 +1,6 @@
 package com.willyoubackend.domain.user.service;
 
-import com.willyoubackend.domain.user.dto.EmailRequest;
-import com.willyoubackend.domain.user.dto.LoginResponseDto;
-import com.willyoubackend.domain.user.dto.SignupRequestDto;
-import com.willyoubackend.domain.user.dto.VerifiRequest;
+import com.willyoubackend.domain.user.dto.*;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.jwt.JwtUtil;
@@ -29,7 +26,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -164,4 +160,121 @@ public class UserService {
         newAccessToken = jwtUtil.substringToken(newAccessToken);
         return newAccessToken;
     }
+
+    @Transactional
+    public ApiResponse<String> resetPassword(String username, ResetPasswordRequestDto requestDto) {
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        userEntity.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userRepository.save(userEntity);
+
+        return ApiResponse.successMessage("비밀번호가 변경되었습니다.");
+    }
+
+    public void verifyPassword(String username, PasswordRequestDto requestDto) {
+        UserEntity currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        boolean isMatched = passwordEncoder.matches(requestDto.getPassword(), currentUser.getPassword());
+
+        if (!isMatched) {
+            throw new CustomException(ErrorCode.PASSWORD_VERIFICATION_FAILED);
+        }
+    }
+
+    public boolean checkIsNewByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        UserProfileEntity userProfileEntity = userProfileRepository.findByUserEntity(userEntity);
+
+        return userProfileEntity.isNew();
+    }
+
+    @Transactional
+    public void sendUsernameByEmail(EmailRequest request) {
+        String email = request.getEmail();
+
+        // DB에서 email을 기반으로 username 찾기
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        String username = user.getUsername();
+
+        sendUsernameEmail(email, username);
+    }
+
+    private void sendUsernameEmail(String email, String username) {
+        String subject = "Will You ID 조회 서비스입니다.";
+        String text = "해당 이메일로 가입한 ID 는 " + username + " 입니다.";
+
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(text, true);
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Transactional
+    public ApiResponse<String> resetPasswordByEmail(ResetPasswordByEmailRequestDto requestDto) {
+        UserEntity userEntity = userRepository.findByUsernameAndEmail(requestDto.getUsername(), requestDto.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        String newPassword = generateRandomPassword();
+        userEntity.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(userEntity);
+
+        sendResetPasswordEmail(requestDto.getEmail(), newPassword);
+
+        return ApiResponse.successMessage("비밀번호가 초기화되었으며, 새로운 비밀번호가 이메일로 전송되었습니다.");
+    }
+
+    private String generateRandomPassword() {
+        StringBuilder password = new StringBuilder();
+        Random random = new Random();
+
+        // 랜덤 알파벳 문자 추가 (대소문자 각각 적어도 한 개)
+        password.append((char) (random.nextInt(26) + 'A'));
+        password.append((char) (random.nextInt(26) + 'a'));
+
+        // 랜덤 숫자 추가
+        password.append(random.nextInt(10));
+
+        // 랜덤 특수문자 추가
+        String specialChars = "@#$%^&+=!";
+        password.append(specialChars.charAt(random.nextInt(specialChars.length())));
+
+        // 나머지 길이를 채울 때까지 랜덤 문자 추가
+        String allChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&+=!";
+        for (int i = 4; i < 12; i++) {
+            password.append(allChars.charAt(random.nextInt(allChars.length())));
+        }
+
+        return password.toString();
+    }
+
+    private void sendResetPasswordEmail(String email, String newPassword) {
+        String subject = "Will You 비밀번호 초기화 서비스입니다.";
+        String text = "새로운 비밀번호는 " + newPassword + " 입니다.";
+
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(text, true);
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isUsernameExists(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
+
+
 }

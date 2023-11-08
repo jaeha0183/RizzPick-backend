@@ -11,6 +11,9 @@ import com.willyoubackend.domain.dating.repository.ActivitiesDatingRepository;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
+import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -30,12 +33,15 @@ import java.util.List;
 public class DatingService {
     private final DatingRepository datingRepository;
     private final ActivitiesDatingRepository activitiesDatingRepository;
+    private final UserLikeStatusRepository userLikeStatusRepository;
+    private final UserNopeStatusRepository userNopeStatusRepository;
+    private final UserMatchStatusRepository userMatchStatusRepository;
     private final UserRepository userRepository;
 
     public ResponseEntity<ApiResponse<DatingResponseDto>> createDating(UserEntity user) {
         // 배포시 변경
-//        if (datingRepository.findAllByUserOrderByCreatedAt(user).size() == 5)
-//            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+        if (datingRepository.findAllByUserOrderByCreatedAt(user).size() == 5)
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
         Dating dating = new Dating(
                 "이목을 끄는 이름을 지어주세요!",
                 "어디서 만나실건가요?",
@@ -45,12 +51,20 @@ public class DatingService {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.successData(responseDto));
     }
 
-    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList() {
-        List<DatingResponseDto> datingResponseDtoList = datingRepository.findAllByOrderByCreatedAt()
-                .stream()
-                .map(DatingResponseDto::new)
-                .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(datingResponseDtoList));
+    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList(UserEntity user) {
+        List<Dating> datingList = datingRepository.findAllByOrderByCreatedAt(user);
+        List<DatingResponseDto> responseDtoList = new ArrayList<>();
+        for (Dating dating : datingList) {
+            if (!userLikeStatusRepository.existBySentUserAndReceivedUser(user, dating.getUser()) &&
+                    !userNopeStatusRepository.existBySentUserAndReceivedUser(user, dating.getUser()) &&
+                    !userMatchStatusRepository.existByUserOneAndUserTwo(user, dating.getUser()) &&
+                    !userMatchStatusRepository.existByUserTwoAndUserOne(user, dating.getUser())
+            ) {
+                responseDtoList.add(new DatingResponseDto(dating));
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(responseDtoList));
     }
 
     public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingListByUser(UserEntity user) {

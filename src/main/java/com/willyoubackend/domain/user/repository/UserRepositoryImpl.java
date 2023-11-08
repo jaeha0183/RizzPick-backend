@@ -5,11 +5,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.user.entity.QUserEntity;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
-import com.willyoubackend.domain.user_profile.entity.LocationEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.stream.Location;
 import java.util.List;
 
 @Repository
@@ -20,29 +18,29 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     private final QUserEntity user = QUserEntity.userEntity;
 
     @Override
-    public List<UserEntity> findByUserProfileEntity_LocationAndIdNot(LocationEnum location, Long id) {
+    public List<UserEntity> findByUserProfileEntity_LocationAndIdNot(String location, Long id) {
         return jpaQueryFactory.selectFrom(user)
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
                 .leftJoin(user.userProfileEntity.dating).fetchJoin()
-                .where(locationEq(location)
-                        .and(idNe(id)))
+                .where(
+                        idNe(id))
                 .fetch();
     }
 
     @Override
-    public List<UserEntity> findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(LocationEnum location, GenderEnum gender, Long id) {
+    public List<UserEntity> findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(String location, GenderEnum gender, Long id) {
         return jpaQueryFactory.selectFrom(user)
                 .leftJoin(user.profileImages).fetchJoin()
                 .leftJoin(user.userProfileEntity).fetchJoin()
                 .leftJoin(user.userProfileEntity.dating).fetchJoin()
-                .where(locationEq(location)
-                        .and(genderNe(gender))
-                        .and(idNe(id)))
+                .where(
+                        genderNe(gender)
+                                .and(idNe(id)))
                 .fetch();
     }
 
-    private BooleanExpression locationEq(LocationEnum location) {
+    private BooleanExpression locationEq(String location) {
         return location != null ? user.userProfileEntity.location.eq(location) : null;
     }
 

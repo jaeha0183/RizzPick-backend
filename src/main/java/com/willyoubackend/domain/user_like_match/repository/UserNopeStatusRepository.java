@@ -1,6 +1,5 @@
 package com.willyoubackend.domain.user_like_match.repository;
 
-import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_like_match.entity.UserNopeStatus;
 import com.willyoubackend.domain.user_like_match.repository.qdsl.UserNopeStatusCustomRepository;
 import org.springframework.data.jpa.repository.JpaRepository;

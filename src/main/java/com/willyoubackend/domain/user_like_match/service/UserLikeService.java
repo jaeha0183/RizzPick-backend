@@ -9,7 +9,6 @@ import com.willyoubackend.domain.user_like_match.entity.UserMatchStatus;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
-import com.willyoubackend.domain.websocket.entity.ChatRoomRequestDto;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import com.willyoubackend.domain.websocket.service.ChatRoomService;
 import com.willyoubackend.global.dto.ApiResponse;
@@ -22,9 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -55,9 +52,12 @@ public class UserLikeService {
         userLikeStatusRepository.save(new UserLikeStatus(sentUser, receivedUser));
 
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(receivedUser, sentUser) != null) {
-            userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser));
 
+            alertService.send(receivedUser, sentUser, "새로운 매치가 있습니다.");
+
+            userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser));
             chatRoomService.createRoom(sentUser, receivedUser);
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("새로운 인연이 시작 됐습니다!"));
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("행운을 빌어요!"));
     }

@@ -1,5 +1,7 @@
 package com.willyoubackend.domain.user.entity;
 
+import com.willyoubackend.domain.report.entity.ReportDating;
+import com.willyoubackend.domain.report.entity.ReportUser;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
 import com.willyoubackend.domain.websocket.entity.ChatRoom;
@@ -39,10 +41,10 @@ public class UserEntity {
 
     private Long kakaoId;
 
-    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "userEntity")
     private UserProfileEntity userProfileEntity;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.EAGER)
     private List<ProfileImageEntity> profileImages;
 
     // 사용자가 참여하는 채팅방 목록
@@ -54,6 +56,22 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoomFavorite> favoriteRooms = new ArrayList<>();
+
+    // 신고한 사람
+    @OneToMany(mappedBy = "reporter")
+    private List<ReportUser> UserReporter;
+    // 신고 받은 사람
+    @OneToMany(mappedBy = "reported")
+    private List<ReportUser> UserReorted;
+
+    // 신고한 사람
+    @OneToMany(mappedBy = "reporter")
+    private List<ReportDating> DatingReporter;
+    // 신고 받은 사람
+    @OneToMany(mappedBy = "reported")
+    private List<ReportDating> DatingReported;
+
+
 
     public UserEntity(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
         this.username = username;
@@ -80,5 +98,9 @@ public class UserEntity {
         List<ChatRoom> combined = new ArrayList<>(chatroomsAsUser1);
         combined.addAll(chatroomsAsUser2);
         return combined;
+    }
+
+    public void setPassword(String encode) {
+        this.password = encode;
     }
 }

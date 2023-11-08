@@ -4,14 +4,22 @@ import com.willyoubackend.domain.dating.dto.DatingDetailResponseDto;
 import com.willyoubackend.domain.dating.dto.DatingRequestDto;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.dating.service.DatingService;
+import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
+import com.willyoubackend.global.util.AuthorizationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +31,7 @@ import java.util.List;
 @Slf4j(topic = "Dating Controller")
 public class DatingController {
     private final DatingService datingService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "데이트 생성", description = "더미 값이 들어 있는 데이트를 생성(및 저장)합니다. 추후 Update를 이용해 저장을 해야합니다.")
     @PostMapping("/dating")
@@ -32,8 +41,8 @@ public class DatingController {
 
     @Operation(summary = "데이트 전체 조회", description = "앱에 등록 돼있는 모든 데이트를 반환 합니다.")
     @GetMapping("/datings")
-    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList() {
-        return datingService.getDatingList();
+    public ResponseEntity<ApiResponse<List<DatingResponseDto>>> getDatingList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return datingService.getDatingList(userDetails.getUser());
     }
 
     @Operation(summary = "유저가 작성한 데이트 조회", description = "로그인한 유저의 데이트를 조회 할 수 있습니다.")
@@ -69,11 +78,23 @@ public class DatingController {
         return datingService.updateDating(userDetails.getUser(), id, requestDto);
     }
 
-    @Operation(summary = "특정 데이트를 삭제", description = "유저 본인이 작성한 데이트를 삭제할 수 있습니다.")
-    @DeleteMapping("/dating/{id}")
-    public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(
+    @Operation(summary = "관리자 데이트 삭제", description = "관리자가 불건전한 데이트를 삭제할 수 있습니다.")
+    @DeleteMapping("/dating/admin/{id}")
+    public ResponseEntity<ApiResponse<DatingResponseDto>> AdmindeleteDating(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id) {
-        return datingService.deleteDating(userDetails.getUser(), id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        UserEntity currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 어드민 권한 확인
+        if (AuthorizationUtils.isAdmin(currentUser) || currentUser.getId().equals(userDetails.getUsername())) {
+            datingService.deleteDating(userDetails.getUser(), id);
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("데이트 계획 삭제 완료"));
+        } else {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        }
     }
 }

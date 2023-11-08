@@ -58,7 +58,6 @@ public class AlertService {
         try {
             emitter.send(SseEmitter.event()
                     .id(id)
-                    .name("sse")
                     .data(data));
         } catch (IOException exception) {
             emitterRepository.deleteById(id);
@@ -106,6 +105,7 @@ public class AlertService {
         Alert alert = alertRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("존재하지 않는 알림입니다."));
         alert.read();
+        alertRepository.save(alert);
         AlertResponseDto alertResponseDto = new AlertResponseDto(alert);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(alertResponseDto));

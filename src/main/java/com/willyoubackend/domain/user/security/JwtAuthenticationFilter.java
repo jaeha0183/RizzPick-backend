@@ -52,7 +52,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
-        Boolean userActiveStatus = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserProfileEntity().isUserActiveStatus();
         String token = jwtUtil.createToken(username, role);
         response.addHeader("Authorization", token);
         RefreshToken refreshToken = refreshTokenRepository.findByUsername(username).orElse(null);
@@ -65,7 +64,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         refreshTokenRepository.save(refreshToken);
         response.addHeader(JwtUtil.REFRESH_HEADER, "Bearer " + refreshToken.getToken());
         response.setStatus(HttpServletResponse.SC_OK);
-        writeResponse(response, "로그인 성공 프로필 설정현황 " + userActiveStatus);
+        writeResponse(response, "로그인 성공");
     }
 
     @Override

@@ -4,9 +4,11 @@ import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
 
+@Deprecated
 @Getter
 public enum ReligionEnum {
-    NONE("무교"),
+    NONE("없음"),
+    IRRELIGION("무교"),
     CHRISTIANITY("기독교"),
     JUDAISM("유대교"),
     ISLAM("이슬람교"),

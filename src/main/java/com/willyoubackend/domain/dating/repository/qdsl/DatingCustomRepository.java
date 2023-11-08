@@ -6,7 +6,7 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import java.util.List;
 
 public interface DatingCustomRepository {
-    List<Dating> findAllByOrderByCreatedAt();
+    List<Dating> findAllByOrderByCreatedAt(UserEntity user);
 
     List<Dating> findAllByUserOrderByCreatedAt(UserEntity user);
 

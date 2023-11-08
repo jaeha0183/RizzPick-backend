@@ -33,7 +33,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(accessToken)) {
             if (!jwtUtil.validateToken(accessToken)) {
                 res.setStatus(499);
-                writeResponse(res,"token 재발급이 필요합니다요");
+                writeResponse(res, "token 재발급이 필요합니다요");
                 throw new JwtException(499 + "");
             }
 

@@ -28,6 +28,8 @@ public class UserProfileResponseDto {
     private String religion;
     private List<ImageResponseDto> profileImages;
     private DatingResponseDto dating;
+//    private boolean isNew;
+//    private boolean userActiveStatus;
 
     public UserProfileResponseDto(UserEntity userEntity) {
         this.userId = userEntity.getId();
@@ -38,21 +40,26 @@ public class UserProfileResponseDto {
 //        }
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
+        this.location = userEntity.getUserProfileEntity().getLocation();
+        this.mbti = userEntity.getUserProfileEntity().getMbti();
+        this.religion = userEntity.getUserProfileEntity().getReligion();
 
         if (userEntity.getUserProfileEntity().getGender() != null) {
             this.gender = userEntity.getUserProfileEntity().getGender().name();
         }
-        if (userEntity.getUserProfileEntity().getLocation() != null) {
-            this.location = userEntity.getUserProfileEntity().getLocation().getThemeName();
-        }
-        if (userEntity.getUserProfileEntity().getMbti() != null) {
-            this.mbti = userEntity.getUserProfileEntity().getMbti().name();
-        }
-        if (userEntity.getUserProfileEntity().getReligion() != null) {
-            this.religion = userEntity.getUserProfileEntity().getReligion().getThemeName();
-        }
+//        if (userEntity.getUserProfileEntity().getLocation() != null) {
+//            this.location = userEntity.getUserProfileEntity().getLocation().getThemeName();
+//        }
+//        if (userEntity.getUserProfileEntity().getMbti() != null) {
+//            this.mbti = userEntity.getUserProfileEntity().getMbti().name();
+//        }
+//        if (userEntity.getUserProfileEntity().getReligion() != null) {
+//            this.religion = userEntity.getUserProfileEntity().getReligion().getThemeName();
+//        }
 
         this.profileImages = userEntity.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
         this.dating = (userEntity.getUserProfileEntity().getDating() != null) ? new DatingResponseDto(userEntity.getUserProfileEntity().getDating()) : null;
+//        this.isNew = userEntity.getUserProfileEntity().isNew();
+//        this.userActiveStatus = userEntity.getUserProfileEntity().isUserActiveStatus();
     }
 }

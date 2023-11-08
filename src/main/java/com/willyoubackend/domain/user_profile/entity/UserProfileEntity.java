@@ -44,21 +44,21 @@ public class UserProfileEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean userActiveStatus;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean isNew = true;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private GenderEnum gender;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = true)
-    private LocationEnum location;
+    private String location;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = true)
-    private MbtiEnum mbti;
+    private String mbti;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = true)
-    private ReligionEnum religion;
+    private String religion;
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -74,20 +74,23 @@ public class UserProfileEntity {
         this.intro = userProfileRequestDto.getIntro();
         this.education = userProfileRequestDto.getEducation();
         this.userActiveStatus = userProfileRequestDto.isUserActiveStatus();
+        this.location = userProfileRequestDto.getLocation();
+        this.mbti = userProfileRequestDto.getMbti();
+        this.religion = userProfileRequestDto.getReligion();
 
         try {
             if (userProfileRequestDto.getGender() != null) {
                 this.gender = GenderEnum.valueOf(userProfileRequestDto.getGender());
             }
-            if (userProfileRequestDto.getLocation() != null) {
-                this.location = LocationEnum.findByThemeName(userProfileRequestDto.getLocation());
-            }
-            if (userProfileRequestDto.getMbti() != null) {
-                this.mbti = MbtiEnum.valueOf(userProfileRequestDto.getMbti());
-            }
-            if (userProfileRequestDto.getReligion() != null) {
-                this.religion = ReligionEnum.findByThemeName(userProfileRequestDto.getReligion());
-            }
+//            if (userProfileRequestDto.getLocation() != null) {
+//                this.location = LocationEnum.findByThemeName(userProfileRequestDto.getLocation());
+//            }
+//            if (userProfileRequestDto.getMbti() != null) {
+//                this.mbti = MbtiEnum.valueOf(userProfileRequestDto.getMbti());
+//            }
+//            if (userProfileRequestDto.getReligion() != null) {
+//                this.religion = ReligionEnum.findByThemeName(userProfileRequestDto.getReligion());
+//            }
         } catch (IllegalArgumentException e) {
             throw new CustomException(ErrorCode.INVALID_ENUM_VAL);
         }
@@ -103,5 +106,12 @@ public class UserProfileEntity {
 
     public void setUserActiveStatus(boolean userActiveStatus) {
         this.userActiveStatus = userActiveStatus;
+        if (userActiveStatus) {
+            this.isNew = false;
+        }
+    }
+
+    public boolean isNew() {
+        return isNew;
     }
 }

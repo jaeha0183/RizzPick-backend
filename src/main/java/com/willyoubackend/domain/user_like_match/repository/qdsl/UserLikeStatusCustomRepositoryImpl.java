@@ -3,6 +3,7 @@ package com.willyoubackend.domain.user_like_match.repository.qdsl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_like_match.entity.QUserLikeStatus;
+import com.willyoubackend.domain.user_like_match.entity.QUserMatchStatus;
 import com.willyoubackend.domain.user_like_match.entity.UserLikeStatus;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -16,6 +17,7 @@ import java.util.List;
 public class UserLikeStatusCustomRepositoryImpl implements UserLikeStatusCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
     private final QUserLikeStatus qUserLikeStatus = QUserLikeStatus.userLikeStatus;
+    private final QUserMatchStatus qUserMatchStatus = QUserMatchStatus.userMatchStatus;
 
     @Override
     public UserLikeStatus findBySentUserAndReceivedUser(UserEntity sentUser, UserEntity receivedUser) {
