@@ -1,5 +1,6 @@
 package com.willyoubackend.domain.user_profile.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.willyoubackend.domain.dating.entity.Dating;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user_profile.dto.UserProfileRequestDto;
@@ -10,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Builder
 @Entity
@@ -25,8 +28,12 @@ public class UserProfileEntity {
     @Column(nullable = true)
     private String nickname;
 
+//    @Column(nullable = true)
+//    private Integer age;
+
     @Column(nullable = true)
-    private Integer age;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthday;
 
     @Column(nullable = true)
     private String intro;
@@ -63,7 +70,7 @@ public class UserProfileEntity {
 
     public void updateProfile(UserProfileRequestDto userProfileRequestDto) {
         this.nickname = userProfileRequestDto.getNickname();
-        this.age = userProfileRequestDto.getAge();
+        this.birthday = userProfileRequestDto.getBirthday();
         this.intro = userProfileRequestDto.getIntro();
         this.education = userProfileRequestDto.getEducation();
         this.userActiveStatus = userProfileRequestDto.isUserActiveStatus();
