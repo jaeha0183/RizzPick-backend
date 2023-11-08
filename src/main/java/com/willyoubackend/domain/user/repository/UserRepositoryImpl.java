@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.willyoubackend.domain.user.entity.QUserEntity;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user_profile.entity.GenderEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -39,6 +40,18 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                 .and(idNe(id)))
                 .fetch();
     }
+
+    @Override
+    public List<UserEntity> findAllUserEntityExceptAdminAndNonActive() {
+        return jpaQueryFactory.selectFrom(user)
+                .leftJoin(user.userProfileEntity).fetchJoin()
+                .where(
+                        user.role.eq(UserRoleEnum.USER),
+                        user.userProfileEntity.userActiveStatus.eq(true)
+                )
+                .fetch();
+    }
+
 
     private BooleanExpression locationEq(String location) {
         return location != null ? user.userProfileEntity.location.eq(location) : null;

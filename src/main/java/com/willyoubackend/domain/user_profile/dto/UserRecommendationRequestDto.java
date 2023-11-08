@@ -6,7 +6,6 @@ import lombok.Getter;
 @Getter
 public class UserRecommendationRequestDto {
     private GenderRecommendationEnum recGender;
-    private String selectedGender;
     private Boolean recAge;
     private Long ageGap;
     private Boolean recLocation;

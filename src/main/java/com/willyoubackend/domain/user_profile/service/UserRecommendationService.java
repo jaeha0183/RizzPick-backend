@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.user_profile.service;
 
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user.entity.UserRoleEnum;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_profile.dto.UserProfileResponseDto;
 import com.willyoubackend.domain.user_profile.dto.UserRecommendationRequestDto;
@@ -48,7 +49,7 @@ public class UserRecommendationService {
 
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendedUsers(UserEntity user) {
         UserRecommendation userRecommendation = userRecommendationRepository.findByUserEntity(user);
-        List<UserEntity> userEntityList = userRepository.findAll();
+        List<UserEntity> userEntityList = userRepository.findAllUserEntityExceptAdminAndNonActive();
         // Gender
         List<UserEntity> recommendedUserList = genderFilter(userRecommendation, userEntityList);
         // Age
@@ -67,6 +68,7 @@ public class UserRecommendationService {
         List<UserEntity> recommendedUserList = new ArrayList<>();
         if (!userRecommendation.getRecGender().equals(GenderRecommendationEnum.BOTH)) {
             for (UserEntity userEntity : userEntityList) {
+                if (userEntity.getRole().equals(UserRoleEnum.ADMIN)) continue;
                 if (userEntity.getUserProfileEntity().getGender().name().equals(userRecommendation.getRecGender().name()))
                     recommendedUserList.add(userEntity);
             }
@@ -81,7 +83,7 @@ public class UserRecommendationService {
         Long maxAge = user.getUserProfileEntity().getAge() + userRecommendation.getAgeGap();
         Long minAge = user.getUserProfileEntity().getAge() - userRecommendation.getAgeGap();
         for (UserEntity userEntity : recommendedUserList) {
-            if (userEntity.getUserProfileEntity().getAge() >= minAge || userEntity.getUserProfileEntity().getAge() <= maxAge) {
+            if (userEntity.getUserProfileEntity().getAge() >= minAge && userEntity.getUserProfileEntity().getAge() <= maxAge) {
                 tempUser.add(userEntity);
             }
         }
@@ -91,6 +93,7 @@ public class UserRecommendationService {
     private List<UserEntity> distanceFilter(UserRecommendation userRecommendation, List<UserEntity> recommendedUserList) {
         List<UserEntity> tempUser = new ArrayList<>();
         for (UserEntity userEntity : recommendedUserList) {
+            if (userEntity.getUserRecommendation() == null) continue;
             double distance = getDistance(
                     userRecommendation.getLatitude(),
                     userRecommendation.getLongitude(),
