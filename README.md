@@ -21,10 +21,10 @@
 
 ---
 ## ⚙️ 서비스 아키텍처
-![ServiceArc.jpg](..%2F..%2F..%2FDownloads%2FServiceArc.jpg)
+![ServiceArc](https://github.com/Will-You/WillYou-backend/assets/114673187/a4a77213-93b9-4d2c-ac32-da3ace36face)
 ---
 ## 📑 ERD
-![rizzpickERD.png](..%2F..%2FrizzpickERD.png)
+![rizzpickERD](https://github.com/Will-You/WillYou-backend/assets/114673187/bf89ea4d-0c21-468e-ba7d-71529a33d09d)
 ---
 
 ## 🧑🏻‍💻 팀원 소개
