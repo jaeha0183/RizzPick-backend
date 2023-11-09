@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "회원 프로필", description = "회원 프로필")
 @RestController
@@ -33,21 +34,17 @@ public class UserProfileController {
     private final UserProfileService userProfileService;
     private final UserRepository userRepository;
 
-    @Operation(summary = "회원 프로필 업데이트")
-    @PutMapping("/updateProfile")
+    @Operation(summary = "회원 프로필 업데이트 (관리자는 다른 회원 프로필도 업데이트 가능)")
+    @PutMapping({"/updateProfile", "/updateProfile/{userId}"})
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateUserProfile(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody UserProfileRequestDto userProfileRequestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Optional<Long> userId,
+            @Valid @RequestBody UserProfileRequestDto userProfileRequestDto) {
 
-        UserEntity currentUser = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Long idToUpdate = userId.orElseGet(() -> userDetails.getUser().getId());
+        UserProfileResponseDto updatedProfile = userProfileService.updateUserProfile(userDetails.getUser(), idToUpdate, userProfileRequestDto);
 
-        // 어드민 권한 확인
-        if (AuthorizationUtils.isAdmin(currentUser) || currentUser.getId().equals(userDetails.getUser().getId())) {
-            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
-        }
-        return userProfileService.updateUserProfile(userDetails.getUser(), userProfileRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(updatedProfile));
     }
 
     @Operation(summary = "프로필 추천 MySQL")

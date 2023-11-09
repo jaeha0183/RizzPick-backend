@@ -28,6 +28,7 @@ public enum ErrorCode {
     INVALID_GENDER(HttpStatus.NOT_ACCEPTABLE, "성별을 입력해야 합니다."),
     INVALID_IMAGE(HttpStatus.NOT_ACCEPTABLE, "이미지를 하나 이상 등록하여야 합니다."),
     INVALID_MAXIMA(HttpStatus.NOT_ACCEPTABLE, "이미지는 최대 6장까지 등록 가능합니다."),
+    INVALID_AGE(HttpStatus.NOT_ACCEPTABLE, "19세 미만은 사용할 수 없습니다"),
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 요청값입니다."),
     INVALID_ENUM_VAL(HttpStatus.NOT_ACCEPTABLE, "유효하지 않은 열거값입니다."),
     TOKEN_REFRESH_REQUIRED(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, "새로운 토큰이 필요합니다.");

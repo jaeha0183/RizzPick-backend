@@ -6,6 +6,7 @@ import com.willyoubackend.domain.user_like_match.dto.MatchResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 public class UserProfileMatchResponseDto {
     private Long userId;
     private String nickname;
-    private Integer age;
+    private LocalDate birthday;
     private String intro;
     private String education;
     private String gender;
@@ -28,7 +29,7 @@ public class UserProfileMatchResponseDto {
     public UserProfileMatchResponseDto(UserEntity userEntity, Long matchId) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
-        this.age = userEntity.getUserProfileEntity().getAge();
+        this.birthday = userEntity.getUserProfileEntity().getBirthday();
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
         this.location = userEntity.getUserProfileEntity().getLocation();

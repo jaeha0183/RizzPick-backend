@@ -1,10 +1,13 @@
 package com.willyoubackend.domain.user_profile.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +16,8 @@ import java.util.stream.Collectors;
 public class UserOwnProfileResponseDto {
     private Long userId;
     private String nickname;
-    private Integer age;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthday;
     private String intro;
     private String education;
     private String gender;
@@ -22,11 +26,13 @@ public class UserOwnProfileResponseDto {
     private String religion;
     private List<ImageResponseDto> profileImages;
     private List<DatingResponseDto> dating;
+    private boolean isNew;
+    private boolean userActiveStatus;
 
-    public UserOwnProfileResponseDto(UserEntity userEntity, List<DatingResponseDto> datingResponseDtoList) {
+    public UserOwnProfileResponseDto(UserEntity userEntity, List<DatingResponseDto> datingResponseDtoList, boolean isNew, boolean userActiveStatus) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
-        this.age = userEntity.getUserProfileEntity().getAge();
+        this.birthday = userEntity.getUserProfileEntity().getBirthday();
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.education = userEntity.getUserProfileEntity().getEducation();
         this.location = userEntity.getUserProfileEntity().getLocation();
@@ -48,5 +54,7 @@ public class UserOwnProfileResponseDto {
 
         this.profileImages = userEntity.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
         this.dating = datingResponseDtoList;
+        this.isNew = userEntity.getUserProfileEntity().isNew();
+        this.userActiveStatus = userEntity.getUserProfileEntity().isUserActiveStatus();
     }
 }
