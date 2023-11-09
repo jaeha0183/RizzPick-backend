@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,9 +58,20 @@ public class AlertService {
 
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
-            emitter.send(SseEmitter.event()
-                    .id(id)
-                    .data(data));
+            // data가 Alert 객체인지 확인 후 처리
+            if(data instanceof Alert) {
+                Alert alert = (Alert) data;
+                // AlertResponseDto에 생성 시간을 포함하여 클라이언트에게 전달
+                AlertResponseDto alertResponseDto = new AlertResponseDto(alert);
+                emitter.send(SseEmitter.event()
+                        .id(id)
+                        .data(alertResponseDto));
+            } else {
+                // 기타 데이터는 그대로 전송
+                emitter.send(SseEmitter.event()
+                        .id(id)
+                        .data(data));
+            }
         } catch (IOException exception) {
             emitterRepository.deleteById(id);
             throw new RuntimeException("연결 오류");
@@ -83,10 +96,12 @@ public class AlertService {
     }
 
     private Alert createAlert(UserEntity receiver, UserEntity sender, String message) {
+
         return Alert.builder()
                 .sender(sender)
                 .receiver(receiver)
                 .message(message)
+                .time(ZonedDateTime.now())
                 .url("/userProfile/" + sender.getId())
                 .readStatus(false)
                 .build();
