@@ -36,6 +36,7 @@ public class AlertService {
     private final RedisPublisher redisPublisher;
 
     public SseEmitter subscribe(UserDetailsImpl userDetails, String lastEventId) {
+        log.info("subscribe");
         Long userId = userDetails.getUser().getId();
         String id = userId + "_" + System.currentTimeMillis();
         SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
@@ -79,6 +80,7 @@ public class AlertService {
     }
 
     public void send(UserEntity receiver, UserEntity sender, String message) {
+        log.info("send");
         Alert alert = createAlert(receiver, sender, message);
         String id = String.valueOf(receiver.getId());
         alertRepository.save(alert);
@@ -96,7 +98,7 @@ public class AlertService {
     }
 
     private Alert createAlert(UserEntity receiver, UserEntity sender, String message) {
-
+        log.info("createAlert");
         return Alert.builder()
                 .sender(sender)
                 .receiver(receiver)
