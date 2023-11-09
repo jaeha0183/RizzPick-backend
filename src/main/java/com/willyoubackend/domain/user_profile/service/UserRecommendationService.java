@@ -13,10 +13,14 @@ import com.willyoubackend.global.dto.ApiResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.LocalDate;
+import org.joda.time.Years;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,10 +84,13 @@ public class UserRecommendationService {
 
     private List<UserEntity> ageFilter(UserRecommendation userRecommendation, UserEntity user, List<UserEntity> recommendedUserList) {
         List<UserEntity> tempUser = new ArrayList<>();
-        Long maxAge = user.getUserProfileEntity().getAge() + userRecommendation.getAgeGap();
-        Long minAge = user.getUserProfileEntity().getAge() - userRecommendation.getAgeGap();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        int age = Period.between(user.getUserProfileEntity().getBirthday(), currentDateTime.toLocalDate()).getYears();
+        Long maxAge = age + userRecommendation.getAgeGap();
+        Long minAge = age - userRecommendation.getAgeGap();
         for (UserEntity userEntity : recommendedUserList) {
-            if (userEntity.getUserProfileEntity().getAge() >= minAge && userEntity.getUserProfileEntity().getAge() <= maxAge) {
+            int currUserAge = Period.between(userEntity.getUserProfileEntity().getBirthday(), currentDateTime.toLocalDate()).getYears();
+            if (currUserAge >= minAge && currUserAge <= maxAge) {
                 tempUser.add(userEntity);
             }
         }
