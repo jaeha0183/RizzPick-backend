@@ -6,6 +6,8 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.ZonedDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,6 +34,10 @@ public class Alert {
 
     @Column
     private boolean readStatus;
+
+    @Column(nullable = false)
+    private ZonedDateTime time;
+
 
     @ManyToOne
     @JoinColumn(name = "receiver_id")
