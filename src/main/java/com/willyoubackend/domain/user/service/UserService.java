@@ -110,7 +110,7 @@ public class UserService {
     }
 
     private void sendAuthEmail(String email, String authKey) {
-        String subject = "Will You 회원가입 인증 메일입니다.";
+        String subject = "RizzPick 회원가입 인증 메일입니다.";
         String text = "인증번호는 " + authKey + "입니다. <br/>";
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -203,7 +203,7 @@ public class UserService {
     }
 
     private void sendUsernameEmail(String email, String username) {
-        String subject = "Will You ID 조회 서비스입니다.";
+        String subject = "RizzPick ID 조회 서비스입니다.";
         String text = "해당 이메일로 가입한 ID 는 " + username + " 입니다.";
 
         try {
@@ -257,7 +257,7 @@ public class UserService {
     }
 
     private void sendResetPasswordEmail(String email, String newPassword) {
-        String subject = "Will You 비밀번호 초기화 서비스입니다.";
+        String subject = "RizzPick 비밀번호 초기화 서비스입니다.";
         String text = "새로운 비밀번호는 " + newPassword + " 입니다.";
 
         try {
