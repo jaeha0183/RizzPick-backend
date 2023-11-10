@@ -18,6 +18,9 @@ public class Activity extends Timestamped {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "location")
+    private String location;
+
     @Column(name = "delete_status", nullable = false)
     private Boolean deleteStatus;
 
@@ -27,6 +30,7 @@ public class Activity extends Timestamped {
 
     public Activity(ActivityRequestDto requestDto) {
         this.content = requestDto.getContent();
+        this.location = requestDto.getLocation();
         this.deleteStatus = false;
     }
 
@@ -36,6 +40,7 @@ public class Activity extends Timestamped {
 
     public void update(ActivityRequestDto requestDto) {
         this.content = requestDto.getContent();
+        this.location = requestDto.getLocation();
     }
 
     public void setDeleteStatus(Boolean status) {
