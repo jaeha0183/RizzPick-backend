@@ -2,6 +2,7 @@
 
 ![99수정 1](https://github.com/RizzPick/RizzPick-backend/assets/114673187/e29caf7a-d3df-4d45-9c4e-5295a53d3e4d)
 
+## 📎 https://rizzpick.com
 
 ## 프로젝트 소개
 
@@ -22,60 +23,27 @@
 
 ---
 ## ⚙️ 서비스 아키텍처
-![ServiceArc](https://github.com/RizzPick/RizzPick-backend/assets/114673187/8279253d-1b33-454b-ab92-b62182f049b2
-)
+![ServiceArc](https://github.com/RizzPick/RizzPick-backend/assets/114673187/8279253d-1b33-454b-ab92-b62182f049b2)
 
-<details>
-<summary>아키텍처 도입 배경</summary>
-<div markdown="1">
+---
+## 💬 기술적 의사 결정
 
-- ### **Nginx**
+| 기술             | 설명                                                                                                                                                                                                                                       |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Nginx**        | 기존 Apache의 WAS에서 추가적으로 HTTPS 연결과 대용량 이미지 처리 요청에 대한 설정이 필요하다 판단하여 추가. Apache와 비교하여 더 빠른 성능을 제공하는 웹서버로, 높은 트래픽 처리와 안정성을 위해 사용.                                             |
+| **GitHub Actions** | 프론트엔드와 백엔드의 효율적인 협업을 위한 자동배포를 진행. 소스 코드의 변경 사항에 대한 자동화된 CI/CD 파이프라인을 구축할 수 있으며, 지속적인 통합 및 배포를 위해 적용.                                                                              |
+| **Redis(EC2)**   | 임시 데이터 사용과 캐싱에 적합하여 사용자의 빈번한 엑세스가 발생하는 데이터를 Redis에 저장하여 데이터 엑세스 속도를 높임. EC2 인스턴스를 사용하여 원하는 OS, 메모리, 스토리지 및 CPU 구성의 선택 제공. 수직 및 수평 스케일링 가능. AWS 보안 그룹을 통한 접근 제한. |
+| **Swagger**      | 프론트엔드와 백엔드의 빠르고 직관적인 의사소통을 위해 API 기능을 문서화하고 테스트하기 위해 적용. API 문서화와 테스트 도구로서 개발자들이 API의 동작을 쉽게 이해하고 테스트 할 수 있도록 도와줌.                                                          |
+| **Docker Hub**   | 추후 EC2의 서버 인스턴스 내에서 다중 컨테이너와 Nginx를 활용한 다중 처리를 진행하기 위해, 먼저 Docker Hub에서 배포를 진행하기로 결정. 개발에 프로그램을 실행하기 전 컴파일 단계에서 오류를 찾을 수 있는 장점으로 사용.                                       |
+| **QueryDSL**     | Soft Delete와 사용자 추천 로직에 있어 복잡해진 쿼리문을 직관적으로 바꾸기 위해 사용. 추가적으로 POST, UPDATE, DELETE를 제외한 GET 요청에 있어서 QueryDSL을 적용하기로 결정.                                                                      |
+| **WebSocket**    | 서버와 클라이언트 간의 실시간 연결을 제공하여 실시간 채팅 기능을 구현하기 위해 적용.                                                                                                                                                        |
+| **SSE(Redis PUB/SUB)** | (SSE) 서버와 클라이언트간의 실시간 연결을 제공하여 실시간 알림 푸시 기능을 구현하기 위해서 적용 (PUB/SUB) 다수의 클라이언트에게 알림을 효과적으로 전달하기 위해 적용서버에서 발생한 이벤트를 PUB/SUB 으로 관리하여, 토픽을 구독한 구독자에게 SSE를 통해 효과적인 실시간 알림 기능을 구현                                       |
 
-  기존 Apache의 WAS에서 추가적으로 HTTPS 연결과 대용량 이미지 처리 요청에 대한 설정이 필요하다 판단하여 추가하기로 결정.
-  Nginx 는 Apache와 비교하여 더 빠른 성능을 제공하는 웹서버입니다. 웹사이트에서 높은 트래픽 처리와 안정성을 위해서 결정하였습니다.
-
-- ### **GtHub Actions**
-
-  프론트엔드와 백엔드의 효율적인 협업을 위한 자동배포를 진행
-  GItHub Actions는 소스 코드의 변경 사항에대한 자동화된 CI/CD 파이프라인을 구축할 수 있습니다. 지속적인 통합 및 배포를 위해서 적용하였습니다.
-
-- ### **Redis(EC2)**
-
-  임시 데이터 사용과 캐싱에 적합하여 사용자의 빈번한 엑세스가 발생하는 데이터를 Redis에 저장하여 데이터 엑세스 속도를 높임.
-  (EC2&Docker)
-
-  EC2 인스턴스의 사용은 사용자에게 원하는 OS, 메모리, 스토리지 및 CPU 구성의 선택을 제공하여 Redis 서버의 성능과 용량을 쉽게 조절 할 수 있게합니다. 더불어, AWS의 EC는 수직 및 수평 스케일링이 가능해져 트래픽이나 데이터의증가에 따라 서버의 용량을 유연하게 조절할 수 있습니다. AWS의 보안 그룹을 활용하면 특정 IP 주소나 범위에 한해서만 Redis 서버에 액세스를 제한할 수 있게 됩니다.
-
-- ### **Swagger**
-
-  프론트엔드와 백엔드의 빠르고 직관적인 의사소통을 목적으로 API의 기능을 문서화하고 테스트하기 위해 적용
-  Swagger는 API 문서화와 테스트 도구로서 개발자들이 API의 동작을 쉽게 이해하고 테스트 할 수 있게 도와줍니다. API의 투명성과 테스트 용이성을 위해서 적용하였습니다.
-
-- ### **Docker Hub**
-
-  추후 EC2의 서버 인스턴스 내에서 다중 컨테이너와 Nginx를 활용해 다중 처리를 진행하기 위해서 먼저 Docker Hub에서 배포를 진행하기 위해 사용을 결정함. 또한 개발에 프로그램을 실행하기전 컴파일 단계에서 오류를 찾을 수 있다는 장점으로 사용을 결정함.
-
-- ### **QueryDSL**
-
-  Soft Delete와 사용자 추천 로직에 있어 복잡해진 쿼리문을 직관적으로 바꾸기 위해 QueryDSL을 사용하였고 추가적으로 POST, UPDATE, DELETE를 제외한 GET 요청에 있어서 QueryDSL을 적용하기로 결정함.
-
-- ### **WebSocket**
-
-  서버와 클라이언트간의 실시간 연결을 제공하여 실시간 채팅 기능을 구현하기 위해서 적용
-
-- ### **SSE(Redis PUB/SUB)**
-
-  (SSE) 서버와 클라이언트간의 실시간 연결을 제공하여 실시간 알림 푸시 기능을 구현하기 위해서 적용
-  (PUB/SUB) 다수의 클라이언트에게 알림을 효과적으로 전달하기 위해 적용
-
-  서버에서 발생한 이벤트를 PUB/SUB 으로 관리하여, 토픽을 구독한 구독자에게 SSE를 통해 효과적인 실시간 알림 기능을 구현
-</div>
-</details>
 
 ---
 ## 📑 ERD
-![rizzpickERD](https://github.com/RizzPick/RizzPick-backend/assets/114673187/f31b76f4-3221-4fe0-9d16-5150c080e8b7
-)
+![RizzPickERD](https://github.com/RizzPick/RizzPick-backend/assets/114673187/86754c1c-2360-4dd1-a7c1-0daf712f4bab)
+
 ---
 ## 🛠트러블슈팅
 
@@ -105,7 +73,7 @@ Redis를 활용하여 사용자가 로그인한 시점에 Recommendations라는 
 
 > 문제
 
-Websocket을 활용하여 실시간 채팅 기능을 구현하던 중, 실시간 채팅 후 예기치 않게 채팅방이 랜덤하게 삭제되거나 해당 사용자가 채팅방에서 삭제되는 현상이 있었다.
+Websocket을 활용하여 실시간 채팅 기능을 구현하던 중, 실시간 채팅 후 예기치 않게 Redis의 채팅방이 랜덤하게 삭제되거나 해당 사용자가 채팅방에서 삭제되는 현상이 있었다.
 
 > 오류 해결 시도
 
@@ -138,6 +106,7 @@ private void validateChatRoomId(Long chatRoomId) {
    ```
     
 이 코드를 일시적으로 삭제한 후 다시 실행해 보니, 문제가 해결된 것을 확인할 수 있었다.
+또한 Redis에 채팅방 정보를 저장하는 것은 휘발성이 높은 데이터이므로, Redis에 저장하는 대신 MySQL에 저장하는 방식으로 변경했다.
 
 </div>
 </details>
@@ -161,6 +130,7 @@ private void validateChatRoomId(Long chatRoomId) {
 </div>
 </details>
 
+---
 
 ## 🧑🏻‍💻 팀원 소개
 
@@ -174,7 +144,11 @@ private void validateChatRoomId(Long chatRoomId) {
 | 이재하 (B) | 팀원  | https://github.com/jaeha0183  |
 
 
+---
+## [프론트 깃허브 링크](https://github.com/RizzPick/RizzPick-frontEnd)
 
-## [프론트 깃허브 링크](https://github.com/RizzPick/RizzPick-backend)
-## [백엔드 깃허브 링크](https://github.com/RizzPick/RizzPick-frontEnd)
+---
+## [백엔드 깃허브 링크](https://github.com/RizzPick/RizzPick-backend)
+
+---
 
