@@ -20,7 +20,8 @@ public class ChatRoomDto {
     private String intro;
     private String mbti;
     private String religion;
-    private String education;
+    private String hobby;
+    private String interest;
     private String location;
     private Long latestMessageId;
     private String latestMessage;
