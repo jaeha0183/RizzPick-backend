@@ -3,7 +3,6 @@ package com.willyoubackend.domain.user_profile.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
-import com.willyoubackend.domain.user_profile.service.UserProfileService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +18,8 @@ public class UserOwnProfileResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
     private String intro;
-    private String education;
+    private String hobby;
+    private String interest;
     private String gender;
     private String location;
     private String mbti;
@@ -34,7 +34,8 @@ public class UserOwnProfileResponseDto {
         this.nickname = userEntity.getUserProfileEntity().getNickname();
         this.birthday = userEntity.getUserProfileEntity().getBirthday();
         this.intro = userEntity.getUserProfileEntity().getIntro();
-        this.education = userEntity.getUserProfileEntity().getEducation();
+        this.hobby = userEntity.getUserProfileEntity().getHobby();
+        this.interest = userEntity.getUserProfileEntity().getInterest();
         this.location = userEntity.getUserProfileEntity().getLocation();
         this.mbti = userEntity.getUserProfileEntity().getMbti();
         this.religion = userEntity.getUserProfileEntity().getReligion();

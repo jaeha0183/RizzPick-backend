@@ -21,7 +21,8 @@ public class UserProfileResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
     private String intro;
-    private String education;
+    private String hobby;
+    private String interest;
     private String gender;
     private String location;
     private String mbti;
@@ -39,7 +40,8 @@ public class UserProfileResponseDto {
 //            throw new CustomException(ErrorCode.INVALID_AGE);
 //        }
         this.intro = userEntity.getUserProfileEntity().getIntro();
-        this.education = userEntity.getUserProfileEntity().getEducation();
+        this.hobby = userEntity.getUserProfileEntity().getHobby();
+        this.interest = userEntity.getUserProfileEntity().getInterest();
         this.location = userEntity.getUserProfileEntity().getLocation();
         this.mbti = userEntity.getUserProfileEntity().getMbti();
         this.religion = userEntity.getUserProfileEntity().getReligion();
