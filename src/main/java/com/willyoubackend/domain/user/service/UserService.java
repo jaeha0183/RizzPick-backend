@@ -123,7 +123,7 @@ public class UserService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        redisUtil.setDataExpire(email, authKey, 3 * 60 * 1L);
+        redisUtil.setDataExpire(email, authKey, 5 * 60 * 1L);
     }
 
     public ApiResponse<String> verifyEmail(VerifiRequest request) {
