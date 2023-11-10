@@ -1,6 +1,7 @@
 # RizzPick
 
-## {서비스 사진 예정}
+![99수정 1](https://github.com/RizzPick/RizzPick-backend/assets/114673187/e29caf7a-d3df-4d45-9c4e-5295a53d3e4d)
+
 
 ## 프로젝트 소개
 
