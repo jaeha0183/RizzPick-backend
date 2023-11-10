@@ -5,4 +5,5 @@ import lombok.Getter;
 @Getter
 public class ActivityRequestDto {
     private String content;
+    private String location;
 }

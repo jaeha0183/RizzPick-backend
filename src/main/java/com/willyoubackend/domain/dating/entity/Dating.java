@@ -34,6 +34,9 @@ public class Dating extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @OneToOne(mappedBy = "dating")
+    private DatingImage datingImage;
+
     public Dating(String title, String location, String theme) {
         this.title = title;
         this.location = location;
@@ -51,6 +54,10 @@ public class Dating extends Timestamped {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public void setDatingImage(DatingImage datingImage) {
+        this.datingImage = datingImage;
     }
 
     public void setDeleteStatus(Boolean status) {

@@ -22,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "데이트 추가", description = "데이트 관련 CRUD API")
@@ -74,8 +75,8 @@ public class DatingController {
     public ResponseEntity<ApiResponse<DatingResponseDto>> updateDating(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id,
-            @RequestBody DatingRequestDto requestDto) {
-        return datingService.updateDating(userDetails.getUser(), id, requestDto);
+            @ModelAttribute DatingRequestDto datingRequestDto) throws IOException {
+        return datingService.updateDating(userDetails.getUser(), id, datingRequestDto);
     }
 
     @Operation(summary = "관리자 데이트 삭제", description = "관리자가 불건전한 데이트를 삭제할 수 있습니다.")
