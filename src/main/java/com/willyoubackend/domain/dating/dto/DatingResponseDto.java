@@ -15,12 +15,12 @@ public class DatingResponseDto {
     private final String datingTheme;
     private final LocalDateTime createdAt;
     private final String userNickname;
-    private final ImageResponseDto userProfilePic;
+    private final ImageResponseDto datingImage;
 
     public DatingResponseDto(Dating dating) {
         this.datingId = dating.getId();
         this.userId = dating.getUser().getId();
-        this.userProfilePic = new ImageResponseDto(dating.getUser().getProfileImages().get(0));
+        this.datingImage = (dating.getDatingImage() == null) ? new ImageResponseDto(dating.getUser().getProfileImages().get(0)) : new ImageResponseDto(dating.getDatingImage());
         this.userNickname = dating.getUser().getUserProfileEntity().getNickname();
         this.datingTitle = dating.getTitle();
         this.datingLocation = dating.getLocation();
