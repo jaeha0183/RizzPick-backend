@@ -10,11 +10,10 @@ import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusReposi
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
 import com.willyoubackend.domain.user_profile.dto.*;
-import com.willyoubackend.domain.user_profile.entity.GenderEnum;
-import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
-import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
+import com.willyoubackend.domain.user_profile.entity.*;
 import com.willyoubackend.domain.user_profile.repository.ProfileImageRepository;
 import com.willyoubackend.domain.user_profile.repository.UserProfileRepository;
+import com.willyoubackend.domain.user_profile.repository.UserRecommendationRepository;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -25,8 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +40,7 @@ public class UserProfileService {
     private final UserNopeStatusRepository userNopeStatusRepository;
     private final ProfileImageRepository profileImageRepository;
     private final UserMatchStatusRepository userMatchStatusRepository;
+    private final UserRecommendationRepository userRecommendationRepository;
 
     public UserProfileResponseDto updateUserProfile(UserEntity requestingUser, Long userId, UserProfileRequestDto userProfileRequestDto) {
 
@@ -63,6 +61,33 @@ public class UserProfileService {
         List<ProfileImageEntity> profileImageEntities = profileImageRepository.findAllByUserEntity(userToUpdate);
         userProfileEntity.setUserActiveStatus(!profileImageEntities.isEmpty());
         userProfileRepository.save(userProfileEntity);
+        // User Recommendation
+        if (userProfileEntity.getGender().equals(GenderEnum.FEMALE)) {
+            userRecommendationRepository.save(
+                    new UserRecommendation(
+                            GenderRecommendationEnum.MALE,
+                            false, 0L,
+                            false, .0F, .0F, .0F
+                    )
+            );
+        } else if (userProfileEntity.getGender().equals(GenderEnum.MALE)) {
+            userRecommendationRepository.save(
+                    new UserRecommendation(
+                            GenderRecommendationEnum.FEMALE,
+                            false, 0L,
+                            false, .0F, .0F, .0F
+                    )
+            );
+        } else {
+            userRecommendationRepository.save(
+                    new UserRecommendation(
+                            GenderRecommendationEnum.BOTH,
+                            false, 0L,
+                            false, .0F, .0F, .0F
+                    )
+            );
+        }
+
         return new UserProfileResponseDto(userToUpdate);
     }
 
@@ -113,7 +138,7 @@ public class UserProfileService {
 
     public ResponseEntity<ApiResponse<UserProfileMatchResponseDto>> getUserProfile(UserEntity user, Long userId) {
         UserMatchStatus matchStatus = (userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId)) == null) ? userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(findUserById(userId), user) : userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId));
-        Long matchId =(matchStatus == null)?null:matchStatus.getId();
+        Long matchId = (matchStatus == null) ? null : matchStatus.getId();
         UserProfileMatchResponseDto userProfileResponseDto = new UserProfileMatchResponseDto(findUserById(userId), matchId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
