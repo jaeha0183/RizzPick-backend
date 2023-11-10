@@ -2,6 +2,7 @@ package com.willyoubackend.domain.sse.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.willyoubackend.domain.sse.entity.Alert;
+import com.willyoubackend.domain.user.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
