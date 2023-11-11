@@ -1,6 +1,7 @@
 package com.willyoubackend.domain.dating.dto;
 
 import com.willyoubackend.domain.dating.entity.Dating;
+import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -15,9 +16,11 @@ public class DatingDetailResponseDto {
     private final String datingTheme;
     private final LocalDateTime createdAt;
     private final List<ActivityResponseDto> activityResponseDtoList;
+    private final ImageResponseDto datingImage;
 
     public DatingDetailResponseDto(Dating dating, List<ActivityResponseDto> activityResponseDtoList) {
         this.datingId = dating.getId();
+        this.datingImage = new ImageResponseDto(dating.getDatingImage());
         this.createdAt = dating.getCreatedAt();
         this.userId = dating.getUser().getId();
         this.datingTitle = dating.getTitle();

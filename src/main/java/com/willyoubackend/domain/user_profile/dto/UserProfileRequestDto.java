@@ -16,7 +16,8 @@ public class UserProfileRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
     private String intro;
-    private String education;
+    private String hobby;
+    private String interest;
     private boolean userActiveStatus;
     private String gender;
     private String location;
