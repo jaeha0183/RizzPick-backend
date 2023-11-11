@@ -1,12 +1,14 @@
 package com.willyoubackend.domain.dating.controller;
 
 import com.willyoubackend.domain.dating.dto.DatingDetailResponseDto;
+import com.willyoubackend.domain.dating.dto.DatingImageRequestDto;
 import com.willyoubackend.domain.dating.dto.DatingRequestDto;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.dating.service.DatingService;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user.security.UserDetailsImpl;
+import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -75,8 +78,17 @@ public class DatingController {
     public ResponseEntity<ApiResponse<DatingResponseDto>> updateDating(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long id,
-            @ModelAttribute DatingRequestDto datingRequestDto) throws IOException {
+            @RequestBody DatingRequestDto datingRequestDto) throws IOException {
         return datingService.updateDating(userDetails.getUser(), id, datingRequestDto);
+    }
+
+    @Operation(summary = "데이팅 이미지 입력")
+    @PutMapping(value = "/dating/image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ImageResponseDto>> updateDatingImage(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long id,
+            @ModelAttribute DatingImageRequestDto requestDto) throws IOException {
+        return datingService.updateDatingImage(userDetails.getUser(), id, requestDto);
     }
 
     @Operation(summary = "관리자 데이트 삭제", description = "관리자가 불건전한 데이트를 삭제할 수 있습니다.")
