@@ -39,26 +39,28 @@ public class UserLikeService {
 
     @Transactional
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createLike(UserEntity sentUser, Long userId) {
+        log.info("좋아요1");
         UserEntity receivedUser = userRepository.findById(userId).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
         );
-
+        log.info("좋아요2");
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(sentUser, receivedUser) != null ||
                 userNopeStatusRepository.findBySentUserAndReceivedUser(sentUser, receivedUser) != null)
             throw new CustomException(ErrorCode.DUPLICATED_LIKE);
-
+        log.info("좋아요3");
         alertService.send(receivedUser, sentUser, "새로운 좋아요를 받았습니다.");
-
+        log.info("좋아요4");
         userLikeStatusRepository.save(new UserLikeStatus(sentUser, receivedUser));
-
+        log.info("좋아요5");
         if (userLikeStatusRepository.findBySentUserAndReceivedUser(receivedUser, sentUser) != null) {
-
+            log.info("좋아요6");
             alertService.send(receivedUser, sentUser, "새로운 매치가 있습니다.");
 
             userMatchStatusRepository.save(new UserMatchStatus(sentUser, receivedUser));
             chatRoomService.createRoom(sentUser, receivedUser);
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("새로운 인연이 시작 됐습니다!"));
         }
+        log.info("좋아요7");
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("행운을 빌어요!"));
     }
 }
