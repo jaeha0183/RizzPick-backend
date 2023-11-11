@@ -92,9 +92,9 @@ public class AlertService {
         alertRepository.save(alert);
 
         AlertResponseDto alertResponseDto = new AlertResponseDto(alert);
-        // Redis pub/sub 채널명 정의
-        ChannelTopic topic = new ChannelTopic("alertChannel");
-        redisPublisher.publishAlert(topic, alertResponseDto);
+//        // Redis pub/sub 채널명 정의
+//        ChannelTopic topic = new ChannelTopic("alertChannel");
+//        redisPublisher.publishAlert(topic, alertResponseDto);
 
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach((key, emitter) -> {
