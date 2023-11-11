@@ -20,7 +20,7 @@ public class DatingDetailResponseDto {
 
     public DatingDetailResponseDto(Dating dating, List<ActivityResponseDto> activityResponseDtoList) {
         this.datingId = dating.getId();
-        this.datingImage = new ImageResponseDto(dating.getDatingImage());
+        this.datingImage = (dating.getDatingImage() == null) ? new ImageResponseDto(dating.getUser().getProfileImages().get(0)) : new ImageResponseDto(dating.getDatingImage());
         this.createdAt = dating.getCreatedAt();
         this.userId = dating.getUser().getId();
         this.datingTitle = dating.getTitle();

@@ -13,6 +13,7 @@ import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
+import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
@@ -130,13 +131,14 @@ public class DatingService {
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<String>> datingImage(UserEntity user, Long id, DatingImageRequestDto requestDto) throws IOException {
+    public ResponseEntity<ApiResponse<ImageResponseDto>> updateDatingImage(UserEntity user, Long id, DatingImageRequestDto requestDto) throws IOException {
         Dating dating = findByIdDateAuthCheck(id, user);
         switch (requestDto.getAction()) {
             case ADD -> {
                 String fileName = s3Uploader.upload(requestDto.getImage(), "datingImage/" + user.getUsername());
                 DatingImage datingImage = new DatingImage(fileName);
                 datingImage.setDating(dating);
+                dating.setDatingImage(datingImage);
                 datingImageRepository.save(datingImage);
             }
             case MODIFY -> {
@@ -146,12 +148,12 @@ public class DatingService {
                 datingImage.update(fileName);
             }
             case DELETE -> {
-                DatingImage datingImage = findByIDatingImageAuthCheck(id,dating);
+                DatingImage datingImage = findByIDatingImageAuthCheck(requestDto.getId(), dating);
                 s3Uploader.delete(datingImage.getImage());
                 datingImageRepository.delete(datingImage);
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("실행 되었습니다."));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new ImageResponseDto(dating.getDatingImage())));
     }
 
     private DatingImage findByIDatingImageAuthCheck(Long id, Dating dating) {
