@@ -39,6 +39,12 @@ public class AlertService {
         log.info("subscribe");
         Long userId = userDetails.getUser().getId();
         String id = userId + "_" + System.currentTimeMillis();
+
+        emitterRepository.findByUserId(userId).ifPresent(existEmitter->{
+            existEmitter.complete();
+            emitterRepository.deleteAllByUserId(userId);
+        });
+
         SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
 
         emitter.onCompletion(() -> emitterRepository.deleteById(id));
