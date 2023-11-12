@@ -10,7 +10,7 @@
 ---
 ## ✅ 서비스 핵심 기능
 
-### **1. 데이트 계획 공유 및 선택** 
+### **1. 데이트 계획 공유 및 선택**
 >사용자들이 개인적으로 기획한 데이트 아이디어를 공유하고, 상대방의 계획을 보며 선택하는 기능입니다.
 
 ### **2. 개인 프로필 기반 추천**
@@ -42,8 +42,7 @@
 
 ---
 ## 📑 ERD
-![RizzPickERD](https://github.com/RizzPick/RizzPick-backend/assets/114673187/86754c1c-2360-4dd1-a7c1-0daf712f4bab)
-
+![RizzPickERD](https://github.com/RizzPick/RizzPick-backend/assets/114673187/89789c7e-8db7-492f-ad79-8dbea7e79331)
 ---
 ## 🛠트러블슈팅
 
@@ -77,12 +76,12 @@ Websocket을 활용하여 실시간 채팅 기능을 구현하던 중, 실시간
 
 > 오류 해결 시도
 
-    
+
 Websocket의 경우 백엔드에서만으로는 이러한 문제를 정확하게 파악하기가 어려웠다. 그래서 프론트엔드 팀과 협업을 시작했고, 양쪽 모두의 코드를 상호 검토해 보면서 오류의 원인을 찾으려고 노력했다. 이 과정에서 발생한 오류 로그를 기반으로 구글링을 진행했고, ChatGPT의 도움도 받아 원인을 해결하려고 했다.
-    
+
 > 오류 해결 방법
 
-    
+
 문제 상황에서 다음과 같은 에러 로그가 관찰되었다.
 
 ```java
@@ -91,20 +90,20 @@ com.willyoubackend.global.exception.CustomException: null
         ...
         at java.base/java.lang.Thread.run(Thread.java:833) ...
 ```
-    
+
 로그 내용을 보면, **`ChatRoomService`**의 **`validateChatRoomId`** 메서드에서 **`CustomException`**이 발생하고 있었다. 이 메서드는 **`ChatRoomId`**의 유효성을 검사하는 코드로 이 로그는 이 유효성 검사에서 문제가 발생했음을 나타내주고 있었다.
-    
+
 문제 해결의 핵심은 아래의 **`ChatRoomId`** 검증 코드를 수정하는 것이었다.
-    
+
 ```java
 // chatRoomId 검사 메서드
 private void validateChatRoomId(Long chatRoomId) {
-    if (chatRoomId == null) {
+        if (chatRoomId == null) {
         throw new CustomException(ErrorCode.INVALID_CHATROOM_ID);
-    }
-}
+        }
+        }
    ```
-    
+
 이 코드를 일시적으로 삭제한 후 다시 실행해 보니, 문제가 해결된 것을 확인할 수 있었다.
 또한 Redis에 채팅방 정보를 저장하는 것은 휘발성이 높은 데이터이므로, Redis에 저장하는 대신 MySQL에 저장하는 방식으로 변경했다.
 
