@@ -81,19 +81,31 @@ public class ChatRoomService {
                 .build();
     }
 
-    public ChatRoomInfoDto findChatRoomInfo(Long chatRoomId, Long id) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM)
-        );
+    public ChatRoomInfoDto findChatRoomInfo(Long chatRoomId, Long userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM));
 
-        UserEntity oppositeUser = findOppositeUser(chatRoom, id);
+        UserEntity oppositeUser = findOppositeUser(chatRoom, userId);
+
+        List<SocketMessage> messages = chatMessageRepository.findByChatRoomId(chatRoomId);
+        List<SocketMessageResponseDto> messageDtos = messages.stream()
+                .map(message -> SocketMessageResponseDto.builder()
+                        .chatRoomId(chatRoomId)
+                        .sender(message.getSender())
+                        .message(message.getMessage())
+                        .time(message.getTime())
+                        .build())
+                .collect(Collectors.toList());
 
         return ChatRoomInfoDto.builder()
                 .userId(oppositeUser.getId())
+                .username(oppositeUser.getUsername())
                 .nickname(oppositeUser.getUserProfileEntity().getNickname())
                 .image(oppositeUser.getProfileImages().isEmpty() ? null : oppositeUser.getProfileImages().get(0).getImage())
+                .messages(messageDtos)
                 .build();
     }
+
 
     private UserEntity findOppositeUser(ChatRoom chatRoom, Long id) {
         UserEntity oppositeUser;
