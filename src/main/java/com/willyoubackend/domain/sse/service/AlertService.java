@@ -122,10 +122,12 @@ public class AlertService {
 //        redisPublisher.publishAlert(topic, alertResponseDto);
 
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
-        sseEmitters.forEach((key, emitter) -> {
-            emitterRepository.saveEventCache(key, alert);
-            sendToClient(emitter, key, new AlertResponseDto(alert));
-        });
+        if (sseEmitters != null) {
+            sseEmitters.forEach((key, emitter) -> {
+                emitterRepository.saveEventCache(key, alert);
+                sendToClient(emitter, key, new AlertResponseDto(alert));
+            });
+        }
     }
 
     private Alert createAlert(UserEntity receiver, UserEntity sender, String message) {
