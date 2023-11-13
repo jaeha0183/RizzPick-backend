@@ -122,16 +122,21 @@ public class AlertService {
         redisPublisher.publishAlert(topic, alertResponseDto);
 
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
-        if (sseEmitters != null) {
-            sseEmitters.forEach((key, emitter) -> {
-                if (emitter != null && key != null) {
-                    emitterRepository.saveEventCache(key, alert);
-                    sendToClient(emitter, key, new AlertResponseDto(alert));
-                } else {
-                    log.warn("SSE emitter is null for key: {}", key);
-                }
-            });
-        }
+        sseEmitters.forEach((key, emitter) -> {
+            emitterRepository.saveEventCache(key, alert);
+            sendToClient(emitter, key, new AlertResponseDto(alert));
+        });
+
+//        if (sseEmitters != null) {
+//            sseEmitters.forEach((key, emitter) -> {
+//                if (emitter != null && key != null) {
+//                    emitterRepository.saveEventCache(key, alert);
+//                    sendToClient(emitter, key, new AlertResponseDto(alert));
+//                } else {
+//                    log.warn("SSE emitter is null for key: {}", key);
+//                }
+//            });
+//        }
     }
 
     private Alert createAlert(UserEntity receiver, UserEntity sender, String message) {
