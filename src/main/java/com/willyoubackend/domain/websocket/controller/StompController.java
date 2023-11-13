@@ -40,6 +40,11 @@ public class StompController {
         simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/message", chatMessage);
     }
 
+    @MessageMapping("/heartbeat")
+    public void heartbeat() {
+        log.info("heartbeat");
+    }
+
     @Transactional
     @MessageMapping("/readMessage")
     public void handleReadMessage(@Payload ReadMessagePayload payload) {
