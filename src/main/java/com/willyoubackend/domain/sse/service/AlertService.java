@@ -106,6 +106,7 @@ public class AlertService {
         // Broken pipe 처리 로직 구현
         // 예: 연결 종료, 재시도 로직, 사용자에게 알림 전송 등
         emitterRepository.deleteById(id);
+        emitterRepository.findAllStartWithById(id);
     }
 
     public void send(UserEntity receiver, UserEntity sender, String message) {
