@@ -29,7 +29,7 @@ public class ChatRoomController {
         return chatRoomService.findChatRoomsByUserId(userDetails.getUser().getId());
     }
 
-    @Operation(summary = "특정 체팅방 정보 조회")
+    @Operation(summary = "특정 채팅방 정보 조회")
     @GetMapping("/rooms/{chatRoomId}")
     public ChatRoomInfoDto getChatRoomInfo(@PathVariable Long chatRoomId) {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
