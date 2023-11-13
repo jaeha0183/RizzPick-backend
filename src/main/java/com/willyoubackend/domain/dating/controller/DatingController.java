@@ -82,6 +82,14 @@ public class DatingController {
         return datingService.updateDating(userDetails.getUser(), id, datingRequestDto);
     }
 
+    @Operation(summary = "데이트 삭제", description = "자신이 작성한 데이트일 경우 삭제가 가능합니다.")
+    @DeleteMapping("/dating/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteDating(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long id) {
+        return datingService.deleteDating(userDetails.getUser(), id);
+    }
+
     @Operation(summary = "데이팅 이미지 입력")
     @PutMapping(value = "/dating/image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ImageResponseDto>> updateDatingImage(
