@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 @Builder
 public class SocketMessageResponseDto {
     private Long chatRoomId;
+    private Long messageId;
     private String sender;
     private String message;
     private ZonedDateTime time;

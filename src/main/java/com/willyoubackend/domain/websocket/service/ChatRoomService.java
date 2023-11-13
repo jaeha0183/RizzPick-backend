@@ -92,6 +92,7 @@ public class ChatRoomService {
                 .map(message -> SocketMessageResponseDto.builder()
                         .chatRoomId(chatRoomId)
                         .sender(message.getSender())
+                        .messageId(message.getId())
                         .message(message.getMessage())
                         .time(message.getTime())
                         .build())
