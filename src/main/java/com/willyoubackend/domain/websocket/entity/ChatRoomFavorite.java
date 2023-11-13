@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.ZonedDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -25,4 +27,6 @@ public class ChatRoomFavorite {
     @ManyToOne
     @JoinColumn(name = "chatroom_id")
     private ChatRoom chatRoom;
+
+    private ZonedDateTime addedAt;
 }
