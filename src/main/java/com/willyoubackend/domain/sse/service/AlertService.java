@@ -86,6 +86,7 @@ public class AlertService {
             }
         } catch (IOException exception) {
             emitterRepository.deleteById(id);
+            log.error("IOException : ", exception);
             throw new RuntimeException("연결 오류");
         }
     }

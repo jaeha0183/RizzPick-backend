@@ -19,6 +19,8 @@ public class EmitterRepository {
 
     public SseEmitter save(String id, SseEmitter sseEmitter) {
         emitters.put(id, sseEmitter);
+        sseEmitter.onCompletion(()->this.deleteById(id));
+        sseEmitter.onTimeout(()->this.deleteById(id));
         return sseEmitter;
     }
 
@@ -64,6 +66,7 @@ public class EmitterRepository {
 
     public void deleteById(String id) {
         emitters.remove(id);
+        deleteAllEventCacheStartWithId(id);
     }
 
     public void deleteAllByUserId(Long userId) {
