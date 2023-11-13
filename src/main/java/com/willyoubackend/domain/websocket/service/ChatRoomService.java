@@ -4,14 +4,12 @@ import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_profile.entity.ProfileImageEntity;
 import com.willyoubackend.domain.user_profile.entity.UserProfileEntity;
-import com.willyoubackend.domain.user_profile.service.UserProfileService;
-import com.willyoubackend.domain.websocket.entity.ChatRoom;
-import com.willyoubackend.domain.websocket.entity.ChatRoomDto;
-import com.willyoubackend.domain.websocket.entity.ChatRoomResponseDto;
-import com.willyoubackend.domain.websocket.entity.SocketMessage;
+import com.willyoubackend.domain.websocket.entity.*;
 import com.willyoubackend.domain.websocket.repository.ChatMessageRepository;
 import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import com.willyoubackend.global.dto.ApiResponse;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +52,9 @@ public class ChatRoomService {
     }
 
     private ChatRoomDto convertToDto(ChatRoom chatRoom, Long userId) {
-        UserEntity otherUser = chatRoom.getUser1().getId().equals(userId) ? chatRoom.getUser2() : chatRoom.getUser1();
-        UserProfileEntity userProfileEntity = otherUser.getUserProfileEntity();
-        List<ProfileImageEntity> profileImageEntities = otherUser.getProfileImages();
+        UserEntity oppositeUser = findOppositeUser(chatRoom, userId);
+        UserProfileEntity userProfileEntity = oppositeUser.getUserProfileEntity();
+        List<ProfileImageEntity> profileImageEntities = oppositeUser.getProfileImages();
 
         String image = (profileImageEntities != null && !profileImageEntities.isEmpty())
                 ? profileImageEntities.get(0).getImage()
@@ -66,8 +64,8 @@ public class ChatRoomService {
 
         return ChatRoomDto.builder()
                 .chatRoomId(chatRoom.getId())
-                .users(Arrays.asList(otherUser.getUsername()))
-                .userId(otherUser.getId())
+                .users(Arrays.asList(oppositeUser.getUsername()))
+                .userId(oppositeUser.getId())
                 .nickname(userProfileEntity.getNickname())
                 .image(image)
                 .birthday(userProfileEntity.getBirthday())
@@ -81,5 +79,31 @@ public class ChatRoomService {
                 .latestMessage(latestMessage != null ? latestMessage.getMessage() : null)
                 .latestMessageTime(latestMessage != null ? latestMessage.getTime().toString() : null)
                 .build();
+    }
+
+    public ChatRoomInfoDto findChatRoomInfo(Long chatRoomId, Long id) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_CHATROOM)
+        );
+
+        UserEntity oppositeUser = findOppositeUser(chatRoom, id);
+
+        return ChatRoomInfoDto.builder()
+                .userId(oppositeUser.getId())
+                .nickname(oppositeUser.getUserProfileEntity().getNickname())
+                .image(oppositeUser.getProfileImages().isEmpty() ? null : oppositeUser.getProfileImages().get(0).getImage())
+                .build();
+    }
+
+    private UserEntity findOppositeUser(ChatRoom chatRoom, Long id) {
+        UserEntity oppositeUser;
+        if (chatRoom.getUser1().getId().equals(id)) {
+            oppositeUser = chatRoom.getUser2();
+        } else if (chatRoom.getUser2().getId().equals(id)) {
+            oppositeUser = chatRoom.getUser1();
+        } else {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+        return oppositeUser;
     }
 }
