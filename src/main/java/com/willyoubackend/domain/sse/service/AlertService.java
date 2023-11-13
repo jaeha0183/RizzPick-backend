@@ -124,7 +124,7 @@ public class AlertService {
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         if (sseEmitters != null) {
             sseEmitters.forEach((key, emitter) -> {
-                if (emitter != null) {
+                if (emitter != null && key != null) {
                     emitterRepository.saveEventCache(key, alert);
                     sendToClient(emitter, key, new AlertResponseDto(alert));
                 } else {
