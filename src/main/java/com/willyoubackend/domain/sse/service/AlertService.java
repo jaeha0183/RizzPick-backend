@@ -65,10 +65,15 @@ public class AlertService {
 
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
+            log.info(data.toString());
             // data가 Alert 객체인지 확인 후 처리
             if(data instanceof Alert) {
                 Alert alert = (Alert) data;
                 // AlertResponseDto에 생성 시간을 포함하여 클라이언트에게 전달
+                log.info(alert.getMessage());
+                log.info(alert.getReceiver().getUsername());
+                log.info(alert.getSender().getUsername());
+                log.info(alert.getUrl());
                 AlertResponseDto alertResponseDto = new AlertResponseDto(alert);
                 emitter.send(SseEmitter.event()
                         .id(id)
