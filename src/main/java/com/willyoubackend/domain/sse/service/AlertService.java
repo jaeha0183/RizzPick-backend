@@ -103,6 +103,7 @@ public class AlertService {
     // Broken pipe 오류 처리를 위한 메서드
     private void handleBrokenPipe(SseEmitter emitter, String id) {
         log.warn("Broken pipe detected for emitter ID " + id);
+        log.info(String.valueOf(emitterRepository.findAllStartWithById(id).size()));
         // Broken pipe 처리 로직 구현
         // 예: 연결 종료, 재시도 로직, 사용자에게 알림 전송 등
         emitterRepository.deleteById(id);
