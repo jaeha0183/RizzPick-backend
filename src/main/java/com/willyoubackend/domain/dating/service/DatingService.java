@@ -120,7 +120,7 @@ public class DatingService {
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(UserEntity user, Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteDating(UserEntity user, Long id) {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
         List<ActivitiesDating> activitiesDatingList = activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate);
         selectedDate.setDeleteStatus(true);
