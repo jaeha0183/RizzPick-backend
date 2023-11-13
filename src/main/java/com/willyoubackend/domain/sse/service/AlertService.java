@@ -87,8 +87,25 @@ public class AlertService {
         } catch (IOException exception) {
             emitterRepository.deleteById(id);
             log.error("IOException : ", exception);
+            if (isBrokenPipeException(exception))
+                handleBrokenPipe(emitter, id);
             throw new RuntimeException("연결 오류");
         }
+    }
+
+    // IOException이 Broken pipe인지 확인하는 메서드
+    private boolean isBrokenPipeException(IOException exception) {
+        // Broken pipe 확인 로직 구현
+        // 예: exception.getMessage().contains("Broken pipe")
+        return exception.getMessage().contains("Broken pipe");
+    }
+
+    // Broken pipe 오류 처리를 위한 메서드
+    private void handleBrokenPipe(SseEmitter emitter, String id) {
+        log.warn("Broken pipe detected for emitter ID " + id);
+        // Broken pipe 처리 로직 구현
+        // 예: 연결 종료, 재시도 로직, 사용자에게 알림 전송 등
+        emitterRepository.deleteById(id);
     }
 
     public void send(UserEntity receiver, UserEntity sender, String message) {
