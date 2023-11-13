@@ -142,7 +142,7 @@ public class DatingService {
                 datingImageRepository.save(datingImage);
             }
             case MODIFY -> {
-                DatingImage datingImage = findByIDatingImageAuthCheck(id, dating);
+                DatingImage datingImage = findByIDatingImageAuthCheck(requestDto.getId(), dating);
                 s3Uploader.delete(datingImage.getImage());
                 String fileName = s3Uploader.upload(requestDto.getImage(), "datingImage/" + user.getUsername());
                 datingImage.update(fileName);
