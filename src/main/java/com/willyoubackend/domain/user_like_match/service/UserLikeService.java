@@ -37,6 +37,7 @@ public class UserLikeService {
     private final AlertService alertService;
     private final Random random = new Random();
 
+    @Transactional
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createLike(UserEntity sentUser, Long userId) {
         log.info("좋아요1");
         UserEntity receivedUser = userRepository.findById(userId).orElseThrow(
