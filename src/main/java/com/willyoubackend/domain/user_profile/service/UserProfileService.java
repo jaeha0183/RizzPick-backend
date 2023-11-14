@@ -85,7 +85,7 @@ public class UserProfileService {
             if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     filteredUser.getUserProfileEntity().isUserActiveStatus()) {
-                DatingResponseDto datingResponseDto = new DatingResponseDto(datingRepository.findAllByUser(filteredUser).get(0));
+                DatingResponseDto datingResponseDto = (datingRepository.findAllByUser(filteredUser) == null) ? null : new DatingResponseDto(datingRepository.findAllByUser(filteredUser).get(0));
                 userProfileResponseDtoList.add(new UserMainResponseDto(filteredUser, datingResponseDto));
             }
             maxLimit++;
@@ -114,7 +114,7 @@ public class UserProfileService {
 
     public ResponseEntity<ApiResponse<UserProfileMatchResponseDto>> getUserProfile(UserEntity user, Long userId) {
         UserMatchStatus matchStatus = (userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId)) == null) ? userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(findUserById(userId), user) : userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId));
-        Long matchId =(matchStatus == null)?null:matchStatus.getId();
+        Long matchId = (matchStatus == null) ? null : matchStatus.getId();
         UserProfileMatchResponseDto userProfileResponseDto = new UserProfileMatchResponseDto(findUserById(userId), matchId, matchId != null);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
