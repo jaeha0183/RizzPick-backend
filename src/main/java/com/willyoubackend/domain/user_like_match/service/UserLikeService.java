@@ -37,7 +37,6 @@ public class UserLikeService {
     private final AlertService alertService;
     private final Random random = new Random();
 
-    @Transactional
     public ResponseEntity<ApiResponse<LikeNopeResponseDto>> createLike(UserEntity sentUser, Long userId) {
         log.info("좋아요1");
         UserEntity receivedUser = userRepository.findById(userId).orElseThrow(
@@ -48,7 +47,6 @@ public class UserLikeService {
                 userNopeStatusRepository.findBySentUserAndReceivedUser(sentUser, receivedUser) != null)
             throw new CustomException(ErrorCode.DUPLICATED_LIKE);
         log.info("좋아요3");
-        alertService.send(receivedUser, sentUser, "새로운 좋아요를 받았습니다.");
         log.info("좋아요4");
         userLikeStatusRepository.save(new UserLikeStatus(sentUser, receivedUser));
         log.info("좋아요5");
@@ -61,6 +59,8 @@ public class UserLikeService {
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("새로운 인연이 시작 됐습니다!"));
         }
         log.info("좋아요7");
+        alertService.send(receivedUser, sentUser, "새로운 좋아요를 받았습니다.");
+
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("행운을 빌어요!"));
     }
 }
