@@ -85,7 +85,7 @@ public class UserProfileService {
             if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     filteredUser.getUserProfileEntity().isUserActiveStatus()) {
-                DatingResponseDto datingResponseDto = (datingRepository.findAllByUser(filteredUser) == null) ? null : new DatingResponseDto(datingRepository.findAllByUser(filteredUser).get(0));
+                DatingResponseDto datingResponseDto = (datingRepository.findAllByUser(filteredUser) == null) ? null : (datingRepository.findAllByUser(filteredUser).size() == 0)?null:new DatingResponseDto(datingRepository.findAllByUser(filteredUser).get(0));
                 userProfileResponseDtoList.add(new UserMainResponseDto(filteredUser, datingResponseDto));
             }
             maxLimit++;
