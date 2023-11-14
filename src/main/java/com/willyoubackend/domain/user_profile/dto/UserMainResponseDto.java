@@ -1,8 +1,11 @@
 package com.willyoubackend.domain.user_profile.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
-import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user_profile.service.UserProfileService;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,9 +15,10 @@ import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-public class UserProfileMatchResponseDto {
+public class UserMainResponseDto {
     private Long userId;
     private String nickname;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
     private String intro;
     private String hobby;
@@ -25,21 +29,22 @@ public class UserProfileMatchResponseDto {
     private String religion;
     private List<ImageResponseDto> profileImages;
     private DatingResponseDto dating;
-    private Long matchId;
-    private Boolean matchStatus;
+//    private boolean isNew;
+//    private boolean userActiveStatus;
 
-    public UserProfileMatchResponseDto(UserEntity userEntity, Long matchId, Boolean matchStatus) {
+    public UserMainResponseDto(UserEntity userEntity, DatingResponseDto datingResponseDto) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
         this.birthday = userEntity.getUserProfileEntity().getBirthday();
+//        if(age<19){
+//            throw new CustomException(ErrorCode.INVALID_AGE);
+//        }
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.hobby = userEntity.getUserProfileEntity().getHobby();
         this.interest = userEntity.getUserProfileEntity().getInterest();
         this.location = userEntity.getUserProfileEntity().getLocation();
         this.mbti = userEntity.getUserProfileEntity().getMbti();
         this.religion = userEntity.getUserProfileEntity().getReligion();
-        this.matchId = matchId;
-        this.matchStatus = matchStatus;
 
         if (userEntity.getUserProfileEntity().getGender() != null) {
             this.gender = userEntity.getUserProfileEntity().getGender().name();
@@ -55,6 +60,8 @@ public class UserProfileMatchResponseDto {
 //        }
 
         this.profileImages = userEntity.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
-        this.dating = (userEntity.getUserProfileEntity().getDating() != null) ? new DatingResponseDto(userEntity.getUserProfileEntity().getDating()) : null;
+        this.dating = datingResponseDto;
+//        this.isNew = userEntity.getUserProfileEntity().isNew();
+//        this.userActiveStatus = userEntity.getUserProfileEntity().isUserActiveStatus();
     }
 }
