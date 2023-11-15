@@ -3,6 +3,9 @@ package com.willyoubackend.domain.user_profile.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.willyoubackend.domain.dating.dto.DatingResponseDto;
 import com.willyoubackend.domain.user.entity.UserEntity;
+import com.willyoubackend.domain.user_profile.service.UserProfileService;
+import com.willyoubackend.global.exception.CustomException;
+import com.willyoubackend.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-public class UserOwnProfileResponseDto {
+public class UserMainResponseDto {
     private Long userId;
     private String nickname;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -25,14 +28,17 @@ public class UserOwnProfileResponseDto {
     private String mbti;
     private String religion;
     private List<ImageResponseDto> profileImages;
-    private List<DatingResponseDto> dating;
-    private boolean isNew;
-    private boolean userActiveStatus;
+    private DatingResponseDto dating;
+//    private boolean isNew;
+//    private boolean userActiveStatus;
 
-    public UserOwnProfileResponseDto(UserEntity userEntity, List<DatingResponseDto> datingResponseDtoList, boolean isNew, boolean userActiveStatus) {
+    public UserMainResponseDto(UserEntity userEntity, DatingResponseDto datingResponseDto) {
         this.userId = userEntity.getId();
         this.nickname = userEntity.getUserProfileEntity().getNickname();
         this.birthday = userEntity.getUserProfileEntity().getBirthday();
+//        if(age<19){
+//            throw new CustomException(ErrorCode.INVALID_AGE);
+//        }
         this.intro = userEntity.getUserProfileEntity().getIntro();
         this.hobby = userEntity.getUserProfileEntity().getHobby();
         this.interest = userEntity.getUserProfileEntity().getInterest();
@@ -54,8 +60,8 @@ public class UserOwnProfileResponseDto {
 //        }
 
         this.profileImages = userEntity.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
-        this.dating = datingResponseDtoList;
-        this.isNew = userEntity.getUserProfileEntity().isNew();
-        this.userActiveStatus = userEntity.getUserProfileEntity().isUserActiveStatus();
+        this.dating = datingResponseDto;
+//        this.isNew = userEntity.getUserProfileEntity().isNew();
+//        this.userActiveStatus = userEntity.getUserProfileEntity().isUserActiveStatus();
     }
 }

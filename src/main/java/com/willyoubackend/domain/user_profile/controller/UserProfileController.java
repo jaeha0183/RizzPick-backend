@@ -49,7 +49,7 @@ public class UserProfileController {
 
     @Operation(summary = "프로필 추천 MySQL")
     @GetMapping("/userprofile/recommendations")
-    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getUserProfiles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ApiResponse<List<UserMainResponseDto>>> getUserProfiles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userProfileService.getRecommendations(userDetails.getUser());
     }
 

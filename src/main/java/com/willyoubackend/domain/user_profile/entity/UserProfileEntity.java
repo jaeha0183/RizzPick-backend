@@ -39,7 +39,10 @@ public class UserProfileEntity {
     private String intro;
 
     @Column(nullable = true)
-    private String education;
+    private String hobby;
+
+    @Column(nullable = true)
+    private String interest;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean userActiveStatus;
@@ -72,7 +75,8 @@ public class UserProfileEntity {
         this.nickname = userProfileRequestDto.getNickname();
         this.birthday = userProfileRequestDto.getBirthday();
         this.intro = userProfileRequestDto.getIntro();
-        this.education = userProfileRequestDto.getEducation();
+        this.hobby = userProfileRequestDto.getHobby();
+        this.interest = userProfileRequestDto.getInterest();
         this.userActiveStatus = userProfileRequestDto.isUserActiveStatus();
         this.location = userProfileRequestDto.getLocation();
         this.mbti = userProfileRequestDto.getMbti();

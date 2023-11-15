@@ -1,22 +1,23 @@
 package com.willyoubackend.domain.dating.service;
 
-import com.willyoubackend.domain.dating.dto.ActivityResponseDto;
-import com.willyoubackend.domain.dating.dto.DatingDetailResponseDto;
-import com.willyoubackend.domain.dating.dto.DatingRequestDto;
-import com.willyoubackend.domain.dating.dto.DatingResponseDto;
+import com.willyoubackend.domain.dating.dto.*;
 import com.willyoubackend.domain.dating.entity.ActivitiesDating;
 import com.willyoubackend.domain.dating.entity.Activity;
 import com.willyoubackend.domain.dating.entity.Dating;
+import com.willyoubackend.domain.dating.entity.DatingImage;
 import com.willyoubackend.domain.dating.repository.ActivitiesDatingRepository;
+import com.willyoubackend.domain.dating.repository.DatingImageRepository;
 import com.willyoubackend.domain.dating.repository.DatingRepository;
 import com.willyoubackend.domain.user.entity.UserEntity;
 import com.willyoubackend.domain.user.repository.UserRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserLikeStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserMatchStatusRepository;
 import com.willyoubackend.domain.user_like_match.repository.UserNopeStatusRepository;
+import com.willyoubackend.domain.user_profile.dto.ImageResponseDto;
 import com.willyoubackend.global.dto.ApiResponse;
 import com.willyoubackend.global.exception.CustomException;
 import com.willyoubackend.global.exception.ErrorCode;
+import com.willyoubackend.global.util.S3Uploader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j(topic = "Dating Service")
 public class DatingService {
+    private final S3Uploader s3Uploader;
     private final DatingRepository datingRepository;
+    private final DatingImageRepository datingImageRepository;
     private final ActivitiesDatingRepository activitiesDatingRepository;
     private final UserLikeStatusRepository userLikeStatusRepository;
     private final UserNopeStatusRepository userNopeStatusRepository;
@@ -109,14 +113,14 @@ public class DatingService {
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<DatingResponseDto>> updateDating(UserEntity user, Long id, DatingRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<DatingResponseDto>> updateDating(UserEntity user, Long id, DatingRequestDto requestDto) throws IOException {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
         selectedDate.update(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new DatingResponseDto(selectedDate)));
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse<DatingResponseDto>> deleteDating(UserEntity user, Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteDating(UserEntity user, Long id) {
         Dating selectedDate = findByIdDateAuthCheck(id, user);
         List<ActivitiesDating> activitiesDatingList = activitiesDatingRepository.findAllActivitiesDatingByDating(selectedDate);
         selectedDate.setDeleteStatus(true);
@@ -124,6 +128,41 @@ public class DatingService {
             activitiesDating.setDeleteStatus(true);
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successMessage("삭제 되었습니다."));
+    }
+
+    @Transactional
+    public ResponseEntity<ApiResponse<ImageResponseDto>> updateDatingImage(UserEntity user, Long id, DatingImageRequestDto requestDto) throws IOException {
+        Dating dating = findByIdDateAuthCheck(id, user);
+        switch (requestDto.getAction()) {
+            case ADD -> {
+                String fileName = s3Uploader.upload(requestDto.getImage(), "datingImage/" + user.getUsername());
+                DatingImage datingImage = new DatingImage(fileName);
+                datingImage.setDating(dating);
+                dating.setDatingImage(datingImage);
+                datingImageRepository.save(datingImage);
+            }
+            case MODIFY -> {
+                DatingImage datingImage = findByIDatingImageAuthCheck(requestDto.getId(), dating);
+                s3Uploader.delete(datingImage.getImage());
+                String fileName = s3Uploader.upload(requestDto.getImage(), "datingImage/" + user.getUsername());
+                datingImage.update(fileName);
+            }
+            case DELETE -> {
+                DatingImage datingImage = findByIDatingImageAuthCheck(requestDto.getId(), dating);
+                s3Uploader.delete(datingImage.getImage());
+                datingImageRepository.delete(datingImage);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(new ImageResponseDto(dating.getDatingImage())));
+    }
+
+    private DatingImage findByIDatingImageAuthCheck(Long id, Dating dating) {
+        DatingImage image = datingImageRepository.findById(id).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
+        );
+        if (!dating.getId().equals(image.getDating().getId()))
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED);
+        return image;
     }
 
     private Dating findByIdDateAuthCheck(Long id, UserEntity user) {

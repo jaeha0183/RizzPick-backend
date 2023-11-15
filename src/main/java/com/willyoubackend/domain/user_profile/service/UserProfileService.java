@@ -91,12 +91,12 @@ public class UserProfileService {
         return new UserProfileResponseDto(userToUpdate);
     }
 
-    public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getRecommendations(UserEntity userEntity) {
+    public ResponseEntity<ApiResponse<List<UserMainResponseDto>>> getRecommendations(UserEntity userEntity) {
 
         String location = userEntity.getUserProfileEntity().getLocation();
         GenderEnum gender = userEntity.getUserProfileEntity().getGender();
 
-        List<UserProfileResponseDto> userProfileResponseDtoList = new ArrayList<>();
+        List<UserMainResponseDto> userProfileResponseDtoList = new ArrayList<>();
         List<UserEntity> filteredUsers;
         if (gender == GenderEnum.MALE || gender == GenderEnum.FEMALE) {
             filteredUsers = userRepository.findByUserProfileEntity_LocationAndUserProfileEntity_GenderNotAndIdNot(location, gender, userEntity.getId());
@@ -110,7 +110,8 @@ public class UserProfileService {
             if (!userNopeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     !userLikeStatusRepository.existBySentUserAndReceivedUser(userEntity, filteredUser) &&
                     filteredUser.getUserProfileEntity().isUserActiveStatus()) {
-                userProfileResponseDtoList.add(new UserProfileResponseDto(filteredUser));
+                DatingResponseDto datingResponseDto = (datingRepository.findAllByUser(filteredUser) == null) ? null : (datingRepository.findAllByUser(filteredUser).size() == 0)?null:new DatingResponseDto(datingRepository.findAllByUser(filteredUser).get(0));
+                userProfileResponseDtoList.add(new UserMainResponseDto(filteredUser, datingResponseDto));
             }
             maxLimit++;
         }
@@ -139,7 +140,7 @@ public class UserProfileService {
     public ResponseEntity<ApiResponse<UserProfileMatchResponseDto>> getUserProfile(UserEntity user, Long userId) {
         UserMatchStatus matchStatus = (userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId)) == null) ? userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(findUserById(userId), user) : userMatchStatusRepository.findByUserMatchedOneAndUserMatchedTwo(user, findUserById(userId));
         Long matchId = (matchStatus == null) ? null : matchStatus.getId();
-        UserProfileMatchResponseDto userProfileResponseDto = new UserProfileMatchResponseDto(findUserById(userId), matchId);
+        UserProfileMatchResponseDto userProfileResponseDto = new UserProfileMatchResponseDto(findUserById(userId), matchId, matchId != null);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.successData(userProfileResponseDto));
     }
 

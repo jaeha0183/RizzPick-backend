@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -18,6 +19,8 @@ public class EmitterRepository {
 
     public SseEmitter save(String id, SseEmitter sseEmitter) {
         emitters.put(id, sseEmitter);
+        sseEmitter.onCompletion(()->this.deleteById(id));
+        sseEmitter.onTimeout(()->this.deleteById(id));
         return sseEmitter;
     }
 
@@ -53,8 +56,26 @@ public class EmitterRepository {
 //        );
     }
 
+    public Optional<SseEmitter> findByUserId(Long userId) {
+        String userIdPrefix = userId + "_";
+        return emitters.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(userIdPrefix))
+                .map(Map.Entry::getValue)
+                .findFirst();
+    }
+
     public void deleteById(String id) {
         emitters.remove(id);
+        deleteAllEventCacheStartWithId(id);
+    }
+
+    public void deleteAllByUserId(Long userId) {
+        String userIdPrefix = userId + "_";
+        Set<String> keysToDelete = emitters.keySet().stream()
+                .filter(key -> key.startsWith(userIdPrefix))
+                .collect(Collectors.toSet());
+
+        keysToDelete.forEach(emitters::remove);
     }
 
     public void deleteAllEventCacheStartWithId(String id) {

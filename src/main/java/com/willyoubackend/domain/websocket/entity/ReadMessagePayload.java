@@ -11,5 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReadMessagePayload {
     private Long messageId; // 읽은 메시지의 ID
+    private String sender; // 메시지 보낸 사람
     private Long chatRoomId; // 해당 메시지의 채팅방 ID
 }

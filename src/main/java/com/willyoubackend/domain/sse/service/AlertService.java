@@ -39,6 +39,12 @@ public class AlertService {
         log.info("subscribe");
         Long userId = userDetails.getUser().getId();
         String id = userId + "_" + System.currentTimeMillis();
+
+//        emitterRepository.findByUserId(userId).ifPresent(existEmitter->{
+//            existEmitter.complete();
+//            emitterRepository.deleteAllByUserId(userId);
+//        });
+
         SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
 
         emitter.onCompletion(() -> emitterRepository.deleteById(id));
@@ -59,10 +65,15 @@ public class AlertService {
 
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
+            log.info(data.toString());
             // data가 Alert 객체인지 확인 후 처리
             if(data instanceof Alert) {
                 Alert alert = (Alert) data;
                 // AlertResponseDto에 생성 시간을 포함하여 클라이언트에게 전달
+                log.info(alert.getMessage());
+                log.info(alert.getReceiver().getUsername());
+                log.info(alert.getSender().getUsername());
+                log.info(alert.getUrl());
                 AlertResponseDto alertResponseDto = new AlertResponseDto(alert);
                 emitter.send(SseEmitter.event()
                         .id(id)
@@ -75,8 +86,28 @@ public class AlertService {
             }
         } catch (IOException exception) {
             emitterRepository.deleteById(id);
+            log.error("IOException : ", exception);
+            if (isBrokenPipeException(exception))
+                handleBrokenPipe(emitter, id);
             throw new RuntimeException("연결 오류");
         }
+    }
+
+    // IOException이 Broken pipe인지 확인하는 메서드
+    private boolean isBrokenPipeException(IOException exception) {
+        // Broken pipe 확인 로직 구현
+        // 예: exception.getMessage().contains("Broken pipe")
+        return exception.getMessage().contains("Broken pipe");
+    }
+
+    // Broken pipe 오류 처리를 위한 메서드
+    private void handleBrokenPipe(SseEmitter emitter, String id) {
+        log.warn("Broken pipe detected for emitter ID " + id);
+        log.info(String.valueOf(emitterRepository.findAllStartWithById(id).size()));
+        // Broken pipe 처리 로직 구현
+        // 예: 연결 종료, 재시도 로직, 사용자에게 알림 전송 등
+        emitterRepository.deleteById(id);
+        log.info(String.valueOf(emitterRepository.findAllStartWithById(id).size()));
     }
 
     public void send(UserEntity receiver, UserEntity sender, String message) {
@@ -95,6 +126,17 @@ public class AlertService {
             emitterRepository.saveEventCache(key, alert);
             sendToClient(emitter, key, new AlertResponseDto(alert));
         });
+
+//        if (sseEmitters != null) {
+//            sseEmitters.forEach((key, emitter) -> {
+//                if (emitter != null && key != null) {
+//                    emitterRepository.saveEventCache(key, alert);
+//                    sendToClient(emitter, key, new AlertResponseDto(alert));
+//                } else {
+//                    log.warn("SSE emitter is null for key: {}", key);
+//                }
+//            });
+//        }
     }
 
     private Alert createAlert(UserEntity receiver, UserEntity sender, String message) {

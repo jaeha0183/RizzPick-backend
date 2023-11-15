@@ -9,6 +9,7 @@ import com.willyoubackend.domain.websocket.repository.ChatRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -38,6 +39,7 @@ public class ChatRoomFavoriteService {
         ChatRoomFavorite favorite = new ChatRoomFavorite();
         favorite.setUser(user);
         favorite.setChatRoom(chatRoom);
+        favorite.setAddedAt(ZonedDateTime.now());
 
         chatRoomFavoriteRepository.save(favorite);
     }

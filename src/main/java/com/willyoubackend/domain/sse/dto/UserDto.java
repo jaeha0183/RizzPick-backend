@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class UserDto {
     private Long id;
-    private List<ImageResponseDto> profileImages;
+//    private List<ImageResponseDto> profileImages;
 
     public UserDto(UserEntity user) {
         this.id = user.getId();
-        this.profileImages = user.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
+//        this.profileImages = user.getProfileImages().stream().map(ImageResponseDto::new).collect(Collectors.toList());
     }
 }
