@@ -15,7 +15,7 @@ public interface ChatMessageRepository extends JpaRepository<SocketMessage, Long
 
     void deleteByChatRoomId(Long chatRoomId);
 
-    List<SocketMessage> findAllByTimeBeforeAndIsReadFalse(ZonedDateTime time);
-
     List<SocketMessage> findByChatRoomId(Long chatRoomId);
+
+    List<SocketMessage> findAllByChatRoomIdAndSenderAndIsReadFalseAndTimeBefore(Long id, String sender, ZonedDateTime time);
 }

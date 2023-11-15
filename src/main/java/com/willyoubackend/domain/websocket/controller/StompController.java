@@ -40,11 +40,11 @@ public class StompController {
         simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/message", chatMessage);
     }
 
-    @Transactional
     @MessageMapping("/readMessage")
     public void handleReadMessage(@Payload ReadMessagePayload payload) {
         Long messageId = payload.getMessageId();
-        chatMessageService.markMessageAsRead(messageId);
+        String sender = payload.getSender();
+        chatMessageService.markMessageAsRead(messageId, sender);
     }
 
 }

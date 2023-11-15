@@ -12,6 +12,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -50,15 +51,26 @@ public class ChatMessageService {
     }
 
 
-    public void markMessageAsRead(Long messageId) {
-        SocketMessage message = chatMessageRepository.findById(messageId).orElseThrow(() -> new RuntimeException("Message not found"));
-        message.setIsRead(true);
+    @Transactional
+    public void markMessageAsRead(Long messageId, String senderUsername) {
+        SocketMessage message = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
 
-        // 지정된 메시지보다 오래된 모든 메시지의 isRead 상태도 true로 업데이트
-        List<SocketMessage> olderMessages = chatMessageRepository.findAllByTimeBeforeAndIsReadFalse(message.getTime());
+        if (!message.getSender().equals(senderUsername)) {
+            message.setIsRead(true);
+        }
+
+        List<SocketMessage> olderMessages = chatMessageRepository
+                .findAllByChatRoomIdAndSenderAndIsReadFalseAndTimeBefore(
+                        message.getChatRoom().getId(),
+                        message.getSender(),
+                        message.getTime()
+                );
+
         for (SocketMessage olderMessage : olderMessages) {
             olderMessage.setIsRead(true);
         }
+
         chatMessageRepository.save(message);
         chatMessageRepository.saveAll(olderMessages);
     }
