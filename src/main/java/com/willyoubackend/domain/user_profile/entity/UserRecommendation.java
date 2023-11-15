@@ -53,6 +53,16 @@ public class UserRecommendation {
         this.latitude = requestDto.getLatitude();
     }
 
+    public UserRecommendation(GenderRecommendationEnum recGender, Boolean recAge, Long ageGap, Boolean recLocation, Float distance, Float longitude, Float latitude) {
+        this.recGender = recGender;
+        this.recAge = recAge;
+        this.ageGap = ageGap;
+        this.recLocation = recLocation;
+        this.distance = distance;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
     public void update(UserRecommendationRequestDto requestDto) {
         this.recGender = requestDto.getRecGender();
         this.recAge = requestDto.getRecAge();
