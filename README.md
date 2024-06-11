@@ -4,85 +4,87 @@
 
 ## 📎 https://rizzpick.com
 
-## 프로젝트 소개
+## Project Introduction
 
-> "우리 뭐할까요?"라는 질문에서 출발해 사용자들이 매력적인 데이트 계획을 통해 깊고 의미 있는 관계를 맺을 수 있도록 유도하고자 합니다.
+> Starting with the question, "What are we going to do?" we aim to guide users to form deep and meaningful relationships through attractive date plans.
 ---
-## ✅ 서비스 핵심 기능
+## ✅ Key Features
 
-### **1. 데이트 계획 공유 및 선택**
->사용자들이 개인적으로 기획한 데이트 아이디어를 공유하고, 상대방의 계획을 보며 선택하는 기능입니다.
+### **1. Sharing and Choosing Date Plans**
+> Users can share their individually planned date ideas and choose plans from others.
 
-### **2. 개인 프로필 기반 추천**
+### **2. Personalized Recommendations**
 
-> 지역, 성별을 기반으로 상대방과의 추천이 이루어집니다.
-
----
-## 🗓 프로젝트 기간
-2023년 10월 4일 ~ 2023년 11월 15일 (6주)
+> Recommendations are made based on region and gender.
 
 ---
-## ⚙️ 서비스 아키텍처
+## 🗓 Project Duration
+October 4, 2023 - November 15, 2023 (6 weeks)
+
+---
+## ⚙️ Service Architecture
 ![ServiceArc](https://github.com/RizzPick/RizzPick-backend/assets/114673187/8279253d-1b33-454b-ab92-b62182f049b2)
 
 ---
-## 💬 기술적 의사 결정
+## 💬 Technical Decisions
 
-| 기술             | 설명                                                                                                                                                                                                                                       |
+| Technology             | Description                                                                                                                                                                                                                                       |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Nginx**        | 기존 Apache의 WAS에서 추가적으로 HTTPS 연결과 대용량 이미지 처리 요청에 대한 설정이 필요하다 판단하여 추가. Apache와 비교하여 더 빠른 성능을 제공하는 웹서버로, 높은 트래픽 처리와 안정성을 위해 사용.                                             |
-| **GitHub Actions** | 프론트엔드와 백엔드의 효율적인 협업을 위한 자동배포를 진행. 소스 코드의 변경 사항에 대한 자동화된 CI/CD 파이프라인을 구축할 수 있으며, 지속적인 통합 및 배포를 위해 적용.                                                                              |
-| **Redis(EC2)**   | 임시 데이터 사용과 캐싱에 적합하여 사용자의 빈번한 엑세스가 발생하는 데이터를 Redis에 저장하여 데이터 엑세스 속도를 높임. EC2 인스턴스를 사용하여 원하는 OS, 메모리, 스토리지 및 CPU 구성의 선택 제공. 수직 및 수평 스케일링 가능. AWS 보안 그룹을 통한 접근 제한. |
-| **Swagger**      | 프론트엔드와 백엔드의 빠르고 직관적인 의사소통을 위해 API 기능을 문서화하고 테스트하기 위해 적용. API 문서화와 테스트 도구로서 개발자들이 API의 동작을 쉽게 이해하고 테스트 할 수 있도록 도와줌.                                                          |
-| **Docker Hub**   | 추후 EC2의 서버 인스턴스 내에서 다중 컨테이너와 Nginx를 활용한 다중 처리를 진행하기 위해, 먼저 Docker Hub에서 배포를 진행하기로 결정. 개발에 프로그램을 실행하기 전 컴파일 단계에서 오류를 찾을 수 있는 장점으로 사용.                                       |
-| **QueryDSL**     | Soft Delete와 사용자 추천 로직에 있어 복잡해진 쿼리문을 직관적으로 바꾸기 위해 사용. 추가적으로 POST, UPDATE, DELETE를 제외한 GET 요청에 있어서 QueryDSL을 적용하기로 결정.                                                                      |
-| **WebSocket**    | 서버와 클라이언트 간의 실시간 연결을 제공하여 실시간 채팅 기능을 구현하기 위해 적용.                                                                                                                                                        |
-| **SSE(Redis PUB/SUB)** | (SSE) 서버와 클라이언트간의 실시간 연결을 제공하여 실시간 알림 푸시 기능을 구현하기 위해서 적용 (PUB/SUB) 다수의 클라이언트에게 알림을 효과적으로 전달하기 위해 적용서버에서 발생한 이벤트를 PUB/SUB 으로 관리하여, 토픽을 구독한 구독자에게 SSE를 통해 효과적인 실시간 알림 기능을 구현                                       |
+| **Nginx**        | Added for HTTPS connections and high-volume image processing, chosen over Apache for better performance and high traffic handling.                                             |
+| **GitHub Actions** | Added for HTTPS connections and high-volume image processing, chosen over Apache for better performance and high traffic handling.                                                                              |
+| **Redis(EC2)**   | Suitable for temporary data and caching, storing frequently accessed data to enhance access speed. EC2 instance allows for desired OS, memory, storage, and CPU configuration, with vertical and horizontal scaling and access restriction through AWS security groups. |
+| **Swagger**      | Applied for API documentation and testing to facilitate quick and intuitive communication between front-end and back-end.                                                          |
+| **Docker Hub**   | Decided to deploy using Docker Hub to facilitate multi-container processing with Nginx in EC2 server instances, beneficial for catching errors in the compile stage before program execution.                                       |
+| **QueryDSL**     | Used to simplify complex query statements for Soft Delete and user recommendation logic, and applied to GET requests excluding POST, UPDATE, DELETE.                                                                      |
+| **WebSocket**    | Applied to provide real-time connection between server and client for real-time chat functionality.                                                                                                                                                        |
+| **SSE(Redis PUB/SUB)** | Applied for real-time notifications, managing events on the server with PUB/SUB and delivering effective real-time notifications to subscribed clients through SSE.                                       |
 
 
 ---
 ## 📑 ERD
 ![RizzPickERD](https://github.com/RizzPick/RizzPick-backend/assets/114673187/89789c7e-8db7-492f-ad79-8dbea7e79331)
 ---
-## 🛠트러블슈팅
+## 🛠Troubleshooting
 
 <details>
-<summary>사용자 추천로직에서의 Redis 사용</summary>
+<summary>Using Redis for User Recommendation Logic</summary>
 <div markdown="2">
 
-> 문제
+> Problem
 
-사용자별 추천 로직을 만들기 위해 Recommendations라는 Entity를 만들어서 관리하려 했으나 유저별로 Recommendations를 추가할시 MySQL에 너무 많은 양의 쿼리가 만들어지는게 예상이 됐고 너무 많은 요청이 보내질 거라 예상된다.
+To create a user recommendation logic, we planned to manage it by creating an entity called Recommendations. However, adding Recommendations per user was expected to generate too many queries in MySQL and send too many requests.
 
-> 오류 해결 시도
+> Solution Attempt
 
-Redis를 활용하여 사용자가 로그인한 시점에 Recommendations라는 Entity를 만들어 저장하고 일정 시간이 지난 뒤 혹은 유저가 로그아웃하면 Redis에서 삭제를 한다.
 
-하지만, Redis 사용자에 대한 정보를 담는다 하더라도 MySQL에서 사용자 프로필을 다시 조회해야 했고 사용자 프로필 자체를 Redis에 저장하게 되면 조회를 하지 못하는 문제가 생겼다. 추가적으로 MVP내에서 사용자 추천 필터를 확실히 정하지 않았기에 서비스 적으로도 효율적으로도 Redis를 사용할 이유가 없어졌다.
+By utilizing Redis, we stored the Recommendations entity created at user login and deleted it after a certain period or when the user logs out. However, even with Redis, the user profile had to be re-queried from MySQL. Storing user profiles in Redis caused issues with profile retrieval, and without definitive user recommendation filters within the MVP, there was no service or efficiency reason to use Redis.
 
-> 오류 해결 방법
 
-사용자 추천 API를 사용자별로 설정하게 만들어지기 전까지 MySQL에서 조회하는 방식을 사용한다.
+> Solution
+
+Use MySQL queries until user-specific settings for the user recommendation API are established.
+
 </div>
 </details>
 
 <details>
-<summary>Websocket 채팅방이 삭제되는 현상</summary>
+<summary>WebSocket Chat Rooms Getting Deleted</summary>
 <div markdown="3">
 
-> 문제
+> Problem
 
-Websocket을 활용하여 실시간 채팅 기능을 구현하던 중, 실시간 채팅 후 예기치 않게 Redis의 채팅방이 랜덤하게 삭제되거나 해당 사용자가 채팅방에서 삭제되는 현상이 있었다.
-
-> 오류 해결 시도
+While implementing real-time chat functionality using WebSocket, chat rooms in Redis were unexpectedly getting deleted or specific users were getting removed from chat rooms.
 
 
-Websocket의 경우 백엔드에서만으로는 이러한 문제를 정확하게 파악하기가 어려웠다. 그래서 프론트엔드 팀과 협업을 시작했고, 양쪽 모두의 코드를 상호 검토해 보면서 오류의 원인을 찾으려고 노력했다. 이 과정에서 발생한 오류 로그를 기반으로 구글링을 진행했고, ChatGPT의 도움도 받아 원인을 해결하려고 했다.
-
-> 오류 해결 방법
+> Solution Attempt
 
 
-문제 상황에서 다음과 같은 에러 로그가 관찰되었다.
+The backend alone was insufficient to pinpoint the problem, so we began collaborating with the front-end team, mutually reviewing code to find the cause. Based on error logs, we conducted searches and consulted ChatGPT for resolution.
+
+> Solution
+
+
+From the error logs, a CustomException was observed in the validateChatRoomId method of ChatRoomService, indicating an issue with ChatRoomId validation.
 
 ```java
 com.willyoubackend.global.exception.CustomException: null
@@ -91,12 +93,13 @@ com.willyoubackend.global.exception.CustomException: null
         at java.base/java.lang.Thread.run(Thread.java:833) ...
 ```
 
-로그 내용을 보면, **`ChatRoomService`**의 **`validateChatRoomId`** 메서드에서 **`CustomException`**이 발생하고 있었다. 이 메서드는 **`ChatRoomId`**의 유효성을 검사하는 코드로 이 로그는 이 유효성 검사에서 문제가 발생했음을 나타내주고 있었다.
 
-문제 해결의 핵심은 아래의 **`ChatRoomId`** 검증 코드를 수정하는 것이었다.
+The log showed that a CustomException occurred in the validateChatRoomId method of ChatRoomService. This method checks the validity of ChatRoomId, indicating an issue with this validation.
+
+The key to solving the problem was modifying the ChatRoomId validation code below:
 
 ```java
-// chatRoomId 검사 메서드
+// chatRoomId validation method
 private void validateChatRoomId(Long chatRoomId) {
         if (chatRoomId == null) {
         throw new CustomException(ErrorCode.INVALID_CHATROOM_ID);
@@ -104,50 +107,49 @@ private void validateChatRoomId(Long chatRoomId) {
         }
    ```
 
-이 코드를 일시적으로 삭제한 후 다시 실행해 보니, 문제가 해결된 것을 확인할 수 있었다.
-또한 Redis에 채팅방 정보를 저장하는 것은 휘발성이 높은 데이터이므로, Redis에 저장하는 대신 MySQL에 저장하는 방식으로 변경했다.
+Temporarily removing this validation resolved the issue. Additionally, switching from Redis to MySQL for chat room data storage, considering Redis's volatility.
 
 </div>
 </details>
 
 <details>
-<summary>QueryDSL 활용 DB 쿼리 최적화</summary>
+<summary>DB Query Optimization with QueryDSL</summary>
 <div markdown="4">
 
-> 문제
+> Problem
 
-1. 사용자 목록을 가져오기 위해서 JPA를 사용하여 쿼리를 작성했음. 그러나 이 방법을 사용했을때 쿼리문이 길었으며, 유연성이 떨어졌음.
-2. 특정 쿼리 조회 시 요청별로 구성하는 값이 다를경우 다른 요청을 만들거나 쿼리문이 복잡해지는 상황이 발생.
+1. Long and inflexible query statements when fetching user lists using JPA.
+2. Complex and variable requests for specific query retrievals.
 
-> 오류 해결 시도
+> Solution Attempt
 
-1. 문제를 해결하기 위해 QueryDSL 을 도입하여 쿼리문을 더 간결하고 유연하게 작성하려고 했음. 코드의 가독성과 유연성은 좋아졌지만, 쿼리문의 길이는 JPA만을 사용했을 때와 비슷했음.
+1. To address the issue, we introduced QueryDSL to write more concise and flexible query statements. While the code readability and flexibility improved, the query length remained similar to using only JPA.
 
-> 오류 해결 방법
+> Solution
 
-1. QueryDSL의 ‘leftJoin’ 과 ‘fetchJoin’ 기능을 활용하여 쿼리문을 최적화함. 이 기능을 통해 필요 필요한 데이터를 한 번의 쿼리로 가져오하게 하여, 실행되는 쿼리문의 수를 줄임.
+1. Optimized queries using QueryDSL's leftJoin and fetchJoin, reducing the number of executed queries by retrieving necessary data in a single query.
 </div>
 </details>
 
 ---
 
-## 🧑🏻‍💻 팀원 소개
+## 🧑🏻‍💻 Team Members
 
-| 이름      | 역할  | 깃허브 주소                         |
+| Name      | Role  | GitHub Address                         |
 |---------|-----|-------------------------------|
-| 정우용 (B) | 팀장  | https://github.com/jwywoo     |
-| 소석진 (F) | 부팀장 | https://github.com/seokjin909    |
-| 김연수 (F) | 팀원  | https://github.com/Xeonxoo99    |
-| 전진웅 (B) | 팀원  | https://github.com/JJW11111   |
-| 김우응 (B) | 팀원  | https://github.com/Gimwooeung |
-| 이재하 (B) | 팀원  | https://github.com/jaeha0183  |
+| Jung Woo-yong (B)	 | Team Leader	  | https://github.com/jwywoo     |
+| So Seok-jin (F) | Deputy Leader	 | https://github.com/seokjin909    |
+| Kim Yeon-su (F)	 | Team Member	  | https://github.com/Xeonxoo99    |
+| Jeon Jin-woong (B)	 | Team Member	  | https://github.com/JJW11111   |
+| Kim Woo-eung (B) | Team Member	  | https://github.com/Gimwooeung |
+| Lee Jae-ha (B) | Team Member	  | https://github.com/jaeha0183  |
 
 
 ---
-## [프론트 깃허브 링크](https://github.com/RizzPick/RizzPick-frontEnd)
+## [Front-end Github Link](https://github.com/RizzPick/RizzPick-frontEnd)
 
 ---
-## [백엔드 깃허브 링크](https://github.com/RizzPick/RizzPick-backend)
+## [Back-end Github Link](https://github.com/RizzPick/RizzPick-backend)
 
 ---
 
